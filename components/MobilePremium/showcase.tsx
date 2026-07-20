@@ -69,6 +69,8 @@ import { DatePickerField } from './DatePickerField';
 import { RevealMask } from './RevealMask';
 import { LoadingOverlay } from '../primitives';
 import { ActivityGridPreview } from './ActivityGridPreview';
+import { CopyForAiButton } from './CopyForAiButton';
+import { buildAiPayload } from '../../utils/buildAiPayload';
 import { PALETTES, type AtmosphereSurface } from '../premium/shared';
 
 const SURFACES: AtmosphereSurface[] = [
@@ -701,6 +703,52 @@ export function Showcase() {
         <View style={styles.section}>
           <MobileSectionEyebrow>Toast (auto-dismissing alerts)</MobileSectionEyebrow>
           <ToastDemo />
+        </View>
+
+        <View style={styles.section}>
+          <MobileSectionEyebrow>Copy for AI (dev helper)</MobileSectionEyebrow>
+          <MobileSurface>
+            <Text style={[styles.bodyText, { color: colors.textSecondary, marginBottom: 12 }]}>
+              Builds a plain-text payload (app, route, title, timestamp, visible content) and
+              copies it to the clipboard. One tap takes the current screen into an AI chat
+              without a screenshot.
+            </Text>
+            <CopyForAiButton
+              variant="subtle"
+              testID="showcase-copy-for-ai-subtle"
+              payload={buildAiPayload({
+                appName: 'arqavellum',
+                route: '/dev/premium',
+                title: 'Showcase',
+                contextLabel: 'Design system reference',
+                params: { section: 'copy-for-ai' },
+                visibleContent: [
+                  '- Kit: MobilePremium',
+                  '- Atmospheres: 7',
+                  '- Hooks: animation + layout + clipboard',
+                ].join('\n'),
+              })}
+            />
+            <View style={styles.spacer} />
+            <Text style={[styles.bodyText, { color: colors.textSecondary, marginBottom: 12 }]}>
+              Ghost variant — for the compact MobileHeader nav-mode row.
+            </Text>
+            <MobileHeader
+              title="Showcase"
+              accentColor={colors.brand}
+              onBack={() => {}}
+              navRightAction={
+                <CopyForAiButton
+                  testID="showcase-copy-for-ai-ghost"
+                  payload={buildAiPayload({
+                    appName: 'arqavellum',
+                    route: '/dev/premium',
+                    title: 'Showcase',
+                  })}
+                />
+              }
+            />
+          </MobileSurface>
         </View>
 
         <View style={styles.section}>

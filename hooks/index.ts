@@ -76,3 +76,5 @@ export type {
   ActivityGridLayoutInput,
   ActivityGridLayoutMode,
 } from './useActivityGridLayout';
+export { useCopyForAi } from './useCopyForAi';
+export type { UseCopyForAiResult } from './useCopyForAi';
