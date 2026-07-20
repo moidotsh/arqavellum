@@ -295,6 +295,35 @@ function lineHasSb2Exempt(content: string, matchIndex: number): boolean {
   return SB2_EXEMPT_REGEX.test(lineTail);
 }
 
+/**
+ * Scan one source string for magic-number violations, applying both the
+ * comment-prefix and same-line `// sb2-exempt` filters. Exported solely
+ * so the test can exercise the filter chain against synthetic source
+ * without writing a temp file.
+ */
+export function scanMagicNumberViolations(
+  content: string,
+  fileRel: string,
+): Violation[] {
+  const out: Violation[] = [];
+  MAXWIDTH_LITERAL_REGEX.lastIndex = 0;
+  let match;
+  while ((match = MAXWIDTH_LITERAL_REGEX.exec(content)) !== null) {
+    const before = textBeforeMatchOnLine(content, match.index);
+    if (COMMENT_PREFIX_REGEX.test(before)) continue;
+    if (lineHasSb2Exempt(content, match.index)) continue;
+
+    out.push({
+      check: 'SB2-magic-number',
+      file: fileRel,
+      line: lineOf(content, match.index),
+      message:
+        'Literal maxWidth: 420 or maxWidth: 380 bypasses the canonical policy style — spread ...MOBILE_CONTENT_WIDTH_STYLE or ...MOBILE_DIALOG_WIDTH_STYLE instead (or add // sb2-exempt on this line with justification). Other numeric maxWidth values are allowed; only the canonical policy caps are flagged.',
+    });
+  }
+  return out;
+}
+
 function auditMagicNumber(files: string[]): Violation[] {
   const violations: Violation[] = [];
   for (const file of files) {
@@ -303,21 +332,7 @@ function auditMagicNumber(files: string[]): Violation[] {
     if (file === STYLES_CONSTANTS_FILE) continue;
 
     const content = readFileSync(file, 'utf8');
-    MAXWIDTH_LITERAL_REGEX.lastIndex = 0;
-    let match;
-    while ((match = MAXWIDTH_LITERAL_REGEX.exec(content)) !== null) {
-      const before = textBeforeMatchOnLine(content, match.index);
-      if (COMMENT_PREFIX_REGEX.test(before)) continue;
-      if (lineHasSb2Exempt(content, match.index)) continue;
-
-      violations.push({
-        check: 'SB2-magic-number',
-        file: relative(ROOT, file),
-        line: lineOf(content, match.index),
-        message:
-          'Literal maxWidth: 420 or maxWidth: 380 bypasses the canonical policy style — spread ...MOBILE_CONTENT_WIDTH_STYLE or ...MOBILE_DIALOG_WIDTH_STYLE instead (or add // sb2-exempt on this line with justification). Other numeric maxWidth values are allowed; only the canonical policy caps are flagged.',
-      });
-    }
+    violations.push(...scanMagicNumberViolations(content, relative(ROOT, file)));
   }
   return violations;
 }

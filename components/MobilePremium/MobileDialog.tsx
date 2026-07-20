@@ -233,12 +233,17 @@ const styles = StyleSheet.create({
   //
   // The previous `width: '90%'` was a hand-tuned approximation of the
   // mobile column; the policy spread replaces it with the canonical
-  // `width: '100%' + maxWidth: 380 + alignSelf: 'center'` shape. On a
-  // 380pt+ viewport the card renders at 380pt centered (visually
-  // equivalent to the old 90%-with-cap on most mobile widths); on a
-  // narrower viewport (e.g. iPhone SE @ 320pt) the card fills the
-  // viewport instead of leaving a 10% gutter — better for the
-  // constrained mobile body.
+  // `width: '100%' + maxWidth: 380 + alignSelf: 'center'` shape. This
+  // is NOT visually identical to the old behavior — narrow viewports
+  // render the card wider than before. The host `cardLayer` applies a
+  // 16pt horizontal padding, so `width: '100%'` resolves to viewport
+  // width minus 32pt. On iPhone SE @ 320pt the card is now 288pt
+  // centered (vs the previous 259pt — `90%` of 288pt with an extra
+  // ~13pt gutter on each side). At 420pt+ viewports the card caps at
+  // 380pt centered, matching the previous visual. The wider
+  // narrow-viewport behavior is intentional: the dialog is the
+  // focused interruptive surface on mobile, and the previous extra
+  // 10% gutter read as drift rather than breathing room.
   cardWrapper: {
     ...MOBILE_DIALOG_WIDTH_STYLE,
   },

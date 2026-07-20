@@ -20,6 +20,7 @@
 
 import { describe, it, expect } from 'vitest';
 import {
+  scanMagicNumberViolations,
   RN_MODAL_IMPORT_REGEX,
   PORTAL_PANEL_POLICY_SPREAD_REGEX,
   MAXWIDTH_LITERAL_REGEX,
@@ -298,6 +299,66 @@ const b = { maxWidth: 380 };`;
     // followed by another digit is a different number entirely.
     expect(findLiterals(`const s = { maxWidth: 4200 };`)).toEqual([]);
     expect(findLiterals(`const s = { maxWidth: 38000 };`)).toEqual([]);
+  });
+
+  it('does NOT detect maxWidth: 420 inside a // line comment', () => {
+    // Comment-prefix filter: when the text before the match on the
+    // same line starts with `//` the match is treated as prose, not
+    // live code. The filter is the same heuristic audit-component-
+    // quality.ts uses.
+    const src = `// legacy note: maxWidth: 420 was the pre-policy cap
+const s = { padding: 16 };`;
+    expect(scanMagicNumberViolations(src, 'fake.tsx')).toEqual([]);
+  });
+
+  it('does NOT detect maxWidth: 420 inside a /* block comment line', () => {
+    const src = `/*
+ * Historical note: maxWidth: 380 was the dialog cap.
+ */
+const s = { padding: 16 };`;
+    expect(scanMagicNumberViolations(src, 'fake.tsx')).toEqual([]);
+  });
+
+  it('does NOT detect maxWidth: 420 inside a JSDoc continuation', () => {
+    const src = `/**
+ * @deprecated maxWidth: 420 — use the policy spread instead.
+ */
+const s = { padding: 16 };`;
+    expect(scanMagicNumberViolations(src, 'fake.tsx')).toEqual([]);
+  });
+
+  it('suppresses a single violation when // sb2-exempt is on the same line', () => {
+    // Same-line exemption: a `// sb2-exempt` marker on the SAME line as
+    // the literal suppresses just that one match. Other violations on
+    // different lines in the same file are still reported.
+    const src = `const a = { maxWidth: 420 }; // sb2-exempt: legacy
+const b = { maxWidth: 380 };`;
+    const violations = scanMagicNumberViolations(src, 'fake.tsx');
+    expect(violations).toHaveLength(1);
+    expect(violations[0].line).toBe(2);
+    expect(violations[0].check).toBe('SB2-magic-number');
+  });
+
+  it('does NOT treat a file-level // sb2-exempt as a per-line suppress for magic-number', () => {
+    // Same-line exemption is line-scoped for magic-number. A marker on
+    // a different line does NOT suppress a violation. (The file-level
+    // marker suppresses SB2-portal only — see fileHasSb2Exempt.)
+    const src = `// sb2-exempt: file-level
+const a = { maxWidth: 420 };`;
+    const violations = scanMagicNumberViolations(src, 'fake.tsx');
+    expect(violations).toHaveLength(1);
+    expect(violations[0].line).toBe(2);
+  });
+
+  it('reports the correct line number for violations in multi-line source', () => {
+    const src = `
+const a = { padding: 8 };
+
+const b = { maxWidth: 420 };
+`;
+    const violations = scanMagicNumberViolations(src, 'fake.tsx');
+    expect(violations).toHaveLength(1);
+    expect(violations[0].line).toBe(4);
   });
 });
 
