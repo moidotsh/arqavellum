@@ -36,7 +36,7 @@ export default function HomeScreen() {
           <Text style={[styles.text, { color: colors.text }]}>
             This is Arqavellum&rsquo;s home placeholder. The shell is wired end-to-end:
             auth, navigation, MobilePremium design system, Zustand stores,
-            React Query, and the 10-audit pre-commit gate all work.
+            React Query, and the 12-audit pre-commit gate all work.
           </Text>
           <View style={{ height: 12 }} />
           <Text style={[styles.text, { color: colors.textSecondary }]}>
