@@ -13,6 +13,7 @@ import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from 'reac
 import { isWeb } from '../../utils';
 import { usePlatformAnimation, useReducedMotion } from '../../hooks';
 import { useAppTheme } from '../../context';
+import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 
 export interface MobileStepRailProps {
   /** Current step (0-indexed). `current` is the primary prop name. */
@@ -114,9 +115,7 @@ export function MobileStepRail({
 
 const styles = StyleSheet.create({
   outer: {
-    width: '100%',
-    maxWidth: 420,
-    alignSelf: 'center',
+    ...MOBILE_CONTENT_WIDTH_STYLE,
     paddingHorizontal: 20,
     paddingVertical: 8,
   },

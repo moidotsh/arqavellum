@@ -43,7 +43,19 @@ export {
 // Centralized style constants. Complement theme.ts with layout/visual
 // values that don't belong in the theme hook (border radius, input dims,
 // card padding, z-index layers).
-export { BORDER_RADIUS, INPUT, CARD, Z_INDEX, SCREEN_BODY_STYLE } from './styles';
+export {
+  BORDER_RADIUS,
+  INPUT,
+  CARD,
+  Z_INDEX,
+  SCREEN_BODY_STYLE,
+  CONTENT_WIDTH_MODE,
+  MOBILE_CONTENT_MAX_WIDTH,
+  MOBILE_DIALOG_MAX_WIDTH,
+  MOBILE_CONTENT_WIDTH_STYLE,
+  MOBILE_DIALOG_WIDTH_STYLE,
+} from './styles';
+export type { ContentWidthMode } from './styles';
 
 // App-level layout config (cross-cutting switches for screen composition).
 export { APP_LAYOUT } from './layout';

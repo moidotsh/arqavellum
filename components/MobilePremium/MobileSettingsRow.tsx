@@ -30,7 +30,7 @@ import React from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { ChevronRight } from '@tamagui/lucide-icons-2';
 import { usePressedStyle } from '../premium/shared';
-import { theme } from '../../constants';
+import { theme, MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
 
 export interface MobileSettingsRowProps {
@@ -178,15 +178,21 @@ export function MobileSettingsRow({
 }
 
 const styles = StyleSheet.create({
+  // Defensive standalone cap. Rows LIVE inside the column rather than
+  // defining its boundary — MobileSurface is the canonical column site
+  // for a settings group — but MobileSettingsRow is also used directly
+  // on standalone surfaces. Preserving the cap on the row itself
+  // (carried over from the pre-policy `maxWidth: 420` literal) keeps
+  // standalone usage mobile-shaped without relying on every caller
+  // wrapping the row. In fluid mode the cap collapses; the row fills
+  // whatever width its container provides.
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
     minHeight: 56,
-    width: '100%',
-    maxWidth: 420,
-    alignSelf: 'center',
+    ...MOBILE_CONTENT_WIDTH_STYLE,
   },
   iconBox: {
     width: 36,

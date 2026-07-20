@@ -193,6 +193,11 @@ const C2_EXEMPT_FILES = new Set([
   // It deliberately wraps RN Modal to escape host ScrollView / transform /
   // clipping contexts. This is the one place where RN Modal is the point.
   join(ROOT, 'components/MobilePremium/MobileDialog.tsx'),
+  // MobileSheet is the MobilePremium kit's canonical bottom/top sheet. Same
+  // load-bearing reason as MobileDialog: a sheet MUST portal to the OS level
+  // or it gets clipped by ancestor surfaces (MobileSurface has overflow:hidden
+  // + borderRadius, and host ScrollViews swallow absolute positioning).
+  join(ROOT, 'components/MobilePremium/MobileSheet.tsx'),
 ]);
 
 const C2_EXEMPT_REGEX = /\bc2-exempt\b/;

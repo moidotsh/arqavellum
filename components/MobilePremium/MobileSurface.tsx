@@ -9,6 +9,7 @@ import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { isWeb } from '../../utils';
 import { useAndroidChromeBlurFix } from '../../hooks';
 import { useAppTheme } from '../../context';
+import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 
 export interface MobileSurfaceProps {
   children?: React.ReactNode;
@@ -138,9 +139,7 @@ const styles = StyleSheet.create({
   surface: {
     position: 'relative',
     overflow: 'hidden',
-    width: '100%',
-    maxWidth: 420,
-    alignSelf: 'center',
+    ...MOBILE_CONTENT_WIDTH_STYLE,
   },
   innerHairline: {
     position: 'absolute',

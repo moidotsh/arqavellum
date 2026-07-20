@@ -33,6 +33,7 @@ import React, { useEffect } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { isWeb } from '../../utils';
 import { FadeIn } from '../premium/shared';
+import { MOBILE_DIALOG_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
 import { MobileSurface } from './MobileSurface';
 import { MobileHeader } from './MobileHeader';
@@ -224,9 +225,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 16,
   },
+  // Policy spread lands on `cardWrapper` — the visible centered dialog
+  // card. NOT on the surrounding `cardLayer` (which is pointerEvents=
+  // 'box-none' and exists only to layout the card within the viewport).
+  // SB2 verifies that a portal panel carries the policy style; this is
+  // the canonical MobileDialog site.
+  //
+  // The previous `width: '90%'` was a hand-tuned approximation of the
+  // mobile column; the policy spread replaces it with the canonical
+  // `width: '100%' + maxWidth: 380 + alignSelf: 'center'` shape. On a
+  // 380pt+ viewport the card renders at 380pt centered (visually
+  // equivalent to the old 90%-with-cap on most mobile widths); on a
+  // narrower viewport (e.g. iPhone SE @ 320pt) the card fills the
+  // viewport instead of leaving a 10% gutter — better for the
+  // constrained mobile body.
   cardWrapper: {
-    width: '90%',
-    maxWidth: 380,
+    ...MOBILE_DIALOG_WIDTH_STYLE,
   },
   body: {
     padding: 20,

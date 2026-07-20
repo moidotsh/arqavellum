@@ -19,6 +19,7 @@ import React from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { AlertCircle, CheckCircle2, Info, AlertTriangle } from '@tamagui/lucide-icons-2';
 import { useAppTheme } from '../../context';
+import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 
 export type MobileAlertType = 'error' | 'warning' | 'success' | 'info';
 export type MobileAlertVariant = 'success' | 'warning' | 'error' | 'info';
@@ -123,9 +124,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    width: '100%',
-    maxWidth: 420,
-    alignSelf: 'center',
+    ...MOBILE_CONTENT_WIDTH_STYLE,
   },
   iconCircle: {
     width: 24,

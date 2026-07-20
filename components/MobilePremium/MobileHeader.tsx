@@ -22,7 +22,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { ChevronLeft, X } from '@tamagui/lucide-icons-2';
-import { theme } from '../../constants';
+import { theme, MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { usePressedStyle } from '../premium/shared';
@@ -185,9 +185,7 @@ export function MobileHeader({
 const styles = StyleSheet.create({
   // ── Nav mode ─────────────────────────────────────────────────────────
   navContainer: {
-    width: '100%',
-    maxWidth: 420,
-    alignSelf: 'center',
+    ...MOBILE_CONTENT_WIDTH_STYLE,
     paddingHorizontal: 8,
   },
   navRow: {
@@ -222,9 +220,7 @@ const styles = StyleSheet.create({
 
   // ── Page mode ────────────────────────────────────────────────────────
   pageContainer: {
-    width: '100%',
-    maxWidth: 420,
-    alignSelf: 'center',
+    ...MOBILE_CONTENT_WIDTH_STYLE,
     paddingHorizontal: 20,
     paddingBottom: 8,
   },
