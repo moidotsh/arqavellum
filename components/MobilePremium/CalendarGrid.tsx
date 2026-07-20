@@ -14,8 +14,14 @@
 // YYYY-MM-DD validation site.
 //
 // Accessibility contract:
-//   • Container is role="grid" with a composed label.
-//   • Each week row is role="row".
+//   • Container is accessibilityRole="list" with a composed label. RN's
+//     AccessibilityRole enum does not include "grid" or "row"; "list" is
+//     the closest available cross-platform role. Consumers that want
+//     strict WAI-ARIA grid semantics on web can layer host-level
+//     aria-role="grid" / aria-role="row" attributes themselves (same
+//     pattern the showcase documents for tabpanel at
+//     components/MobilePremium/showcase.tsx in the SegmentedControl
+//     `variant="tabs"` demo).
 //   • Each day cell is role="button" (Pressable) with accessibilityState={{
 //     selected }} for the active day and accessibilityState={{ disabled }}
 //     for out-of-range days. Min 40×40 tap target.

@@ -2,7 +2,7 @@
   "name": "arqavellum",
   "main": "expo-router/entry",
   "version": "1.0.0",
-  "description": "Clean, domain-agnostic PWA-first Expo+Tamagui+Supabase+Bun starter with a 47-pattern architecture constitution, 10-audit pre-commit gate, and a light-default MobilePremium design system.",
+  "description": "Clean, domain-agnostic PWA-first Expo+Tamagui+Supabase+Bun starter with a 47-pattern architecture constitution, 12-audit pre-commit gate, and a light-default MobilePremium design system.",
   "scripts": {
     "start": "expo start",
     "web": "expo start --web",

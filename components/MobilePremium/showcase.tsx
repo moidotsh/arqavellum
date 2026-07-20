@@ -368,7 +368,7 @@ export function Showcase() {
   const [showPassword, setShowPassword] = useState(false);
   const [selectValue, setSelectValue] = useState('monthly');
   const [segSelection, setSegSelection] = useState<'7d' | '30d' | '90d'>('30d');
-  const [segTab, setSegTab] = useState<'sets' | 'notes' | 'history'>('sets');
+  const [segTab, setSegTab] = useState<'summary' | 'details' | 'activity'>('summary');
   const [segDensity, setSegDensity] = useState<'low' | 'med' | 'high'>('med');
   const [radioChip, setRadioChip] = useState<string>('all');
   const [multiChip, setMultiChip] = useState<string[]>(['alpha']);
@@ -616,7 +616,7 @@ export function Showcase() {
               max={100}
               step={1}
               fastStep={5}
-              unitLabel="reps"
+              unitLabel="units"
               onChange={setStepperValue}
             />
           </MobileSurface>
@@ -627,7 +627,7 @@ export function Showcase() {
           <MobileSurface>
             <MobileCheckboxItem
               title="Enable notifications"
-              subtitle="Get reminded when it&rsquo;s time to work out."
+              subtitle="Get reminded when something needs your attention."
               checked={checked}
               onToggle={() => setChecked((c) => !c)}
             />
@@ -760,9 +760,9 @@ export function Showcase() {
             <SegmentedControl
               variant="tabs"
               segments={[
-                { label: 'Sets', value: 'sets' },
-                { label: 'Notes', value: 'notes' },
-                { label: 'History', value: 'history' },
+                { label: 'Summary', value: 'summary' },
+                { label: 'Details', value: 'details' },
+                { label: 'Activity', value: 'activity' },
               ]}
               value={segTab}
               onChange={setSegTab}
@@ -780,11 +780,11 @@ export function Showcase() {
               style={[styles.tabPanel, { backgroundColor: colors.cardAlt }]}
             >
               <Text style={[styles.bodyText, { color: colors.text }]}>
-                {segTab === 'sets'
-                  ? 'Sets panel: 3 sets × 8 reps at 75% 1RM.'
-                  : segTab === 'notes'
-                    ? 'Notes panel: form felt clean on the third set.'
-                    : 'History panel: last completed 5 days ago.'}
+                {segTab === 'summary'
+                  ? 'Summary panel: 3 entries logged today.'
+                  : segTab === 'details'
+                    ? 'Details panel: notes recorded against each entry.'
+                    : 'Activity panel: last completed 5 days ago.'}
               </Text>
             </View>
             <View style={styles.spacer} />
@@ -1203,7 +1203,7 @@ export function Showcase() {
                 accessibilityLabel="Reveal private notes"
               >
                 <Text style={[styles.revealText, { color: colors.text }]}>
-                  Private: 8 reps at 75% 1RM. Form felt clean on the third set.
+                  Private: account reference AC-1234. Keep between you and your accountant.
                 </Text>
               </RevealMask>
             </View>

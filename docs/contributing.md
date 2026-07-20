@@ -39,9 +39,9 @@ When unsure, default to consumer-side. Promoting a consumer-specific change into
 
 ## Evolving the audit gate
 
-The 10-audit gate is the load-bearing enforcement of the constitution. Evolve it deliberately:
+The 12-audit gate is the load-bearing enforcement of the constitution. Evolve it deliberately:
 
-1. **New audit script.** Drops into `scripts/audit-*.ts`. Wire into `.husky/pre-commit` (in pre-commit order — read the existing order to find the right slot) AND `package.json` → `lint:structure`. Update `CLAUDE.md` → "The 10 audits" table in the same change. If the audit corresponds to a new S/C/D/SE/T/R code, also update `ARCHITECTURE.md` with the definition.
+1. **New audit script.** Drops into `scripts/audit-*.ts`. Wire into `.husky/pre-commit` (in pre-commit order — read the existing order to find the right slot) AND `package.json` → `lint:structure`. Update `CLAUDE.md` → "The 12 audits" table in the same change. If the audit corresponds to a new S/C/D/SE/T/R code, also update `ARCHITECTURE.md` with the definition.
 
 2. **Tightening an existing audit (regex tweak, removed allowlist entry).** Run the audit on the current arqavellum tree first. If arqavellum passes, ship. If arqavellum doesn't pass, fix the violations in the same change.
 

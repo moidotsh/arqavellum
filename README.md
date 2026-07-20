@@ -1,11 +1,11 @@
 # Arqavellum
 
-> A clean, domain-agnostic PWA-first Expo+Tamagui+Supabase+Bun starter repo. Ships a 47-pattern constitution, 10-audit pre-commit gate, repository pattern, Zustand + React Query, and barrel exports — retuned for **light-default, dark-opt-in** + **PWA-first (native export is consumer extension)** + **email/password auth**. Clone it, drop in your domain, ship.
+> A clean, domain-agnostic PWA-first Expo+Tamagui+Supabase+Bun starter repo. Ships a 47-pattern constitution, 12-audit pre-commit gate, repository pattern, Zustand + React Query, and barrel exports — retuned for **light-default, dark-opt-in** + **PWA-first (native export is consumer extension)** + **email/password auth**. Clone it, drop in your domain, ship.
 
 ## What arqavellum is
 
 - A **starter**, not a framework. You clone it, you own the copy, you modify freely. (Like `create-next-app`, like `expo-template-*`.)
-- A **47-pattern architecture constitution**: 10-audit pre-commit gate, repository pattern, Zustand + React Query, barrel exports, premium Mobile design system.
+- A **47-pattern architecture constitution**: 12-audit pre-commit gate, repository pattern, Zustand + React Query, barrel exports, premium Mobile design system.
 - **Light-default, dark-opt-in.** Both palettes ship in `constants/theme.ts`. The user picks via Settings (`light` / `dark` / `system`); preference persists across sessions; `system` defers to OS `prefers-color-scheme`. Adding a *third* mode (e.g. `dim`) is a deliberate consumer extension that requires retuning every MobilePremium primitive.
 - **PWA-first.** Static web export is the supported default. Native iOS/Android export is an intentional consumer extension — arqavellum ships native scaffolding (`icon`, `ios`, `android`, `expo-splash-screen` plugin in `app.config.ts`) + 3 placeholder PNGs at `./assets/`. The consumer adds `eas.json`, EAS Build config, brand PNGs, their own iOS bundle identifier + Android application/package ID (replacing the `app.arqavellum` starter value), and platform validation before native release. Runtime manifest-injection block in `app/_layout.tsx` remains load-bearing for PWA installability.
 - **Email/password auth by default.** Consumers needing PIN+device-UUID auth re-add the 4 PIN primitives + `audit-rpc-auth.ts` + a `verify_session` RPC as a customization (see `CLAUDE.md` → "When to add PIN auth").
@@ -50,7 +50,7 @@ Route (app/) → Hook (hooks/) → Service (services/) → Repository (utils/sup
 - **No hardcoded hex colors.** `audit-ui-theme.ts` (S7) enforces this — use `theme.colors.light.*`.
 - **No `setInterval` without `clearInterval`.** `audit-runtime-resilience.ts` (R4a) enforces this.
 
-The full 47-pattern constitution lives in `ARCHITECTURE.md`. The 10-audit pre-commit gate is documented in `CLAUDE.md` → "Pre-commit checks".
+The full 47-pattern constitution lives in `ARCHITECTURE.md`. The 12-audit pre-commit gate is documented in `CLAUDE.md` → "Pre-commit checks".
 
 ## The design system
 
