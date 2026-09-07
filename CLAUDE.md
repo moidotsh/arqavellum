@@ -47,7 +47,7 @@ Arqavellum has 12 structural audits + `tsc --noEmit` + structural ESLint that ru
 | 8 | `audit-testing-types.ts` | `[D6]`, `[T1]`, `[T2]` | UI code importing raw `shared/types`; test files outside `__tests__/`; inline `vi.mock()`. |
 | 9 | `audit-pattern-compliance.ts` | `[S19]`, `[C10]` | `package-lock.json`/`yarn.lock` in tree; imports of deprecated symbols. |
 | 10 | `audit-runtime-resilience.ts` | `[R4a]`, `[R4b]`, `[R1]` | `setInterval` without `clearInterval`; `addEventListener` without `removeEventListener`; async `useEffect` that awaits then setState/navigates without a cancellation guard. |
-| 11 | `audit-screen-body.ts` | `[SB1]` | Full-screen route in `app/` (excluding `_layout.tsx`, `+not-found.tsx`, `dev/`) missing `SCREEN_BODY_STYLE`. Suppress with `// sb1-exempt`. Skipped when `CONTENT_WIDTH_MODE = 'fluid'`. |
+| 11 | `audit-screen-body.ts` | `[SB1]` | Full-screen route in `app/` (excluding `_layout.tsx`, `+not-found.tsx`, `dev/`) missing `SCREEN_BODY_STYLE` (composing `ScreenScaffold` from `components/composed/` satisfies SB1 by delegation — the scaffold applies the policy centrally). Suppress with `// sb1-exempt`. Skipped when `CONTENT_WIDTH_MODE = 'fluid'`. |
 | 12 | `audit-mobile-content-width.ts` | `[SB2-portal]`, `[SB2-magic-number]` | Portal component (imports RN `Modal` under `components/`) missing `...MOBILE_CONTENT_WIDTH_STYLE` / `...MOBILE_DIALOG_WIDTH_STYLE` spread on its panel style entry; literal numeric `maxWidth` under `components/`. Suppress with `// sb2-exempt`. Skipped when `CONTENT_WIDTH_MODE = 'fluid'`. |
 
 Structural ESLint (`eslint.structure.config.js`) enforces two more:
