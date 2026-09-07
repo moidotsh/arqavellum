@@ -41,6 +41,8 @@ export interface MobileInputProps {
   value: string;
   /** Callback when text changes. */
   onChangeText: (text: string) => void;
+  /** Called when the field loses focus (commit-on-blur drafts). */
+  onBlur?: () => void;
   /** Placeholder text. */
   placeholder?: string;
   /** Error message — rendered in a dedicated slot beneath the input. Alias of `error`. */
@@ -98,6 +100,7 @@ export function MobileInput({
   label,
   value,
   onChangeText,
+  onBlur,
   placeholder,
   errorText,
   error,
@@ -189,7 +192,10 @@ export function MobileInput({
             maxLength={maxLength}
             editable={!!editable && !isClickable}
             onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
+            onBlur={() => {
+              setIsFocused(false);
+              onBlur?.();
+            }}
           />
           {/* Focus ring — Animated.View because opacity is an Animated.Value. */}
           <Animated.View pointerEvents="none" style={ringStyle} />

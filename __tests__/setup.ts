@@ -149,6 +149,16 @@ vi.mock('tamagui', () => ({
     lg: false,
     xl: false,
   })),
+  // Identity pass-through: components use it to resolve theme variable
+  // objects to plain values; the mock theme only holds plain strings.
+  getVariableValue: vi.fn((value: unknown) => value),
+  // Stable viewport for components that measure (charts, gauges, grids).
+  useWindowDimensions: vi.fn(() => ({
+    width: 1024,
+    height: 768,
+    scale: 1,
+    fontScale: 1,
+  })),
   themed: vi.fn((component) => component),
   createTamagui: vi.fn((config) => config),
   config: {},
