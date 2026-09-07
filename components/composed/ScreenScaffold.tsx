@@ -29,8 +29,16 @@ interface ScreenScaffoldProps {
   navRightAction?: React.ReactNode;
   /** Atmosphere palette. Default 'analytics'. */
   surface?: MobileAtmosphereSurface;
-  /** Content column max width. Default 640. */
+  /**
+   * Content column max width. Default: `bodyMaxWidth` when set, else 640.
+   */
   maxWidth?: number;
+  /**
+   * Lift the screen-body cap for this screen (a real desktop layout:
+   * `bodyMaxWidth={1280}`). Undefined keeps the constrained policy cap —
+   * the opt-in is per screen and deliberate, not a global mode flip.
+   */
+  bodyMaxWidth?: number;
   /**
    * Extra bottom scroll padding. Default 24; raised to FOOTER_INSET when a
    * `footer` mounts (fixed overlay chrome needs clearance) unless already
@@ -51,12 +59,14 @@ export function ScreenScaffold({
   onBack,
   navRightAction,
   surface = 'analytics',
-  maxWidth = 640,
+  maxWidth,
+  bodyMaxWidth,
   paddingBottom = 24,
   footer,
   children,
 }: ScreenScaffoldProps) {
   const { colors } = useAppTheme();
+  const resolvedMaxWidth = maxWidth ?? bodyMaxWidth ?? 640;
   const resolvedHeader =
     header ??
     (navTitle != null ? (
@@ -68,12 +78,12 @@ export function ScreenScaffold({
       <MobileAtmosphere surface={surface} />
       {resolvedHeader}
       <ScrollView
-        style={SCREEN_BODY_STYLE}
+        style={bodyMaxWidth != null ? [SCREEN_BODY_STYLE, { maxWidth: bodyMaxWidth }] : SCREEN_BODY_STYLE}
         contentContainerStyle={{
           paddingBottom: footer ? Math.max(paddingBottom, FOOTER_INSET) : paddingBottom,
         }}
       >
-        <View style={[styles.column, { maxWidth }]}>{children}</View>
+        <View style={[styles.column, { maxWidth: resolvedMaxWidth }]}>{children}</View>
       </ScrollView>
       {footer}
     </View>
