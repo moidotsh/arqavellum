@@ -15,7 +15,7 @@
 // pattern composes without the consumer hand-positioning anything.
 
 import React from 'react';
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme, MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
@@ -29,6 +29,12 @@ export interface MobileHomeHeaderProps {
   menuButton?: React.ReactNode;
   /** Optional right-side slot (avatar, notifications). */
   rightAction?: React.ReactNode;
+  /**
+   * Optional tap handler for the brand text. Consumers use this for
+   * brand-gesture affordances (e.g. a hidden feature toggle on repeated
+   * taps). When omitted the brand renders as plain text.
+   */
+  onBrandPress?: () => void;
   /**
    * Optional glass-cap layer rendered behind the brand row at the top of
    * the header — pass `<MobileNavDrawerGlassCap open={drawerOpen} />` to
@@ -53,6 +59,7 @@ export function MobileHomeHeader({
   menuButton,
   rightAction,
   drawerGlassCap,
+  onBrandPress,
   testID,
   style,
 }: MobileHomeHeaderProps) {
@@ -67,12 +74,28 @@ export function MobileHomeHeader({
       {drawerGlassCap ? drawerGlassCap : null}
       <View style={styles.row}>
         {menuButton ? <View style={styles.slot}>{menuButton}</View> : null}
-        <Text
-          style={[theme.typography.mobileTitle, { color: colors.text }]}
-          numberOfLines={1}
-        >
-          {brand}
-        </Text>
+        {onBrandPress ? (
+          <Pressable
+            onPress={onBrandPress}
+            hitSlop={8}
+            accessibilityRole="button"
+            accessibilityLabel={brand}
+          >
+            <Text
+              style={[theme.typography.mobileTitle, { color: colors.text }]}
+              numberOfLines={1}
+            >
+              {brand}
+            </Text>
+          </Pressable>
+        ) : (
+          <Text
+            style={[theme.typography.mobileTitle, { color: colors.text }]}
+            numberOfLines={1}
+          >
+            {brand}
+          </Text>
+        )}
         <View style={styles.flexSpacer} />
         {rightAction ? <View style={styles.slot}>{rightAction}</View> : null}
       </View>
