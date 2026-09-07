@@ -45,6 +45,7 @@ import { MobileSettingsRow } from './MobileSettingsRow';
 import { MobileSectionEyebrow } from './MobileSectionEyebrow';
 import { MobileStepper } from './MobileStepper';
 import { MobileCheckboxItem } from './MobileCheckboxItem';
+import { CheckBox } from './CheckBox';
 import { MobileSelectionList } from './MobileSelectionList';
 import { MobileStepRail } from './MobileStepRail';
 import { MobileDialog } from './MobileDialog';
@@ -633,6 +634,12 @@ export function Showcase() {
               checked={checked}
               onToggle={() => setChecked((c) => !c)}
             />
+            <View style={styles.bareCheckboxRow}>
+              <CheckBox checked={checked} />
+              <Text style={[styles.bareCheckboxLabel, { color: colors.textColors.tertiary }]}>
+                Bare indicator — the row owns the press
+              </Text>
+            </View>
           </MobileSurface>
         </View>
 
@@ -1367,6 +1374,17 @@ export function Showcase() {
 }
 
 const styles = StyleSheet.create({
+  bareCheckboxRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    minHeight: 44,
+  },
+  bareCheckboxLabel: {
+    fontSize: 13,
+  },
   shell: {
     flex: 1,
   },

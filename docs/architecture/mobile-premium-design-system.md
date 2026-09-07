@@ -239,7 +239,8 @@ via the path alias, or `../MobilePremium` relatively).
 
 | Component | Purpose |
 |---|---|
-| `MobileCheckboxItem` | Premium checkbox row with animated check. |
+| `CheckBox` | The bare checkbox indicator (animated check) for rich rows that own their press target. |
+| `MobileCheckboxItem` | Premium checkbox row with animated check (composes `CheckBox`). |
 | `MobileSelectionList` | Radio / multi-select row list for wizard steps. Accent tint on selection, hairline border, 44px min tap target. |
 | `MobileStepper` | Large-value +/- stepper. |
 | `SegmentedControl` | Pill-track segmented control with two explicit a11y variants. `variant="selection"` — radiogroup/radio for mutually-exclusive value pickers (period, scope, density). `variant="tabs"` — tablist/tab for content-region switching. The two variants share visual treatment but carry distinct a11y contracts — pick by content semantics, not by visual preference. The `tabs` variant does NOT wire `aria-controls` via a shell-managed id; the consumer owns matching panel composition and platform-specific panel association end-to-end (the shell ships the tablist + tab semantics only). `chromeless` drops the track fill for inline affordances inside a hero surface. No slide animation in v1 — the active state changes instantly. |

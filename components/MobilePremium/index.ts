@@ -39,6 +39,8 @@ export type { MobileStepperProps } from './MobileStepper';
 export { MobileSelect } from './MobileSelect';
 export type { MobileSelectProps, MobileSelectOption } from './MobileSelect';
 
+export { CheckBox } from './CheckBox';
+export type { CheckBoxProps } from './CheckBox';
 export { MobileCheckboxItem } from './MobileCheckboxItem';
 export type { MobileCheckboxItemProps } from './MobileCheckboxItem';
 
