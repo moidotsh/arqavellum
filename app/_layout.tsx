@@ -35,7 +35,6 @@ import { initializeNetworkListeners } from '../stores';
 import { AuthProvider, ToastProvider, ThemeProvider, useAppTheme } from '../context';
 import { AuthGuard, ToastContainer, AppErrorBoundary } from '../components/primitives';
 import { QueryProvider } from '../lib/react-query';
-import { SCREEN_BODY_STYLE } from '../constants';
 
 function RootShell() {
   const { colorScheme, colors } = useAppTheme();
@@ -152,8 +151,12 @@ function RootShell() {
                   <Stack
                     screenOptions={{
                       headerShown: false,
+                      // No width policy here: the body column is owned by
+                      // each screen (SB1 — ScreenScaffold or
+                      // SCREEN_BODY_STYLE on the route itself). Re-asserting
+                      // the cap at the root would sit ABOVE the scaffold and
+                      // defeat any per-screen bodyMaxWidth lift.
                       contentStyle: {
-                        ...SCREEN_BODY_STYLE,
                         backgroundColor: colors.backgroundDeep,
                       },
                     }}
