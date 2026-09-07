@@ -19,6 +19,7 @@ import React from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { AlertCircle, CheckCircle2, Info, AlertTriangle } from '@tamagui/lucide-icons-2';
 import { useAppTheme } from '../../context';
+import { hapticNotificationSuccess } from '../../utils/haptics';
 import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 
 export type MobileAlertType = 'error' | 'warning' | 'success' | 'info';
@@ -74,6 +75,13 @@ export function MobileAlert({
   const { colors } = useAppTheme();
   const resolvedType = type ?? variant ?? 'info';
   const resolvedMessage = message ?? body;
+
+  // Success alerts ARE the celebration path — the confirmation haptic
+  // lives here (once per mount) so every consumer's success signal feels
+  // the same instead of each call site remembering to fire one.
+  React.useEffect(() => {
+    if (resolvedType === 'success') hapticNotificationSuccess();
+  }, [resolvedType]);
 
   const accentMap: Record<MobileAlertType, { accent: string; Icon: typeof Info }> = {
     error: { accent: colors.status.error, Icon: AlertCircle },
