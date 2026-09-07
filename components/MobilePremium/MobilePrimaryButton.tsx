@@ -49,6 +49,14 @@ export interface MobilePrimaryButtonProps {
    *   • 'ghost' — accent text, transparent background.
    */
   variant?: 'primary' | 'secondary' | 'ghost';
+  /**
+   * Size.
+   *   • 'md' (default) — the ~54px full-width screen action (preserves the
+   *     490px fit; MobileActionFooter is its canonical site).
+   *   • 'sm' — a compact inline action for rows, headers, and toolbars:
+   *     36pt min height, hugs its content instead of filling the column.
+   */
+  size?: 'md' | 'sm';
   /** Optional leading or trailing icon. */
   icon?: React.ReactNode;
   /** Icon position (default 'left'). */
@@ -78,6 +86,7 @@ export function MobilePrimaryButton({
   loading = false,
   accentColor,
   variant = 'primary',
+  size = 'md',
   icon,
   iconPosition = 'left',
   testID,
@@ -89,6 +98,7 @@ export function MobilePrimaryButton({
   const isPrimary = variant === 'primary';
   const isSecondary = variant === 'secondary';
   const isGhost = variant === 'ghost';
+  const isSmall = size === 'sm';
 
   // The button's material — branches on variant.
   //   primary: gradient (web) + inset highlight + accent-tinted glow.
@@ -143,20 +153,21 @@ export function MobilePrimaryButton({
       accessibilityState={{ disabled: disabled || loading }}
       style={({ pressed }) => [
         styles.button,
+        isSmall ? styles.buttonSm : styles.buttonMd,
         materialStyle,
         { opacity: disabled || loading ? 0.5 : 1 },
         pressed && !disabled ? pressedStyle : null,
         style,
       ]}
     >
-      <View style={styles.content}>
+      <View style={[styles.content, isSmall && styles.contentSm]}>
         {loading ? (
           // c4-exempt: inline spinner replaces the icon during loading.
           <ActivityIndicator size="small" color={textColor} style={styles.spinner} />
         ) : showLeadingIcon ? (
           <View style={styles.iconSlot}>{icon}</View>
         ) : null}
-        <Text style={[ACTION_LABEL_STYLE, { color: textColor }]}>
+        <Text style={[ACTION_LABEL_STYLE, isSmall && ACTION_LABEL_STYLE_SM, { color: textColor }]}>
           {loading ? 'Please wait\u2026' : children}
         </Text>
         {!loading && showTrailingIcon ? (
@@ -166,6 +177,11 @@ export function MobilePrimaryButton({
     </Pressable>
   );
 }
+
+const ACTION_LABEL_STYLE_SM = {
+  fontSize: 13,
+  lineHeight: 16,
+} as const;
 
 const styles = StyleSheet.create({
   // Defensive standalone cap. Buttons LIVE inside the column rather
@@ -179,13 +195,26 @@ const styles = StyleSheet.create({
   // mode the cap collapses; the button fills whatever width its
   // container provides.
   button: {
-    ...MOBILE_CONTENT_WIDTH_STYLE,
     minHeight: 54,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
+  },
+  // The md screen action caps to the content column (see the sizing
+  // note above — MobileActionFooter is the canonical site).
+  buttonMd: {
+    ...MOBILE_CONTENT_WIDTH_STYLE,
+  },
+  // Compact inline action — rows, headers, toolbars. Hugs its content
+  // (no column cap) and holds the 36pt touch minimum.
+  buttonSm: {
+    alignSelf: 'flex-start',
+    minHeight: 36,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
   },
   content: {
     flexDirection: 'row',
@@ -197,6 +226,9 @@ const styles = StyleSheet.create({
     minWidth: 20,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  contentSm: {
+    gap: 6,
   },
   spinner: {
     marginRight: 4,
