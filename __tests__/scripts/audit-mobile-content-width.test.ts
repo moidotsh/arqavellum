@@ -11,6 +11,7 @@
 //   - SB2-portal exemption: file-level // sb2-exempt marker
 //   - SB2-magic-number detection: literals in live code
 //   - SB2-magic-number skips: comments, constants/styles.ts, same-line exempt
+//   - SB2-surface: the surface primitive fills its container, no self-cap
 //   - Policy mode: same canonical source feeds runtime styles and audits
 //
 // These tests do NOT spawn the script as a subprocess. The audit's
@@ -27,6 +28,7 @@ import {
   fileImportsRnModal,
   appliesPolicySpreadToPortalPanel,
   fileHasSb2Exempt,
+  scanSurfaceViolations,
 } from '../../scripts/audit-mobile-content-width';
 import {
   CONTENT_WIDTH_MODE,
@@ -396,5 +398,57 @@ const styles = StyleSheet.create({
 const styles = { row: { maxWidth: 420 } };`;
     expect(fileImportsRnModal(src)).toBe(false);
     expect(MAXWIDTH_LITERAL_REGEX.test(src)).toBe(true);
+  });
+});
+
+describe('SB2-surface — the surface primitive fills its container', () => {
+  const SURFACE_FILE = 'components/MobilePremium/MobileSurface.tsx';
+
+  it('ignores files that are not the surface primitive', () => {
+    const src = `const styles = StyleSheet.create({ surface: { maxWidth: 1 } });`;
+    expect(scanSurfaceViolations(src, 'components/MobilePremium/MobileAlert.tsx')).toEqual([]);
+  });
+
+  it('a filling surface (width 100%, no policy spread) passes', () => {
+    const src = `const styles = StyleSheet.create({
+  surface: {
+    position: 'relative',
+    overflow: 'hidden',
+    width: '100%',
+  },
+});`;
+    expect(scanSurfaceViolations(src, SURFACE_FILE)).toEqual([]);
+  });
+
+  it('a self-capping surface (policy spread on the surface style) is flagged', () => {
+    const src = `import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
+const styles = StyleSheet.create({
+  surface: {
+    position: 'relative',
+    ...MOBILE_CONTENT_WIDTH_STYLE,
+  },
+});`;
+    // The regression shape trips both rules at once: the spread returns
+    // AND the fill width is gone.
+    const violations = scanSurfaceViolations(src, SURFACE_FILE);
+    expect(violations).toHaveLength(2);
+    expect(violations.every((v) => v.check === 'SB2-surface')).toBe(true);
+  });
+
+  it('a surface style without the fill width is flagged', () => {
+    const src = `const styles = StyleSheet.create({
+  surface: { position: 'relative', overflow: 'hidden' },
+});`;
+    const violations = scanSurfaceViolations(src, SURFACE_FILE);
+    expect(violations).toHaveLength(1);
+    expect(violations[0].check).toBe('SB2-surface');
+  });
+
+  it('a file-level sb2-exempt suppresses the check', () => {
+    const src = `// sb2-exempt: deliberate bespoke width ownership
+const styles = StyleSheet.create({
+  surface: { maxWidth: 420 },
+});`;
+    expect(scanSurfaceViolations(src, SURFACE_FILE)).toEqual([]);
   });
 });

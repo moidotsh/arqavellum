@@ -3,13 +3,18 @@
 // hairline + glow + tint; every color reference resolves to
 // `useAppTheme().colors.*` (the live palette for the active colorScheme).
 // Light is default; dark flips automatically via the ThemeProvider.
+//
+// Width ownership: the surface FILLS its container (`width: '100%'`). The
+// centered mobile column comes from the layer above — the screen body
+// (SB1 / SCREEN_BODY_STYLE) or the portal panel (SB2) — never from the
+// surface itself, so a consumer may widen its scaffold column without
+// every card marooning at the mobile cap.
 
 import React, { useMemo } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { isWeb } from '../../utils';
 import { useAndroidChromeBlurFix } from '../../hooks';
 import { useAppTheme } from '../../context';
-import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 
 export interface MobileSurfaceProps {
   children?: React.ReactNode;
@@ -139,7 +144,11 @@ const styles = StyleSheet.create({
   surface: {
     position: 'relative',
     overflow: 'hidden',
-    ...MOBILE_CONTENT_WIDTH_STYLE,
+    // Fill the container. SB2-surface (audit-mobile-content-width.ts)
+    // guards this: the surface must not re-assert the content-width
+    // policy — the column belongs to the scaffold body (SB1) or the
+    // portal panel (SB2-portal), not to every card.
+    width: '100%',
   },
   innerHairline: {
     position: 'absolute',

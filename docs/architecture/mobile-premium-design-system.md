@@ -63,7 +63,7 @@ vertical gradient, a hairline inner border, a soft outer glow, and a
 faint accent tint. The surface's color identity comes from the
 atmosphere behind it and the tint — **no thick accent bars.**
 
-One surface per screen. `maxWidth: 420`, `borderRadius: 20`. Centered.
+One surface per screen. `width: '100%'`, `borderRadius: 20`. The surface fills its container — the centered mobile column comes from the screen body (SB1) or the portal panel (SB2), never from the surface itself, so a widened scaffold column widens its cards with it.
 
 #### 2.3.1 Light-mode surface mechanics
 
@@ -182,7 +182,7 @@ via the path alias, or `../MobilePremium` relatively).
 
 | Component | Purpose |
 |---|---|
-| `MobileSurface` | The single material surface. `maxWidth: 420`, `borderRadius: 20`. Optional `accentColor` tints the background. |
+| `MobileSurface` | The single material surface. `width: '100%'`, `borderRadius: 20` — fills its container (SB2-surface forbids a self-cap). Optional `accentColor` tints the background. |
 
 ### Inputs
 
