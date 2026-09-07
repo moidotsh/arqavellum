@@ -17,12 +17,19 @@ interface ScreenScaffoldProps {
   surface?: MobileAtmosphereSurface;
   /** Content column max width. Default 640. */
   maxWidth?: number;
-  /** Extra bottom scroll padding (sticky footers, trays). Default 24. */
+  /**
+   * Extra bottom scroll padding. Default 24; raised to FOOTER_INSET when a
+   * `footer` mounts (fixed overlay chrome needs clearance) unless already
+   * larger.
+   */
   paddingBottom?: number;
   /** Fixed overlay chrome rendered after the body (action footers, trays). */
   footer?: React.ReactNode;
   children: React.ReactNode;
 }
+
+/** Clearance for a fixed footer's height so the body's tail stays reachable. */
+const FOOTER_INSET = 96;
 
 export function ScreenScaffold({
   header,
@@ -40,7 +47,9 @@ export function ScreenScaffold({
       {header}
       <ScrollView
         style={SCREEN_BODY_STYLE}
-        contentContainerStyle={{ paddingBottom }}
+        contentContainerStyle={{
+          paddingBottom: footer ? Math.max(paddingBottom, FOOTER_INSET) : paddingBottom,
+        }}
       >
         <View style={[styles.column, { maxWidth }]}>{children}</View>
       </ScrollView>
