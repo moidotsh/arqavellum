@@ -20,7 +20,6 @@ import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-na
 import { AlertCircle, CheckCircle2, Info, AlertTriangle } from '@tamagui/lucide-icons-2';
 import { useAppTheme } from '../../context';
 import { hapticNotificationSuccess } from '../../utils/haptics';
-import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 
 export type MobileAlertType = 'error' | 'warning' | 'success' | 'info';
 export type MobileAlertVariant = 'success' | 'warning' | 'error' | 'info';
@@ -132,7 +131,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    ...MOBILE_CONTENT_WIDTH_STYLE,
+    // Inline block: fills its container, like MobileSurface — the column
+    // is owned by the layer above (SB1 screen body / portal panel).
+    width: '100%',
   },
   iconCircle: {
     width: 24,
