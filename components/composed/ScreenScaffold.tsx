@@ -15,7 +15,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useAppTheme } from '../../context';
-import { SCREEN_BODY_STYLE } from '../../constants';
+import { SCREEN_BODY_STYLE, DESKTOP_LAYOUT_MODE } from '../../constants';
 import { MobileAtmosphere, MobileHeader, type MobileAtmosphereSurface } from '../MobilePremium';
 
 interface ScreenScaffoldProps {
@@ -37,6 +37,8 @@ interface ScreenScaffoldProps {
    * Lift the screen-body cap for this screen (a real desktop layout:
    * `bodyMaxWidth={1280}`). Undefined keeps the constrained policy cap —
    * the opt-in is per screen and deliberate, not a global mode flip.
+   * Honored only while DESKTOP_LAYOUT_MODE is 'multi-column'; shelved
+   * call sites stay in the tree inert.
    */
   bodyMaxWidth?: number;
   /**
@@ -66,7 +68,10 @@ export function ScreenScaffold({
   children,
 }: ScreenScaffoldProps) {
   const { colors } = useAppTheme();
-  const resolvedMaxWidth = maxWidth ?? bodyMaxWidth ?? 640;
+  // Desktop lifts answer to the repository-level mode: shelved means the
+  // constrained mobile column at any viewport width, lift props inert.
+  const liftedBodyMaxWidth = DESKTOP_LAYOUT_MODE === 'multi-column' ? bodyMaxWidth : undefined;
+  const resolvedMaxWidth = maxWidth ?? liftedBodyMaxWidth ?? 640;
   const resolvedHeader =
     header ??
     (navTitle != null ? (
@@ -78,7 +83,7 @@ export function ScreenScaffold({
       <MobileAtmosphere surface={surface} />
       {resolvedHeader}
       <ScrollView
-        style={bodyMaxWidth != null ? [SCREEN_BODY_STYLE, { maxWidth: bodyMaxWidth }] : SCREEN_BODY_STYLE}
+        style={liftedBodyMaxWidth != null ? [SCREEN_BODY_STYLE, { maxWidth: liftedBodyMaxWidth }] : SCREEN_BODY_STYLE}
         contentContainerStyle={{
           paddingBottom: footer ? Math.max(paddingBottom, FOOTER_INSET) : paddingBottom,
         }}
