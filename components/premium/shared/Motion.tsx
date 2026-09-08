@@ -46,6 +46,12 @@ export interface FadeInProps {
   y?: number;
   /** Override reduced-motion (force the slide even when the user has reduced motion on). Rare. */
   ignoreReducedMotion?: boolean;
+  /**
+   * Vertical gap between children (px). FadeIn renders one wrapper view;
+   * screen scaffolds gap only their DIRECT children, so a FadeIn hosting
+   * several sections must carry the rhythm itself or they stack flush.
+   */
+  gap?: number;
   style?: StyleProp<ViewStyle>;
 }
 
@@ -64,6 +70,7 @@ export function FadeIn({
   duration = 480,
   y = 8,
   ignoreReducedMotion = false,
+  gap,
   style,
 }: FadeInProps) {
   const reduced = useReducedMotion();
@@ -76,7 +83,11 @@ export function FadeIn({
     animateOnMount: true,
   });
 
-  return <Animated.View style={[animStyle, style]}>{children}</Animated.View>;
+  return (
+    <Animated.View style={[animStyle, gap != null ? { gap } : null, style]}>
+      {children}
+    </Animated.View>
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────
