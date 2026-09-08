@@ -2,21 +2,30 @@
 //
 // Component-level render + layout tests for FilterChipGroup.
 //   - Renders children
-//   - wrap default true → flexWrap 'wrap'
-//   - wrap=false → flexWrap 'nowrap'
-//   - Does NOT render a ScrollView in either mode
+//   - oneRow default true → chips sit inside a horizontal scroll container
+//   - oneRow={false} → flex-wrap row, no scroll container
 //   - Carries no a11y role of its own (presentational)
 
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { StyleSheet } from 'react-native';
 import { ThemeProvider } from '../../context';
 import { FilterChipGroup } from '../../components/MobilePremium/FilterChipGroup';
 import { FilterChip } from '../../components/MobilePremium/FilterChip';
 
 function Wrap({ children }: { children: ReactNode }) {
   return <ThemeProvider>{children}</ThemeProvider>;
+}
+
+function inScrollView(container: HTMLElement, label: string): boolean {
+  const chip = container.querySelector(`[accessibilitylabel="${label}"]`);
+  expect(chip).not.toBeNull();
+  let el: Element | null = chip;
+  while (el) {
+    if (el.tagName.toLowerCase() === 'scrollview') return true;
+    el = el.parentElement;
+  }
+  return false;
 }
 
 describe('FilterChipGroup — layout', () => {
@@ -33,60 +42,28 @@ describe('FilterChipGroup — layout', () => {
     expect(getByText('Two')).toBeTruthy();
   });
 
-  it('default wrap is true (flexWrap: "wrap")', () => {
+  it('default oneRow places chips inside a horizontal scroll container', () => {
     const { container } = render(
       <Wrap>
         <FilterChipGroup>
-          <FilterChip label="A" selected={false} onPress={() => {}} />
+          <FilterChip label="A" selected={false} onPress={() => {}} accessibilityLabel="chip-a" />
         </FilterChipGroup>
       </Wrap>,
     );
-    // The group is the outer View. We can't read StyleSheet-resolved style
-    // from jsdom, so assert the structure: the group is a View with row
-    // layout containing chip(s).
-    const chips = container.querySelectorAll('[accessibilityrole="button"]');
-    expect(chips.length).toBe(1);
+    expect(inScrollView(container, 'chip-a')).toBe(true);
   });
 
-  it('wrap=false produces a different flexWrap value than default', () => {
-    // The style is applied inline via StyleSheet. Verify the prop is
-    // accepted without type errors and the component still renders.
+  it('oneRow={false} wraps without a scroll container', () => {
     const { container } = render(
       <Wrap>
-        <FilterChipGroup wrap={false}>
-          <FilterChip label="A" selected={false} onPress={() => {}} />
-          <FilterChip label="B" selected={false} onPress={() => {}} />
+        <FilterChipGroup oneRow={false}>
+          <FilterChip label="A" selected={false} onPress={() => {}} accessibilityLabel="chip-a" />
+          <FilterChip label="B" selected={false} onPress={() => {}} accessibilityLabel="chip-b" />
         </FilterChipGroup>
       </Wrap>,
     );
-    const chips = container.querySelectorAll('[accessibilityrole="button"]');
-    expect(chips.length).toBe(2);
-  });
-
-  it('does NOT render a ScrollView (default wrap mode)', () => {
-    const { container } = render(
-      <Wrap>
-        <FilterChipGroup>
-          <FilterChip label="A" selected={false} onPress={() => {}} />
-        </FilterChipGroup>
-      </Wrap>,
-    );
-    // ScrollView would show up as a host node with a specific prop signature
-    // (e.g. onScroll). The DOM-walked tree should contain only Views.
-    const scrollViews = container.querySelectorAll('[onscroll]');
-    expect(scrollViews.length).toBe(0);
-  });
-
-  it('does NOT render a ScrollView in wrap=false mode either', () => {
-    const { container } = render(
-      <Wrap>
-        <FilterChipGroup wrap={false}>
-          <FilterChip label="A" selected={false} onPress={() => {}} />
-        </FilterChipGroup>
-      </Wrap>,
-    );
-    const scrollViews = container.querySelectorAll('[onscroll]');
-    expect(scrollViews.length).toBe(0);
+    expect(inScrollView(container, 'chip-a')).toBe(false);
+    expect(inScrollView(container, 'chip-b')).toBe(false);
   });
 
   it('accepts a custom gap without error', () => {
@@ -124,6 +101,3 @@ describe('FilterChipGroup — layout', () => {
     expect(radiogroups.length).toBe(0);
   });
 });
-
-// sanity: ensure StyleSheet import isn't tree-shaken out of the test build
-void StyleSheet;

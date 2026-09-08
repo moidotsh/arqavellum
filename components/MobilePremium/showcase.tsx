@@ -933,20 +933,32 @@ export function Showcase() {
             </FilterChipGroup>
             <View style={styles.spacer} />
             <Text style={[styles.bodyText, { color: colors.textSecondary, marginBottom: 8 }]}>
-              wrap: false inside a consumer-supplied horizontal ScrollView
+              One row (default) — overflows scroll instead of wrapping
             </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              <FilterChipGroup wrap={false}>
-                {['tag-a', 'tag-b', 'tag-c', 'tag-d', 'tag-e', 'tag-f'].map((t) => (
-                  <FilterChip
-                    key={t}
-                    label={t}
-                    selected={false}
-                    onPress={() => {}}
-                  />
-                ))}
-              </FilterChipGroup>
-            </ScrollView>
+            <FilterChipGroup>
+              {['tag-a', 'tag-b', 'tag-c', 'tag-d', 'tag-e', 'tag-f'].map((t) => (
+                <FilterChip
+                  key={t}
+                  label={t}
+                  selected={false}
+                  onPress={() => {}}
+                />
+              ))}
+            </FilterChipGroup>
+            <View style={styles.spacer} />
+            <Text style={[styles.bodyText, { color: colors.textSecondary, marginBottom: 8 }]}>
+              oneRow: false — chips flex-wrap
+            </Text>
+            <FilterChipGroup oneRow={false}>
+              {['tag-a', 'tag-b', 'tag-c', 'tag-d', 'tag-e', 'tag-f'].map((t) => (
+                <FilterChip
+                  key={t}
+                  label={t}
+                  selected={false}
+                  onPress={() => {}}
+                />
+              ))}
+            </FilterChipGroup>
           </MobileSurface>
         </View>
 
