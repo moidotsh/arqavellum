@@ -17,7 +17,7 @@ import {
 } from '../components/MobilePremium';
 import { useAuth, useAppTheme } from '../context';
 import { navigateToSettings, navigateToPremiumShowcase } from '../navigation';
-import { SCREEN_BODY_STYLE } from '../constants';
+import { SCREEN_BODY_STYLE, APP_DISPLAY_NAME } from '../constants';
 
 export default function HomeScreen() {
   const { session, signOut } = useAuth();
@@ -27,14 +27,14 @@ export default function HomeScreen() {
     <SafeAreaView style={[styles.shell, { backgroundColor: colors.backgroundDeep }]} edges={['top', 'bottom']}>
       <MobileAtmosphere surface="analytics" />
       <MobileHeader
-        title="Arqavellum"
+        title={APP_DISPLAY_NAME}
         eyebrow="Welcome"
       />
       <View style={styles.body}>
         <MobileSectionEyebrow>Getting Started</MobileSectionEyebrow>
         <MobileSurface padding={20}>
           <Text style={[styles.text, { color: colors.text }]}>
-            This is Arqavellum&rsquo;s home placeholder. The shell is wired end-to-end:
+            This is {APP_DISPLAY_NAME}&rsquo;s home placeholder. The shell is wired end-to-end:
             auth, navigation, MobilePremium design system, Zustand stores,
             React Query, and the 12-audit pre-commit gate all work.
           </Text>

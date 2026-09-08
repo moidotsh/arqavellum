@@ -90,7 +90,7 @@ This is the load-bearing consumer guide. Following these steps in order yields a
    - This file (title + headings)
 3. **Set up env:** copy `.env.local.example` → `.env.local`, fill in your Supabase URL + anon key.
 4. **Replace icons (two surfaces):** `public/icons/*` (PWA, always required — 192.png, 512.png, 512-maskable.png) and `assets/*` (native extension — icon.png, splash-icon.png, adaptive-icon.png). Arqavellum ships neutral indigo placeholders for both; the consumer overrides with brand artwork. The `assets/*` PNGs only matter for a native build, but replacing them upfront is cheap. Before any native release also replace the `ios.bundleIdentifier: 'app.arqavellum'` starter value in `app.config.ts` + `app.json` with your own iOS bundle ID and add your Android application/package ID — `app.arqavellum` is starter scaffolding, not a consumer's release identity.
-5. **Override the `brand` color slot** in `constants/theme.ts` → `theme.colors.light.brand` (and `brandHover`, `brandPress`, `brandMuted`, `brandSoft`, `buttonBackground`, `buttonBackgroundDisabled`).
+5. **Override the `brand` color slot** in `constants/theme.ts` → `theme.colors.light.brand` (and `brandHover`, `brandPress`, `brandMuted`, `brandSoft`, `buttonBackground`, `buttonBackgroundDisabled`), and the product NAME in `constants/displayName.ts` (`APP_DISPLAY_NAME`) — the auth footer, home placeholder, and PWA meta titles all read it.
 6. **(Optional) customize atmosphere palettes** in `components/premium/shared/atmospherePalettes.ts` — the 7 semantic palettes are domain-agnostic but a consumer may want different hues.
 7. **Drop in domain code:**
    - Routes → `app/` (replace the placeholder `app/index.tsx`)

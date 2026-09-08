@@ -29,6 +29,7 @@ import { TamaguiProvider } from 'tamagui';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import config from '../tamagui.config';
+import { APP_DISPLAY_NAME } from '../constants';
 import { isWeb, hasDocument, hasWindow } from '../utils/platform';
 import { logger } from '../utils';
 import { initializeNetworkListeners } from '../stores';
@@ -87,7 +88,7 @@ function RootShell() {
     ensureMeta('apple-mobile-web-app-capable', 'yes');
     ensureMeta('mobile-web-app-capable', 'yes');
     ensureMeta('apple-mobile-web-app-status-bar-style', colorScheme === 'dark' ? 'black' : 'default');
-    ensureMeta('apple-mobile-web-app-title', 'Arqavellum');
+    ensureMeta('apple-mobile-web-app-title', APP_DISPLAY_NAME);
     ensureMeta('theme-color', colors.background, '(min-width: 701px)');
     ensureMeta('theme-color', colors.brand, '(max-width: 700px)');
 
