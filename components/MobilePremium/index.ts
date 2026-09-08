@@ -57,6 +57,8 @@ export { FilterChip } from './FilterChip';
 export type { FilterChipProps, FilterChipAccessibilityRole } from './FilterChip';
 
 export { FilterChipGroup } from './FilterChipGroup';
+export { SearchField } from './SearchField';
+export type { SearchFieldProps } from './SearchField';
 export type { FilterChipGroupProps } from './FilterChipGroup';
 
 export { DisclosureRow } from './DisclosureRow';

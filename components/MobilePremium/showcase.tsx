@@ -57,6 +57,7 @@ import { HamburgerButton } from './HamburgerButton';
 import { SkeletonBlock } from './SkeletonBlock';
 import { SegmentedControl } from './SegmentedControl';
 import { FilterChip } from './FilterChip';
+import { SearchField } from './SearchField';
 import { FilterChipGroup } from './FilterChipGroup';
 import { DisclosureRow } from './DisclosureRow';
 import { EmptyState } from './EmptyState';
@@ -372,6 +373,7 @@ export function Showcase() {
   const [selectedId, setSelectedId] = useState<string | null>('option-a');
   const [multiSelectedIds, setMultiSelectedIds] = useState<string[]>(['feature-1']);
   const [inputValue, setInputValue] = useState('');
+  const [searchValue, setSearchValue] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [selectValue, setSelectValue] = useState('monthly');
   const [segSelection, setSegSelection] = useState<'7d' | '30d' | '90d'>('30d');
@@ -580,6 +582,22 @@ export function Showcase() {
               onRightIconPress={() => setShowPassword((s) => !s)}
               maxLength={64}
             />
+          </MobileSurface>
+        </View>
+
+        <View style={styles.section}>
+          <MobileSectionEyebrow>Search</MobileSectionEyebrow>
+          <MobileSurface>
+            <SearchField
+              value={searchValue}
+              onChangeText={setSearchValue}
+              placeholder="Search foods, stores, tags…"
+            />
+            <FilterChipGroup>
+              <FilterChip label="Search" selected={searchValue.length > 0} onPress={() => {}} />
+              <FilterChip label="Filters" selected={false} onPress={() => {}} />
+              <FilterChip label="Add item" selected={false} onPress={() => {}} />
+            </FilterChipGroup>
           </MobileSurface>
         </View>
 
