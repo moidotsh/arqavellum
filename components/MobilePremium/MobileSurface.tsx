@@ -30,6 +30,13 @@ export interface MobileSurfaceProps {
   disableBorder?: boolean;
   /** Padding inside the surface. Default 20. */
   padding?: number | string;
+  /**
+   * Style for the content flow view (gap, alignItems, justifyContent, …).
+   * Layout props here order the surface's children; padding and radius have
+   * dedicated props. Historically this style sat on the outer paint view,
+   * where flow props like `gap` silently did nothing (children live in the
+   * inner content view).
+   */
   style?: StyleProp<ViewStyle>;
   testID?: string;
 }
@@ -114,7 +121,6 @@ export function MobileSurface({
         borderStyle,
         materialStyle,
         { backgroundColor: colors.card },
-        style,
       ]}
     >
       {gradientStyle ? (
@@ -135,7 +141,9 @@ export function MobileSurface({
           ]}
         />
       ) : null}
-      <View style={styles.content}>{children}</View>
+      {/* Consumer style lands here — flow props (gap, alignItems) order the
+          children; the outer view only paints and clips. */}
+      <View style={[styles.content, style]}>{children}</View>
     </View>
   );
 }
