@@ -103,7 +103,7 @@ export function MobileCheckboxItem({
       <View style={styles.text}>
         <Text style={[TITLE_STYLE, { color: colors.text }]}>{resolvedTitle}</Text>
         {resolvedSubtitle ? (
-          <Text style={[SUBTITLE_STYLE, { color: colors.textColors.tertiary }]}>
+          <Text style={[SUBTITLE_STYLE, { color: colors.textMuted }]}>
             {resolvedSubtitle}
           </Text>
         ) : null}
