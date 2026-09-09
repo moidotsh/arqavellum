@@ -111,6 +111,9 @@ export function SegmentedControl<T>({
             accessibilityRole={segmentRole as any}
             accessibilityState={segmentState}
             accessibilityLabel={segment.accessibilityLabel ?? segment.label}
+            // The sm track insets segments 4px vertically (28px visual) —
+            // hitSlop restores a 44px effective target with zero visual change.
+            hitSlop={size === 'sm' ? 8 : 4}
             style={({ pressed }) => [
               {
                 flex: fullWidth ? 1 : 0,

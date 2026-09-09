@@ -75,6 +75,8 @@ export function FilterChip({
       accessibilityRole={accessibilityRole}
       accessibilityState={a11yState}
       accessibilityLabel={accessibilityLabel ?? label}
+      // 36px visual — hitSlop lifts the effective target to the 44px floor.
+      hitSlop={8}
       style={({ pressed }) => [
         styles.chip,
         {
