@@ -33,6 +33,9 @@ export interface StatCardProps {
   value: string | number;
   /** Optional supporting line under the value. */
   subtitle?: string;
+  /** Provide to make the subtitle a tappable action (the verb lives at
+   *  the finding — e.g. "update your balance" on a stat tile). */
+  subtitleAction?: () => void;
   /** Optional small icon next to the label. Consumer-tinted. */
   icon?: React.ReactNode;
   /** Visual treatment. Default 'plain'. */
@@ -84,6 +87,7 @@ export function StatCard({
   label,
   value,
   subtitle,
+  subtitleAction,
   icon,
   variant = 'plain',
   size = 'md',
@@ -154,15 +158,35 @@ export function StatCard({
         {value}
       </Text>
       {subtitle ? (
-        <Text
-          style={[
-            { fontSize: 13, fontWeight: '400', lineHeight: 18 },
-            { color: subtitleColor, marginTop: gapBetweenValueAndSubtitle },
-          ]}
-          numberOfLines={2}
-        >
-          {subtitle}
-        </Text>
+        subtitleAction ? (
+          <Pressable
+            onPress={subtitleAction}
+            accessibilityRole="button"
+            accessibilityLabel={subtitle}
+            hitSlop={8}
+            style={{ marginTop: gapBetweenValueAndSubtitle, alignSelf: 'flex-start' }}
+          >
+            <Text
+              style={[
+                { fontSize: 13, fontWeight: '600', lineHeight: 18 },
+                { color: colors.brandPress },
+              ]}
+              numberOfLines={2}
+            >
+              {subtitle}
+            </Text>
+          </Pressable>
+        ) : (
+          <Text
+            style={[
+              { fontSize: 13, fontWeight: '400', lineHeight: 18 },
+              { color: subtitleColor, marginTop: gapBetweenValueAndSubtitle },
+            ]}
+            numberOfLines={2}
+          >
+            {subtitle}
+          </Text>
+        )
       ) : null}
     </View>
   );
