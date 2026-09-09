@@ -195,7 +195,7 @@ via the path alias, or `../MobilePremium` relatively).
 
 | Component | Purpose |
 |---|---|
-| `MobilePrimaryButton` | One per screen. 54px tall (`size="sm"` for a 36pt inline action in rows/headers — hugs content, no column cap). Brand color slot. `loading` swaps the label to "Please wait…". `disabled` dims (no disabled label — surface the reason in `MobileActionFooter.progressText` instead). `variant="ghost"` for low-emphasis secondary actions. |
+| `MobilePrimaryButton` | One per screen. 54px tall (`size="sm"` for a 36pt inline action in rows/headers — hugs content, no column cap). Brand color slot. `loading` swaps the label to "Please wait…". `disabled` swaps the fill for the theme's disabled wash and the label ink for the theme's primary `text` color at 0.85 opacity — the label stays AA-readable at first glance (forms open pristine-and-invalid by design); no disabled label, surface the reason in `MobileActionFooter.progressText` instead. `variant="ghost"` for low-emphasis secondary actions. |
 
 ### Layout
 

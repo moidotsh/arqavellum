@@ -140,7 +140,13 @@ export function MobilePrimaryButton({
     } as const;
   }, [accent, colors.buttonBackgroundDisabled, disabled, loading, isGhost, isSecondary]);
 
-  const textColor = isPrimary ? colors.textOnBrand : accent;
+  // Disabled/loading ink: the label must stay readable on the disabled
+  // wash. `text` resolves per mode (near-black in light, near-white in
+  // dark) and holds AA on the brand-tinted wash in both; `textOnBrand`
+  // is tuned for the full-brand pairing and sinks into dark-mode washes.
+  const textColor = isPrimary
+    ? (disabled || loading ? colors.text : colors.textOnBrand)
+    : accent;
   const showLeadingIcon = icon && iconPosition === 'left';
   const showTrailingIcon = icon && iconPosition === 'right';
 
@@ -155,7 +161,7 @@ export function MobilePrimaryButton({
         styles.button,
         isSmall ? styles.buttonSm : styles.buttonMd,
         materialStyle,
-        { opacity: disabled || loading ? 0.5 : 1 },
+        { opacity: disabled || loading ? 0.85 : 1 },
         pressed && !disabled ? pressedStyle : null,
         style,
       ]}
