@@ -126,7 +126,7 @@ export function MobileSelect({
           <Text
             style={[
               styles.triggerLabel,
-              { color: selected ? colors.text : colors.textColors.tertiary },
+              { color: selected ? colors.text : colors.textSecondary },
             ]}
             numberOfLines={1}
           >

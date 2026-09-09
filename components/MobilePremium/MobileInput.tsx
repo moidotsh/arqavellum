@@ -182,7 +182,7 @@ export function MobileInput({
             value={value}
             onChangeText={onChangeText}
             placeholder={placeholder}
-            placeholderTextColor={colors.textColors.tertiary}
+            placeholderTextColor={colors.textSecondary}
             secureTextEntry={secureTextEntry}
             autoCapitalize={autoCapitalize}
             autoCorrect={autoCorrect}
