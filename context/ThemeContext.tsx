@@ -78,8 +78,13 @@ function resolveScheme(pref: ColorSchemePreference): ColorScheme {
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const nativeScheme = useNativeColorScheme();
   const [preference, setPreferenceState] = useState<ColorSchemePreference>('system');
+  // Seed from the REAL system scheme, not just RN's useColorScheme — on
+  // web it can boot null (no change event ever fires to correct it), so
+  // a system-dark first visitor would be stuck in light. matchMedia /
+  // Appearance are read directly; the change listener below takes over
+  // from there.
   const [systemScheme, setSystemScheme] = useState<ColorScheme>(
-    nativeScheme === 'dark' ? 'dark' : 'light',
+    () => (nativeScheme === 'dark' ? 'dark' : readSystemScheme()),
   );
   const [hydrated, setHydrated] = useState(false);
 
