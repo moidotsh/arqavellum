@@ -224,6 +224,10 @@ vi.mock('@supabase/supabase-js', () => ({
       upsert: vi.fn(() => Promise.resolve({ data: null, error: null })),
     })),
     rpc: vi.fn(() => Promise.resolve({ data: null, error: null })),
+    channel: vi.fn(() => ({
+      on: vi.fn(() => ({ subscribe: vi.fn() })),
+    })),
+    removeChannel: vi.fn(),
   })),
 }));
 

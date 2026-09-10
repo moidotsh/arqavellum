@@ -20,3 +20,4 @@ export {
   throwIfFailed,
 } from './repositories';
 export { withRpcTelemetry } from './rpcTelemetry';
+export { startRealtimeTable, type RealtimeRow, type RealtimeTableConfig } from './realtimeTable';
