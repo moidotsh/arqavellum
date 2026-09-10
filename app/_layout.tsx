@@ -10,7 +10,7 @@
 // (Tamagui's own light/dark) tracks the resolved colorScheme. Both stay
 // in sync — provider order is load-bearing.
 //
-// Two web-only useEffect blocks are load-bearing:
+// Three web-only useEffect blocks are load-bearing:
 //
 //   1. PWA runtime injection — Expo Web's static export strips every
 //      PWA-related tag from <head> except <link rel="icon">. This block
@@ -22,6 +22,12 @@
 //      criteria require a registered SW with a fetch handler. Production-
 //      only, gated on `isWeb` + `'serviceWorker' in navigator`. See
 //      docs/architecture/pwa-installability.md §4.
+//
+//   3. Vercel Web Analytics — the official no-framework snippet plus the
+//      once-per-session visit-source report (QR scan / typed / linked /
+//      PWA launch). Ships DISABLED: EXPO_PUBLIC_WEB_ANALYTICS=1 gates the
+//      script injection (classification itself is local-only). See
+//      utils/webAnalytics.ts and app/qr.tsx (the printed-code landing).
 
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
@@ -32,6 +38,7 @@ import config from '../tamagui.config';
 import { APP_DISPLAY_NAME } from '../constants';
 import { isWeb, hasDocument, hasWindow } from '../utils/platform';
 import { logger } from '../utils';
+import { initWebAnalytics, reportVisitSource } from '../utils/webAnalytics';
 import { initializeNetworkListeners } from '../stores';
 import { AuthProvider, ToastProvider, ThemeProvider, useAppTheme } from '../context';
 import { AuthGuard, ToastContainer, AppErrorBoundary } from '../components/primitives';
@@ -45,6 +52,18 @@ function RootShell() {
   useEffect(() => {
     const cleanup = initializeNetworkListeners();
     return cleanup;
+  }, []);
+
+  // Vercel Web Analytics (web only, opt-in): classification runs
+  // locally on every entry; the script that reports it injects only
+  // when the consumer sets EXPO_PUBLIC_WEB_ANALYTICS=1 (invariant 13 —
+  // the seam ships disabled). The /qr landing route reports from its
+  // own effect (children run first); this one covers every other entry
+  // and is a session-guarded no-op after a /qr report.
+  useEffect(() => {
+    if (!isWeb || !hasWindow() || !hasDocument()) return;
+    if (process.env.EXPO_PUBLIC_WEB_ANALYTICS === '1') initWebAnalytics();
+    reportVisitSource();
   }, []);
 
   // PWA runtime injection + service worker registration. Both gated on

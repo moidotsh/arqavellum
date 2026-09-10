@@ -4,6 +4,7 @@
 // the relative source (`./errors`).
 
 export * from './platform';
+export * from './webAnalytics';
 export * from './logger';
 export * from './errors';
 export * from './api-client';

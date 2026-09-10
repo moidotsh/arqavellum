@@ -30,7 +30,9 @@ import { useAuthStore } from '../../stores';
 import { replaceWithHome, replaceWithLogin } from '../../navigation';
 
 const AUTH_SEGMENTS = new Set(['login', 'register', 'forgot-password']);
-const PUBLIC_SEGMENTS = new Set(['dev']);
+// 'qr' is the printed-code redirect stub (invariant 13) — no data,
+// hands straight to home; an unsigned scanner must never see /login.
+const PUBLIC_SEGMENTS = new Set(['dev', 'qr']);
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const status = useAuthStore((s) => s.status);

@@ -19,7 +19,7 @@
  *   1. The build exits 0.
  *   2. Every file in REQUIRED_HTML_ROUTES exists under `dist/` with the
  *      exact path/filename emitted by Expo Router's static export. The
- *      eight required routes are the starter's baseline shell; consumer
+ *      nine required routes are the starter's baseline shell; consumer
  *      domain routes may add more HTML files, and any extras are reported
  *      on success but do not fail the gate.
  *   3. The build log contains no Tamagui extraction-failure signatures
@@ -63,6 +63,7 @@ const BUILD_LOG = join(PROJECT_ROOT, '.verify-web-build.log');
 //   app/register.tsx          -> dist/register.html
 //   app/forgot-password.tsx   -> dist/forgot-password.html
 //   app/settings.tsx          -> dist/settings.html
+//   app/qr.tsx                -> dist/qr.html
 //   app/dev/premium.tsx       -> dist/dev/premium.html
 //   (expo-router internal)    -> dist/_sitemap.html
 //   (expo-router internal)    -> dist/+not-found.html
@@ -75,7 +76,7 @@ const BUILD_LOG = join(PROJECT_ROOT, '.verify-web-build.log');
 //     domain routes produces extras; those extras are reported on success
 //     so the consumer can confirm their routes shipped, but they do not
 //     fail the gate.
-//   - The starter's own baseline run produces zero extras (the eight
+//   - The starter's own baseline run produces zero extras (the nine
 //     required routes are the entire emitted set).
 const REQUIRED_HTML_ROUTES: readonly string[] = [
   'index.html',
@@ -83,6 +84,7 @@ const REQUIRED_HTML_ROUTES: readonly string[] = [
   'register.html',
   'forgot-password.html',
   'settings.html',
+  'qr.html',
   'dev/premium.html',
   '_sitemap.html',
   '+not-found.html',
