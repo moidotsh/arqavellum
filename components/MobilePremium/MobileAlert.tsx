@@ -18,6 +18,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { AlertCircle, CheckCircle2, Info, AlertTriangle } from '@tamagui/lucide-icons-2';
+import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
 import { hapticNotificationSuccess } from '../../utils/haptics';
 

@@ -22,6 +22,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { Search, X } from '@tamagui/lucide-icons-2';
+import { theme } from '../../constants';
 import { useFocusRing } from '../premium/shared';
 import { useAppTheme } from '../../context';
 
@@ -120,13 +121,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     minHeight: 36,
-    borderRadius: 999,
+    borderRadius: theme.shapes.tag,
   },
   // FilterChip's geometry: 36 tall, pill, 13px type.
   input: {
     flex: 1,
     minHeight: 36,
-    borderRadius: 999,
+    borderRadius: theme.shapes.tag,
     borderWidth: 1,
     paddingHorizontal: 34,
     fontSize: 13,

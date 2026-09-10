@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    borderRadius: 12,
+    borderRadius: theme.shapes.tile,
     borderWidth: 1,
     paddingHorizontal: 14,
     // 44px min tap target. With the 12px vertical padding, the total

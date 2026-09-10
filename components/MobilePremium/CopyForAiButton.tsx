@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingVertical: 6,
     paddingHorizontal: 12,
-    borderRadius: 999,
+    borderRadius: theme.shapes.tag,
     borderWidth: 1,
     minHeight: 32,
   },

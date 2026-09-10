@@ -14,6 +14,7 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { isWeb } from '../../utils';
 import { useAndroidChromeBlurFix } from '../../hooks';
+import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
 
 export interface MobileSurfaceProps {
@@ -45,7 +46,7 @@ export function MobileSurface({
   children,
   accentColor,
   tintStrength = 0.04,
-  borderRadius = 20,
+  borderRadius = theme.shapes.surface,
   disableGradient = false,
   disableGlow = false,
   disableBlur = false,

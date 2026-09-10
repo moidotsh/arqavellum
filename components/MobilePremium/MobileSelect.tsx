@@ -249,7 +249,7 @@ const styles = StyleSheet.create({
   trigger: {
     height: 54,
     borderWidth: 1.5,
-    borderRadius: 14,
+    borderRadius: theme.shapes.control,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: theme.shapes.tile,
     borderWidth: 1,
     paddingVertical: 14,
     paddingHorizontal: 14,

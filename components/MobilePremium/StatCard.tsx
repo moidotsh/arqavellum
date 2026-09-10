@@ -220,7 +220,7 @@ export function StatCard({
 const styles = StyleSheet.create({
   shell: {
     width: '100%',
-    borderRadius: 16,
+    borderRadius: theme.shapes.surface,
     overflow: 'hidden',
   },
   inner: {

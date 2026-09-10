@@ -22,6 +22,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Pressable, usePressedStyle } from '../premium/shared';
+import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
 
 export type FilterChipAccessibilityRole = 'button' | 'radio' | 'checkbox';

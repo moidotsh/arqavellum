@@ -1466,13 +1466,13 @@ const styles = StyleSheet.create({
   },
   atmosphereRow: {
     marginBottom: 12,
-    borderRadius: 16,
+    borderRadius: theme.shapes.surface,
     overflow: 'hidden',
   },
   atmosphereContainer: {
     height: 120,
     position: 'relative',
-    borderRadius: 16,
+    borderRadius: theme.shapes.surface,
     overflow: 'hidden',
   },
   atmosphereLabel: {
@@ -1493,7 +1493,7 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingVertical: 8,
     paddingHorizontal: 14,
-    borderRadius: 999,
+    borderRadius: theme.shapes.tag,
     borderWidth: 1,
   },
   themeChipLabel: {
@@ -1508,7 +1508,7 @@ const styles = StyleSheet.create({
   toastChip: {
     paddingVertical: 8,
     paddingHorizontal: 14,
-    borderRadius: 999,
+    borderRadius: theme.shapes.tag,
     borderWidth: 1,
   },
   toastChipLabel: {
@@ -1524,7 +1524,7 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 100,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: theme.shapes.tile,
   },
   animLabel: {
     fontSize: 11,
@@ -1557,7 +1557,7 @@ const styles = StyleSheet.create({
   },
   shakeCard: {
     padding: 12,
-    borderRadius: 12,
+    borderRadius: theme.shapes.tile,
   },
   variantRow: {
     marginBottom: 12,
@@ -1571,7 +1571,7 @@ const styles = StyleSheet.create({
   tabPanel: {
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 12,
+    borderRadius: theme.shapes.tile,
   },
   disclosureHeader: {
     fontSize: 14,
@@ -1619,7 +1619,7 @@ const styles = StyleSheet.create({
   revealWrap: {
     paddingVertical: 20,
     paddingHorizontal: 16,
-    borderRadius: 12,
+    borderRadius: theme.shapes.tile,
   },
   revealText: {
     fontSize: 14,

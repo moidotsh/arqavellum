@@ -34,7 +34,7 @@ import React from 'react';
 import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { Pressable, usePressedStyle } from '../premium/shared';
 import { useAppTheme } from '../../context';
-import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
+import { theme, MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 
 export interface Segment<T> {
   /** Visible label on the segment. */
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
   track: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 999,
+    borderRadius: theme.shapes.tag,
     borderWidth: 1,
     gap: 2,
     ...MOBILE_CONTENT_WIDTH_STYLE,

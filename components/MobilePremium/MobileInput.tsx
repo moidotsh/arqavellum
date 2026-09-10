@@ -246,11 +246,11 @@ const styles = StyleSheet.create({
   },
   inputInner: {
     position: 'relative',
-    borderRadius: 14,
+    borderRadius: theme.shapes.control,
   },
   input: {
     borderWidth: 1.5,
-    borderRadius: 14,
+    borderRadius: theme.shapes.control,
     padding: 16,
     paddingRight: 50,
     fontSize: 16,

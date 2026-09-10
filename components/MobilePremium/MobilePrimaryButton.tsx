@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
   // container provides.
   button: {
     minHeight: 54,
-    borderRadius: 14,
+    borderRadius: theme.shapes.control,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,

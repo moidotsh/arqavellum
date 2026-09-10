@@ -357,6 +357,25 @@ export const theme = {
     pill: 9999,
   },
 
+  // ── Shape tokens ────────────────────────────────────────────────────
+  // Semantic corner radii for the MobilePremium kit. This family is the
+  // single re-skin point for the kit's shape language: a consumer going
+  // sleek/monotone sets surface/control to 8 and tag to 4 here, and every
+  // kit primitive follows — no component edits. `borderRadius` above is
+  // the raw size scale for ad-hoc shapes; primitives use these semantics.
+  shapes: {
+    /** Cards + section surfaces (MobileSurface, StatCard, alerts). */
+    surface: 16,
+    /** Portal panels — bottom sheets, calendar/dialog bodies. */
+    sheet: 20,
+    /** Inputs, buttons, selects — interactive controls. */
+    control: 14,
+    /** Small tiles — selection rows, option containers, thumbnails. */
+    tile: 12,
+    /** Chips, tags, badges. 999 renders full round. */
+    tag: 999,
+  },
+
   // ── Named type styles ─────────────────────────────────────────────────
   // Premium reads through type. Consumers import the named style and spread
   // it; they do NOT pick ad-hoc fontSize/fontWeight values for titles and
