@@ -101,6 +101,12 @@ export interface MobileAtmosphereProps {
   surface: MobileAtmosphereSurface;
   backgroundColor?: string;
   showVignette?: boolean;
+  /**
+   * Whether the drifting orbs render. False leaves the flat base tint +
+   * vignette — the retail/editorial read (a shop wants paper, not a
+   * lava lamp). The drift animations also stop when the orbs are off.
+   */
+  showOrbs?: boolean;
   palette?: Partial<AtmospherePalette>;
   style?: ViewStyle | false;
 }
@@ -109,6 +115,7 @@ export function MobileAtmosphere({
   surface,
   backgroundColor,
   showVignette = true,
+  showOrbs = true,
   palette,
   style,
 }: MobileAtmosphereProps) {
@@ -126,6 +133,7 @@ export function MobileAtmosphere({
   const orb3Anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
+    if (!showOrbs) return;
     if (reduced) return;
     if (isWeb && !hasWindow()) return;
 
@@ -149,7 +157,7 @@ export function MobileAtmosphere({
       a2.stop();
       a3.stop();
     };
-  }, [orb1Anim, orb2Anim, orb3Anim, reduced]);
+  }, [orb1Anim, orb2Anim, orb3Anim, reduced, showOrbs]);
 
   useEffect(() => {
     if (surface === prevSurfaceRef.current) return;
@@ -195,26 +203,28 @@ export function MobileAtmosphere({
       style={[styles.container, { backgroundColor: base }, style === false ? null : style]}
       pointerEvents="none"
     >
-      <View style={orbsColumned ? styles.orbBandColumned : styles.orbBandFull}>
-        <AtmosphereOrbs
-          surface={displayedSurface}
-          paletteOverride={palette}
-          orb1Anim={orb1Anim}
-          orb2Anim={orb2Anim}
-          orb3Anim={orb3Anim}
-          opacity={outgoingOpacity}
-        />
-        {incomingSurface ? (
+      {showOrbs ? (
+        <View style={orbsColumned ? styles.orbBandColumned : styles.orbBandFull}>
           <AtmosphereOrbs
-            surface={incomingSurface}
+            surface={displayedSurface}
             paletteOverride={palette}
             orb1Anim={orb1Anim}
             orb2Anim={orb2Anim}
             orb3Anim={orb3Anim}
-            opacity={incomingOpacity}
+            opacity={outgoingOpacity}
           />
-        ) : null}
-      </View>
+          {incomingSurface ? (
+            <AtmosphereOrbs
+              surface={incomingSurface}
+              paletteOverride={palette}
+              orb1Anim={orb1Anim}
+              orb2Anim={orb2Anim}
+              orb3Anim={orb3Anim}
+              opacity={incomingOpacity}
+            />
+          ) : null}
+        </View>
+      ) : null}
       {showVignette && isWeb ? (
         <View style={[styles.vignette, { boxShadow: vignette }]} />
       ) : null}
