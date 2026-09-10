@@ -373,6 +373,8 @@ export function Showcase() {
   const [selectedId, setSelectedId] = useState<string | null>('option-a');
   const [multiSelectedIds, setMultiSelectedIds] = useState<string[]>(['feature-1']);
   const [inputValue, setInputValue] = useState('');
+  const [submitValue, setSubmitValue] = useState('');
+  const [lastSubmitted, setLastSubmitted] = useState<string | null>(null);
   const [searchValue, setSearchValue] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [selectValue, setSelectValue] = useState('monthly');
@@ -581,6 +583,23 @@ export function Showcase() {
               }
               onRightIconPress={() => setShowPassword((s) => !s)}
               maxLength={64}
+            />
+            <MobileInput
+              label="Quick note"
+              value={submitValue}
+              onChangeText={setSubmitValue}
+              placeholder="Type and press Enter…"
+              returnKeyType="send"
+              onSubmitEditing={() => {
+                const trimmed = submitValue.trim();
+                if (trimmed.length === 0) return;
+                setLastSubmitted(trimmed);
+                setSubmitValue('');
+              }}
+              helperText={
+                lastSubmitted != null ? `Sent: ${lastSubmitted}` : 'Enter submits the field.'
+              }
+              maxLength={80}
             />
           </MobileSurface>
         </View>

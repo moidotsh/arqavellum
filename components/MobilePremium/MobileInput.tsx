@@ -43,6 +43,10 @@ export interface MobileInputProps {
   onChangeText: (text: string) => void;
   /** Called when the field loses focus (commit-on-blur drafts). */
   onBlur?: () => void;
+  /** Called when the field is submitted (Enter / return key). */
+  onSubmitEditing?: () => void;
+  /** Return-key hint (web Enter / native return key). */
+  returnKeyType?: 'done' | 'go' | 'next' | 'search' | 'send';
   /** Placeholder text. */
   placeholder?: string;
   /** Error message — rendered in a dedicated slot beneath the input. Alias of `error`. */
@@ -101,6 +105,8 @@ export function MobileInput({
   value,
   onChangeText,
   onBlur,
+  onSubmitEditing,
+  returnKeyType,
   placeholder,
   errorText,
   error,
@@ -188,6 +194,8 @@ export function MobileInput({
             autoCorrect={autoCorrect}
             keyboardType={keyboardType}
             autoComplete={autoComplete as any}
+            onSubmitEditing={onSubmitEditing}
+            returnKeyType={returnKeyType}
             autoFocus={autoFocus}
             maxLength={maxLength}
             editable={!!editable && !isClickable}
