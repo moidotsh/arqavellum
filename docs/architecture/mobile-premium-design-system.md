@@ -63,7 +63,7 @@ vertical gradient, a hairline inner border, a soft outer glow, and a
 faint accent tint. The surface's color identity comes from the
 atmosphere behind it and the tint — **no thick accent bars.**
 
-One surface per screen. `width: '100%'`, `borderRadius: 20`. The surface fills its container — the centered mobile column comes from the screen body (SB1) or the portal panel (SB2), never from the surface itself, so a widened scaffold column widens its cards with it.
+One surface per screen. `width: '100%'`, `borderRadius: theme.shapes.surface` (16 by default). The surface fills its container — the centered mobile column comes from the screen body (SB1) or the portal panel (SB2), never from the surface itself, so a widened scaffold column widens its cards with it.
 
 #### 2.3.1 Light-mode surface mechanics
 
@@ -117,6 +117,18 @@ The legacy "card with a 3px accent bar on top" pattern is rejected.
 The surface's identity comes from the atmosphere behind it and the
 optional `accentColor` prop on `MobileSurface`, which tints the
 background subtly. No thick painted bars.
+
+#### 2.3.2 Shape tokens (`theme.shapes`)
+
+The kit's corner language is one semantic family in `constants/theme.ts` — the single re-skin point for shape:
+
+- `surface` (16) — cards + section surfaces (`MobileSurface`, `StatCard`, `MobileAlert`)
+- `sheet` (20) — portal panels (calendar/dialog bodies)
+- `control` (14) — inputs, buttons, selects
+- `tile` (12) — selection rows, option containers, thumbnails
+- `tag` (999) — chips, tags, badges (full round)
+
+Primitives read the tokens (not literals), so a consumer flattening the language — e.g. a sleek, monochrome retail feel — overrides the family once (`surface: 8, control: 8, tile: 6, tag: 4`) and every primitive follows. The raw `theme.borderRadius` scale (`small`/`medium`/`large`/`pill`) remains for ad-hoc shapes. Micro-radii (hairlines, grabbers, progress bars, focus rings) stay literal on purpose — they're chrome, not shape language.
 
 ### 2.4 Reduced motion by default
 
@@ -182,7 +194,7 @@ via the path alias, or `../MobilePremium` relatively).
 
 | Component | Purpose |
 |---|---|
-| `MobileSurface` | The single material surface. `width: '100%'`, `borderRadius: 20` — fills its container (SB2-surface forbids a self-cap). Optional `accentColor` tints the background. |
+| `MobileSurface` | The single material surface. `width: '100%'`, `borderRadius: theme.shapes.surface` (16) — fills its container (SB2-surface forbids a self-cap). Optional `accentColor` tints the background. |
 
 ### Inputs
 
