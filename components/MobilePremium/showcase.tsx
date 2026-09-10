@@ -65,6 +65,8 @@ import { StatCard } from './StatCard';
 import { Avatar } from './Avatar';
 import { SegmentedProgress } from './SegmentedProgress';
 import { OfflineBanner } from './OfflineBanner';
+import { MobileAnnouncementBar } from './MobileAnnouncementBar';
+import { MobileFootnote } from './MobileFootnote';
 import { CarouselTutorial } from './CarouselTutorial';
 import { Wizard } from './Wizard';
 import { ProgressRing } from './ProgressRing';
@@ -1144,6 +1146,18 @@ export function Showcase() {
             actionLabel="Retry"
             onAction={() => {}}
           />
+        </View>
+
+        <View style={styles.section}>
+          <MobileSectionEyebrow>Announcement bar</MobileSectionEyebrow>
+          <MobileAnnouncementBar
+            message="Pickup Friday 17–19h — details under Visit."
+            actionLabel="Details"
+            onAction={() => {}}
+            onDismiss={() => {}}
+          />
+          <View style={styles.spacer} />
+          <MobileFootnote lines={['All prices CAD. Examples shown for layout.', 'Starter shell — replace this fine print.']} />
         </View>
 
         <View style={styles.section}>

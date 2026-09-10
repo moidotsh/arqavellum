@@ -87,6 +87,12 @@ export type {
 export { OfflineBanner } from './OfflineBanner';
 export type { OfflineBannerProps, OfflineBannerVariant } from './OfflineBanner';
 
+export { MobileAnnouncementBar } from './MobileAnnouncementBar';
+export type { MobileAnnouncementBarProps } from './MobileAnnouncementBar';
+
+export { MobileFootnote } from './MobileFootnote';
+export type { MobileFootnoteProps } from './MobileFootnote';
+
 export { CarouselTutorial } from './CarouselTutorial';
 export type { CarouselTutorialProps, TutorialSlide } from './CarouselTutorial';
 
