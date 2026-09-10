@@ -176,6 +176,10 @@ export const theme = {
         // on the panel, not the scrim, so its upward bleed lands off-screen
         // above the viewport instead of darkening the brand cutout.
         navScrimBackdropBlur: 'blur(8px)',
+        // Scrim hex alpha over backgroundDeep. Light mode runs one step
+        // heavier than dark: the panel floats on white content, and the
+        // veil needs real separation to read as depth, not fog.
+        navScrimAlpha: 'dd',
         navPanelShadow: '4px 0 32px rgba(0, 0, 0, 0.36), 0 2px 8px rgba(0, 0, 0, 0.2)',
 
         // Faint vignette to settle the atmosphere into the edges (web).
@@ -313,6 +317,7 @@ export const theme = {
         // shadow depth are mode-independent; the scrim alpha comes from
         // backgroundDeep at the call site).
         navScrimBackdropBlur: 'blur(8px)',
+        navScrimAlpha: 'cc',
         navPanelShadow: '4px 0 32px rgba(0, 0, 0, 0.36), 0 2px 8px rgba(0, 0, 0, 0.2)',
 
         atmosphereVignette: 'inset 0 0 160px 60px rgba(0, 0, 0, 0.30)',

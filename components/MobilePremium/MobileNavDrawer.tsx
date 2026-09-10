@@ -269,7 +269,7 @@ export function MobileNavDrawer({
         style={[
           styles.scrim,
           {
-            backgroundColor: `${colors.backgroundDeep}${isAndroidChrome ? 'f2' : 'cc'}`,
+            backgroundColor: `${colors.backgroundDeep}${isAndroidChrome ? 'f2' : colors.mobilePremium.navScrimAlpha}`,
             opacity: animatedIn ? 1 : 0,
             ...(isCutout ? { top: 0, left: anchorOffset + DRAWER_WIDTH } : null),
             ...(isWeb
