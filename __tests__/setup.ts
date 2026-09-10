@@ -170,44 +170,23 @@ vi.mock('tamagui', () => ({
   Theme: 'Theme',
 }));
 
-vi.mock('@tamagui/lucide-icons-2', () => ({
-  ChevronRight: 'ChevronRight',
-  ChevronLeft: 'ChevronLeft',
-  ChevronDown: 'ChevronDown',
-  ChevronUp: 'ChevronUp',
-  Check: 'Check',
-  X: 'X',
-  Plus: 'Plus',
-  Minus: 'Minus',
-  Settings: 'Settings',
-  User: 'User',
-  Home: 'Home',
-  Calendar: 'Calendar',
-  Clock: 'Clock',
-  Info: 'Info',
-  AlertCircle: 'AlertCircle',
-  HelpCircle: 'HelpCircle',
-  Trash: 'Trash',
-  Edit: 'Edit',
-  Save: 'Save',
-  Upload: 'Upload',
-  Download: 'Download',
-  RefreshCw: 'RefreshCw',
-  Eye: 'Eye',
-  EyeOff: 'EyeOff',
-  Lock: 'Lock',
-  Unlock: 'Unlock',
-  Sun: 'Sun',
-  Moon: 'Moon',
-  Monitor: 'Monitor',
-  ClipboardCopy: 'ClipboardCopy',
-  Menu: 'Menu',
-  Bell: 'Bell',
-  Mail: 'Mail',
-  Search: 'Search',
-  Package: 'Package',
-  TrendingUp: 'TrendingUp',
-}));
+// Mock @tamagui/lucide-icons-2: every icon the installed package exports
+// answers its own name (a string). The list derives from the package's
+// type declarations — the runtime module can't execute under jsdom (its
+// dependency chain carries react-native-only syntax), and a hand-kept
+// list grows one entry per icon.
+vi.mock('@tamagui/lucide-icons-2', async () => {
+  const { readFileSync } = await import('node:fs');
+  const dts = readFileSync(
+    'node_modules/@tamagui/lucide-icons-2/types/index.d.ts',
+    'utf8',
+  );
+  const mocked: Record<string, string> = {};
+  for (const match of dts.matchAll(/export \{ (\w+) \} from/g)) {
+    mocked[match[1]] = match[1];
+  }
+  return mocked;
+});
 
 // Mock @supabase/supabase-js.
 vi.mock('@supabase/supabase-js', () => ({
