@@ -188,7 +188,7 @@ via the path alias, or `../MobilePremium` relatively).
 
 | Component | Purpose |
 |---|---|
-| `MobileInput` | Text input with label, optional helper / error slot, and focus ring. |
+| `MobileInput` | Text input with label, optional helper / error slot, and focus ring. Optional `onSubmitEditing` + `returnKeyType` expose the submit path (Enter / return key) for search boxes, chat composers, and quick-add fields. |
 | `MobileSelect` | Bottom-sheet selector with a 54px trigger. Takes a `sheetRenderer` slot for the sheet content. Both the trigger (`group` style) and the portal sheet panel spread `...MOBILE_CONTENT_WIDTH_STYLE` so the sheet stays in the 420pt centered column on any viewport — SB2-portal enforces the spread on the panel by naming convention. |
 
 ### Buttons
