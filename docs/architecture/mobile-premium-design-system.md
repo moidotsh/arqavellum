@@ -188,7 +188,7 @@ via the path alias, or `../MobilePremium` relatively).
 
 | Component | Purpose |
 |---|---|
-| `MobileAtmosphere` | Drifting color-field background. Takes a `surface` prop (see §5). |
+| `MobileAtmosphere` | Drifting color-field background. Takes a `surface` prop (see §5). Whether the orbs render defaults to the theme's atmosphere style (`theme.atmosphere.style`, §5.1) — `showOrbs` is the explicit per-callsite override. |
 
 ### Surface
 
@@ -215,7 +215,7 @@ via the path alias, or `../MobilePremium` relatively).
 |---|---|
 | `MobileHeader` | 44px header (36–48 total with safe-area top). Back chevron, optional dismiss, compact title, accent dot. Optional `eyebrow` for context labels above the title. |
 | `MobileHomeHeader` | Home-screen header that puts the brand on the same row as the menu trigger. 36px brand row (brand text + optional `menuButton` + optional `rightAction`) + optional normal-case `subtitle` below. `paddingHorizontal: 20`, `maxWidth: 420`, `alignSelf: 'center'`. Pairs with `MobileNavDrawer` in cutout mode — when the drawer opens, the transparent cap at the top of the drawer panel lets this header's brand + menu button show through at the same position. The `drawerGlassCap` slot hosts a `MobileNavDrawerGlassCap` so the cutout pattern composes without hand-positioning. The `menuButton` slot is a `React.ReactNode`; the kit ships `HamburgerButton` as the standard trigger. |
-| `MobileNavDrawer` | Left-side hamburger drawer. Shell-level mechanism (slide / scrim / items / active-highlight / badge) — branding, items, and footer are consumer-supplied. Two brand-persistence modes via the `brandPersistence` prop: **`'slideout'`** (default) — panel covers full screen height; brand lives in the `header` slot. **`'cutout'`** — panel leaves a transparent cutout at its top so the home header's brand + hamburger stay visible at the same position; the scrim starts at the panel's right edge and runs to the window edge at all heights, and the consumer renders `MobileNavDrawerGlassCap` over the cutout for the continuous-glass read. The `header` prop is ignored in cutout mode. Two anchor modes via the `anchor` prop: **`'window'`** (default) — panel slides from x=0 of the window. **`'column'`** — panel slides from the left edge of the centered 420pt column (computed from `useWindowDimensions`), so the drawer stays attached to centered content on any viewport. Defaults are picked by `APP_LAYOUT.navDrawerBrandPersistence` and `APP_LAYOUT.navDrawerAnchor` in `constants/layout.ts`. Slides with an iOS-sheet curve (`cubic-bezier(0.32, 0.72, 0, 1)`) behind a frosted-glass scrim (web backdrop-blur via `mobilePremium.navScrimBackdropBlur`; Android Chrome falls back to the milder `androidChromeSurfaceBlur` at higher opacity because it renders `saturate()` poorly). The panel carries a right-edge depth shadow (`mobilePremium.navPanelShadow`) placed on the panel — not the scrim — so its upward bleed lands off-screen instead of darkening the brand cutout. Active row gets a 3px brand strip on the left edge + brand-tinted background + bolder label; inactive rows pick up a hover background on pointer devices. `prefers-reduced-motion` collapses the slide to instant. The `atmosphereShowOrbs` prop (default `true`) toggles the body atmosphere's drifting orbs — pass `false` when the consumer's design language wants the flat base surface instead of motion. |
+| `MobileNavDrawer` | Left-side hamburger drawer. Shell-level mechanism (slide / scrim / items / active-highlight / badge) — branding, items, and footer are consumer-supplied. Two brand-persistence modes via the `brandPersistence` prop: **`'slideout'`** (default) — panel covers full screen height; brand lives in the `header` slot. **`'cutout'`** — panel leaves a transparent cutout at its top so the home header's brand + hamburger stay visible at the same position; the scrim starts at the panel's right edge and runs to the window edge at all heights, and the consumer renders `MobileNavDrawerGlassCap` over the cutout for the continuous-glass read. The `header` prop is ignored in cutout mode. Two anchor modes via the `anchor` prop: **`'window'`** (default) — panel slides from x=0 of the window. **`'column'`** — panel slides from the left edge of the centered 420pt column (computed from `useWindowDimensions`), so the drawer stays attached to centered content on any viewport. Defaults are picked by `APP_LAYOUT.navDrawerBrandPersistence` and `APP_LAYOUT.navDrawerAnchor` in `constants/layout.ts`. Slides with an iOS-sheet curve (`cubic-bezier(0.32, 0.72, 0, 1)`) behind a frosted-glass scrim (web backdrop-blur via `mobilePremium.navScrimBackdropBlur`; Android Chrome falls back to the milder `androidChromeSurfaceBlur` at higher opacity because it renders `saturate()` poorly). The panel carries a right-edge depth shadow (`mobilePremium.navPanelShadow`) placed on the panel — not the scrim — so its upward bleed lands off-screen instead of darkening the brand cutout. Active row gets a 3px brand strip on the left edge + brand-tinted background + bolder label; inactive rows pick up a hover background on pointer devices. `prefers-reduced-motion` collapses the slide to instant. The `atmosphereShowOrbs` prop toggles the body atmosphere's drifting orbs; it defaults to the theme's atmosphere style (`theme.atmosphere.style`, §5.1) — pass an explicit boolean only to override the theme for this drawer alone. |
 | `MobileNavDrawerGlassCap` | Glass cap rendered by the consumer's home header (via `MobileHomeHeader.drawerGlassCap`) over the nav drawer's brand cutout. Crossfades in AND slides with the panel using the same 300ms iOS-sheet easing so the cutout reads as one continuous drawer surface. Replicates the scrim treatment (backgroundDeep at scrim alpha + backdrop blur + right hairline; Android Chrome fallback included). `anchor`/`columnWidth`/`width`/`height` props must match the drawer's so the cap lands exactly over the panel's cutout. `pointerEvents: 'none'` — taps reach the hamburger/X behind it. |
 | `MobileAnnouncementBar` | Owner-authored announcement strip — the one-line broadcast surface ("Pickup Friday 17–19h", "Drop 004 opens Friday"). Purely presentational like `OfflineBanner`: the consumer owns the message, mount/unmount, and any dismissed-once persistence. Optional inline action (`actionLabel` + `onAction`) and optional dismiss control (`onDismiss` — the X only renders when the handler is provided). `accessibilityLiveRegion="polite"`. |
 | `MobileFootnote` | Page-tail colophon: hairline top rule, centered muted small-print `lines`, optional `children` slot above them for link rows (policies, contact, hours). Purely presentational — the quiet close of a surface. |
@@ -410,7 +410,29 @@ When a screen transitions between surfaces (e.g. onboarding step
 changes), `MobileAtmosphere` crossfades the palettes automatically.
 Under reduced motion, it snaps.
 
-### 5.1 Customizing palettes as a consumer
+### 5.1 The atmosphere style is a theme token
+
+Whether the orbs render at all is an atmosphere-**language** decision,
+and it is declared once — `theme.atmosphere.style` in
+`constants/theme.ts`, the same override-point discipline as
+`theme.shapes`:
+
+- `'aurora'` (default) — the drifting color-field orbs over the base
+  tint: the starter's premium read.
+- `'flat'` — base tint + vignette only, no orbs: the editorial/retail
+  read for a consumer whose design language wants calm paper. Orb
+  drift stops too (nothing left to animate).
+
+Every `MobileAtmosphere` — scaffolds, the nav drawer's body, the auth
+screens, any hand-rolled placement — follows the declaration with no
+per-callsite prop threading. `MobileAtmosphere`'s `showOrbs` prop and
+`MobileNavDrawer`'s `atmosphereShowOrbs` remain as **explicit
+per-callsite overrides** (the dev showcase uses one to demo the flat
+read under the starter's aurora theme); day-to-day screens never pass
+them. A consumer on the flat language flips one token and the whole
+app, including screens it forgot about, settles.
+
+### 5.2 Customizing palettes as a consumer
 
 The 7 semantics are domain-agnostic, but the hues are not binding. A
 consumer whose brand is warm-toned may prefer warmer orb hues for
