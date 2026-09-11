@@ -92,6 +92,12 @@ export interface MobileNavDrawerProps {
   /** Atmosphere surface for the drawer body (default: 'analytics'). */
   atmosphere?: MobileAtmosphereSurface;
   /**
+   * Whether the drawer body's drifting orbs render (default true —
+   * the starter's showcase read). False leaves the flat base surface
+   * for consumers whose design language wants calm chrome.
+   */
+  atmosphereShowOrbs?: boolean;
+  /**
    * How the brand area is handled when the drawer is open.
    * - 'slideout' (default): panel covers full screen height; brand lives
    *   in the `header` slot.
@@ -168,6 +174,7 @@ export function MobileNavDrawer({
   header,
   footer,
   atmosphere = 'analytics',
+  atmosphereShowOrbs = true,
   brandPersistence = 'slideout',
   cutoutHeight,
   anchor = 'window',
@@ -343,7 +350,7 @@ export function MobileNavDrawer({
             { backgroundColor: colors.backgroundDeep },
           ]}
         >
-          <MobileAtmosphere surface={atmosphere} />
+          <MobileAtmosphere surface={atmosphere} showOrbs={atmosphereShowOrbs} />
           <View
             style={[styles.panelTint, { backgroundColor: `${colors.backgroundDeep}99` }]}
           />
