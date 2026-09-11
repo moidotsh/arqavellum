@@ -47,6 +47,8 @@ interface ThemeContextValue {
   fontSize: typeof theme.fontSize;
   borderRadius: typeof theme.borderRadius;
   typography: typeof theme.typography;
+  /** Atmosphere language (`theme.atmosphere`) — mode-invariant. */
+  atmosphere: typeof theme.atmosphere;
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -156,6 +158,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       fontSize: theme.fontSize,
       borderRadius: theme.borderRadius,
       typography: theme.typography,
+      atmosphere: theme.atmosphere,
     }),
     // `hydrated` is intentionally NOT in deps — once hydrated, the
     // preference state itself drives the value; including `hydrated`

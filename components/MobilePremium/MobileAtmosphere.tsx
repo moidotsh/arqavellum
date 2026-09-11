@@ -102,9 +102,12 @@ export interface MobileAtmosphereProps {
   backgroundColor?: string;
   showVignette?: boolean;
   /**
-   * Whether the drifting orbs render. False leaves the flat base tint +
-   * vignette — the retail/editorial read (a shop wants paper, not a
-   * lava lamp). The drift animations also stop when the orbs are off.
+   * Whether the drifting orbs render. Undefined (the default) defers
+   * to the theme's atmosphere style — `theme.atmosphere.style: 'flat'`
+   * turns the orbs off app-wide while keeping the base tint +
+   * vignette. Pass an explicit boolean only to override the theme for
+   * this one surface (the dev showcase demos both styles this way).
+   * The drift animations also stop when the orbs are off.
    */
   showOrbs?: boolean;
   palette?: Partial<AtmospherePalette>;
@@ -115,13 +118,16 @@ export function MobileAtmosphere({
   surface,
   backgroundColor,
   showVignette = true,
-  showOrbs = true,
+  showOrbs,
   palette,
   style,
 }: MobileAtmosphereProps) {
   const reduced = useReducedMotion();
   const { useNativeDriver } = usePlatformAnimation();
-  const { colors } = useAppTheme();
+  const { colors, atmosphere } = useAppTheme();
+  // Theme default, per-callsite override: the single declaration point
+  // for the atmosphere language is `theme.atmosphere.style`.
+  const orbsVisible = showOrbs ?? atmosphere.style !== 'flat';
 
   const [displayedSurface, setDisplayedSurface] = useState<MobileAtmosphereSurface>(surface);
   const [incomingSurface, setIncomingSurface] = useState<MobileAtmosphereSurface | null>(null);
@@ -133,7 +139,7 @@ export function MobileAtmosphere({
   const orb3Anim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (!showOrbs) return;
+    if (!orbsVisible) return;
     if (reduced) return;
     if (isWeb && !hasWindow()) return;
 
@@ -157,7 +163,7 @@ export function MobileAtmosphere({
       a2.stop();
       a3.stop();
     };
-  }, [orb1Anim, orb2Anim, orb3Anim, reduced, showOrbs]);
+  }, [orb1Anim, orb2Anim, orb3Anim, reduced, orbsVisible]);
 
   useEffect(() => {
     if (surface === prevSurfaceRef.current) return;
@@ -203,7 +209,7 @@ export function MobileAtmosphere({
       style={[styles.container, { backgroundColor: base }, style === false ? null : style]}
       pointerEvents="none"
     >
-      {showOrbs ? (
+      {orbsVisible ? (
         <View style={orbsColumned ? styles.orbBandColumned : styles.orbBandFull}>
           <AtmosphereOrbs
             surface={displayedSurface}

@@ -92,9 +92,11 @@ export interface MobileNavDrawerProps {
   /** Atmosphere surface for the drawer body (default: 'analytics'). */
   atmosphere?: MobileAtmosphereSurface;
   /**
-   * Whether the drawer body's drifting orbs render (default true —
-   * the starter's showcase read). False leaves the flat base surface
-   * for consumers whose design language wants calm chrome.
+   * Whether the drawer body's drifting orbs render. Undefined (the
+   * default) defers to the theme's atmosphere style
+   * (`theme.atmosphere.style`) — declare 'flat' there to settle the
+   * whole app on the base surface; pass an explicit boolean only to
+   * override the theme for this drawer alone.
    */
   atmosphereShowOrbs?: boolean;
   /**
@@ -174,7 +176,7 @@ export function MobileNavDrawer({
   header,
   footer,
   atmosphere = 'analytics',
-  atmosphereShowOrbs = true,
+  atmosphereShowOrbs,
   brandPersistence = 'slideout',
   cutoutHeight,
   anchor = 'window',

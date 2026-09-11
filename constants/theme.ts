@@ -122,10 +122,6 @@ export const theme = {
         panelBackground: 'rgba(255, 255, 255, 0.6)',
         inputBackground: 'rgba(15, 23, 42, 0.03)',
         inputFocusBackground: 'rgba(79, 70, 229, 0.05)',
-        orbBlue: 'rgba(59, 130, 246, 0.10)',
-        orbPurple: 'rgba(168, 85, 247, 0.08)',
-        orbTeal: 'rgba(20, 184, 166, 0.08)',
-        orbIndigo: 'rgba(79, 70, 229, 0.10)',
       },
 
       // Alert background tint for error containers.
@@ -282,10 +278,6 @@ export const theme = {
         panelBackground: 'rgba(11, 15, 25, 0.6)',
         inputBackground: 'rgba(226, 232, 240, 0.04)',
         inputFocusBackground: 'rgba(99, 102, 241, 0.10)',
-        orbBlue: 'rgba(59, 130, 246, 0.20)',
-        orbPurple: 'rgba(168, 85, 247, 0.16)',
-        orbTeal: 'rgba(20, 184, 166, 0.16)',
-        orbIndigo: 'rgba(99, 102, 241, 0.20)',
       },
 
       // Alert background tint for error containers (dark-mode red wash).
@@ -376,6 +368,25 @@ export const theme = {
     tag: 999,
   },
 
+  // ── Atmosphere tokens ────────────────────────────────────────────────
+  // The atmosphere-language override point — the same discipline as
+  // `shapes`: the consumer declares the background style ONCE here and
+  // every MobileAtmosphere (scaffolds, drawers, auth screens) follows,
+  // with no per-callsite prop threading. `MobileAtmosphere`'s
+  // `showOrbs` prop remains as the explicit per-callsite override
+  // (the dev showcase uses it to demo both styles under one theme).
+  atmosphere: {
+    /**
+     * The background style the atmosphere renders.
+     * - 'aurora' (default): drifting color-field orbs over the base
+     *   tint — the starter's premium read.
+     * - 'flat': base tint + vignette only, no orbs — the editorial or
+     *   retail read for consumers whose design language wants calm
+     *   paper. Orb drift stops too (nothing left to animate).
+     */
+    style: 'aurora',
+  },
+
   // ── Named type styles ─────────────────────────────────────────────────
   // Premium reads through type. Consumers import the named style and spread
   // it; they do NOT pick ad-hoc fontSize/fontWeight values for titles and
@@ -424,6 +435,11 @@ export const theme = {
 // The two color schemes arqavellum supports. `light` is the default. Type-wide
 // so consumers can type their own APIs (`onChangeColorScheme(next: ColorScheme)`).
 export type ColorScheme = 'light' | 'dark';
+
+// The atmosphere background styles (`theme.atmosphere.style`). 'aurora' is
+// the starter default; a consumer declares 'flat' to turn the orbs off
+// app-wide in one place.
+export type AtmosphereStyle = 'aurora' | 'flat';
 
 // Convenience aliases — the resolved palette shape for either mode. Both
 // `light` and `dark` are structurally identical, so the union collapses to

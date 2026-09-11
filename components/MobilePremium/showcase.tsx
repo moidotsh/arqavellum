@@ -527,6 +527,26 @@ export function Showcase() {
               </View>
             </View>
           ))}
+          {/* The atmosphere-language override point, demonstrated: the
+              theme declares 'aurora' or 'flat' once and every surface
+              follows. This row pins the flat read with the explicit
+              prop so both styles stay visible under any theme. */}
+          <View style={styles.atmosphereRow}>
+            <View style={styles.atmosphereContainer}>
+              <MobileAtmosphere surface="analytics" showVignette={false} showOrbs={false} />
+              <View style={[styles.atmosphereLabel, { backgroundColor: colors.card }]}>
+                <Text
+                  style={[
+                    styles.bodyText,
+                    theme.typography.mobileFieldLabel,
+                    { color: colors.text },
+                  ]}
+                >
+                  flat (theme.atmosphere.style)
+                </Text>
+              </View>
+            </View>
+          </View>
         </View>
 
         <View style={styles.section}>
