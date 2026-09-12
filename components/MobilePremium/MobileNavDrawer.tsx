@@ -479,8 +479,14 @@ function DrawerItem({
   const [hovered, setHovered] = useState(false);
   const showBadge = item.badge != null && item.badge > 0;
 
+  // Active row: on ink the wash lifts the plate in the CONTRAST direction
+  // (background alpha — always neutral against the plate); the brand strip
+  // alone carries the accent. The brand-alpha wash tints the whole row —
+  // mud on the dark plate, a pale block on the bone one.
   const backgroundColor = active
-    ? `${accent}1a`
+    ? ink
+      ? `${colors.background}1f`
+      : `${accent}1a`
     : hovered && isWeb
       ? ink
         ? `${colors.background}14`
