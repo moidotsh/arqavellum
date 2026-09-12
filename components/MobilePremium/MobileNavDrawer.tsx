@@ -159,6 +159,14 @@ export interface MobileNavDrawerProps {
    * consumer's receipt face here; the sheet default needs nothing.
    */
   itemLabelStyle?: StyleProp<TextStyle>;
+  /**
+   * Explicit per-callsite surface-language override for the dev showcase
+   * (the same discipline as atmosphereShowOrbs): the theme's
+   * `drawer.style` is the single declaration point — this prop exists so
+   * the showcase can demo both languages side by side. Consumers leave
+   * it unset.
+   */
+  drawerStyle?: 'sheet' | 'ink';
   /** Test ID. */
   testID?: string;
 }
@@ -208,12 +216,14 @@ export function MobileNavDrawer({
   anchor = 'window',
   columnWidth = 420,
   itemLabelStyle,
+  drawerStyle,
   testID,
 }: MobileNavDrawerProps) {
   const { colors } = useAppTheme();
   // Surface language — optional-chained so an older consumer theme copy
-  // (pre-drawer-block) still renders the sheet default.
-  const ink = theme.drawer?.style === 'ink';
+  // (pre-drawer-block) still renders the sheet default. The prop is the
+  // showcase's explicit override (atmosphereShowOrbs discipline).
+  const ink = (drawerStyle ?? theme.drawer?.style) === 'ink';
   const insets = useSafeAreaInsets();
   const reduced = useReducedMotion();
   const { isAndroidChrome } = useAndroidChromeBlurFix();

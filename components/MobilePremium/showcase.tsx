@@ -371,6 +371,12 @@ export function Showcase() {
   const { colors } = useAppTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  // The drawer demo's surface language — flipped by the segmented control
+  // via the component's showcase-only `drawerStyle` override (the theme's
+  // drawer.style stays the single consumer declaration point).
+  const [demoDrawerStyle, setDemoDrawerStyle] = useState<'sheet' | 'ink'>('sheet');
+  // The header pairing follows: on the ink plate the masthead rides it.
+  const demoOnPlate = drawerOpen && demoDrawerStyle === 'ink';
   const [stepperValue, setStepperValue] = useState(5);
   const [checked, setChecked] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>('option-a');
@@ -404,30 +410,32 @@ export function Showcase() {
     return () => clearTimeout(t);
   }, [showLoading]);
 
+  // Icons follow the surface: paper on the ink plate, text on the sheet.
+  const demoIconColor = demoDrawerStyle === 'ink' ? colors.background : colors.text;
   const drawerItems: MobileNavDrawerItem[] = [
     {
       id: '/',
       label: 'Home',
-      icon: <Home size={18} color={colors.text} />,
+      icon: <Home size={18} color={demoIconColor} />,
       onPress: () => {},
     },
     {
       id: '/items',
       label: 'Items',
-      icon: <Package size={18} color={colors.text} />,
+      icon: <Package size={18} color={demoIconColor} />,
       onPress: () => {},
     },
     {
       id: '/progress',
       label: 'Progress',
-      icon: <TrendingUp size={18} color={colors.text} />,
+      icon: <TrendingUp size={18} color={demoIconColor} />,
       badge: 3,
       onPress: () => {},
     },
     {
       id: '/settings',
       label: 'Settings',
-      icon: <Settings size={18} color={colors.text} />,
+      icon: <Settings size={18} color={demoIconColor} />,
       onPress: () => {},
     },
   ];
@@ -468,21 +476,50 @@ export function Showcase() {
         </View>
 
         <View style={styles.section}>
-          <MobileSectionEyebrow>Home Header (brand + subtitle row)</MobileSectionEyebrow>
-          {/* Live cutout-drawer demo: the HamburgerButton swaps to X, the
-              glass cap slides over the brand cutout, and the drawer below
-              opens in APP_LAYOUT's configured mode. */}
+          <MobileSectionEyebrow>Drawer — sheet vs ink (theme.drawer.style)</MobileSectionEyebrow>
+          {/* Live cutout-drawer demo, both surface languages through one
+              hamburger. 'sheet' (default): frosted scrim + blur, atmosphere
+              body, hairline edge, the iOS slide curve — the glass cap
+              completes the cutout. 'ink': the InkPanel plate (print grain +
+              full-height brand rule), flat dim scrim, the out-cubic curve,
+              and the on-plate masthead — the real header stacks above the
+              plate and bleeds to the background color while the subtitle
+              and right-side chrome go invisible holding their space. */}
+          <SegmentedControl
+            variant="selection"
+            segments={[
+              { label: 'Sheet (default)', value: 'sheet' },
+              { label: 'Ink', value: 'ink' },
+            ]}
+            value={demoDrawerStyle}
+            onChange={setDemoDrawerStyle}
+            accessibilityLabel="Drawer surface language"
+          />
+          <View style={styles.spacer} />
           <MobileHomeHeader
             brand="Showcase"
             subtitle="Welcome back, visitor"
+            onPlate={demoOnPlate}
             menuButton={
               <HamburgerButton
                 isOpen={drawerOpen}
                 onPress={() => setDrawerOpen((prev) => !prev)}
+                color={demoOnPlate ? colors.background : undefined}
               />
             }
-            drawerGlassCap={<MobileNavDrawerGlassCap open={drawerOpen} />}
+            drawerGlassCap={
+              demoDrawerStyle === 'sheet' ? (
+                <MobileNavDrawerGlassCap open={drawerOpen} />
+              ) : undefined
+            }
           />
+          <Text style={[styles.bodyText, { color: colors.textSecondary, marginTop: 8 }]}>
+            One hamburger, two materials. Sheet slides on the iOS curve under a frosted scrim;
+            ink sweeps the plate on the out-cubic with the masthead bleeding onto it — the
+            subtitle and any right-side chrome go invisible and hold their space, so nothing
+            shifts and nothing straddles the plate&apos;s rule. Consumers set the row face via
+            itemLabelStyle (e.g. a ledger mono) and declare the language once in the theme.
+          </Text>
         </View>
 
         <View style={styles.section}>
@@ -1461,6 +1498,7 @@ export function Showcase() {
         atmosphere="analytics"
         anchor={APP_LAYOUT.navDrawerAnchor}
         brandPersistence={APP_LAYOUT.navDrawerBrandPersistence}
+        drawerStyle={demoDrawerStyle}
         header={
           <View>
             <Text style={[theme.typography.mobileEyebrow, { color: colors.textMuted }]}>
