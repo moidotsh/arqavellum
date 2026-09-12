@@ -37,10 +37,22 @@ declare global {
     va?: (...args: unknown[]) => void;
     /** Events queued before the script loads; drained by the script. */
     vaq?: unknown[][];
+    /** Vercel Speed Insights endpoint — the stub below until the script loads. */
+    si?: (...args: unknown[]) => void;
+    /** Speed-Insights calls queued before the script loads. */
+    siq?: unknown[][];
   }
 }
 
 const INSIGHTS_SCRIPT_SRC = '/_vercel/insights/script.js';
+
+// The speed-insights contract mirrors @vercel/speed-insights@2.0.0's
+// generic inject (verified against the package source): a window.si
+// queue stub pushing to window.siq, then a SEPARATE script tag at
+// /_vercel/speed-insights/script.js carrying data-sdkn/data-sdkv —
+// the version pins the SDK generation the hand-roll mirrors.
+const SPEED_INSIGHTS_SCRIPT_SRC = '/_vercel/speed-insights/script.js';
+const SPEED_INSIGHTS_SDK_VERSION = '2.0.0';
 
 /** The printed-QR landing path — see the header before ever changing it. */
 export const QR_LANDING_PATH = '/qr';
@@ -109,6 +121,37 @@ export function initWebAnalytics(): void {
   const script = document.createElement('script');
   script.src = INSIGHTS_SCRIPT_SRC;
   script.defer = true;
+  document.head.appendChild(script);
+}
+
+/**
+ * Install the Speed Insights queue stub. Idempotent, pure JS — same
+ * discipline as the analytics stub.
+ */
+function ensureSpeedInsightsQueueStub(): void {
+  if (window.si) return;
+  window.si = (...args: unknown[]) => {
+    (window.siq ??= []).push(args);
+  };
+}
+
+/**
+ * Inject the Speed Insights snippet: the si queue stub, then the script
+ * tag with its SDK dataset attrs. The script (served by Vercel once
+ * Speed Insights is enabled for the project in the dashboard) collects
+ * the core vitals itself — LCP, INP, CLS, TTFB. Off-Vercel or with the
+ * product off, it 404s harmlessly.
+ */
+export function initSpeedInsights(): void {
+  if (!isWeb || !hasWindow() || !hasDocument()) return;
+  if (process.env.NODE_ENV !== 'production') return;
+  ensureSpeedInsightsQueueStub();
+  if (document.head.querySelector(`script[src*="${SPEED_INSIGHTS_SCRIPT_SRC}"]`)) return;
+  const script = document.createElement('script');
+  script.src = SPEED_INSIGHTS_SCRIPT_SRC;
+  script.defer = true;
+  script.dataset.sdkn = '@vercel/speed-insights';
+  script.dataset.sdkv = SPEED_INSIGHTS_SDK_VERSION;
   document.head.appendChild(script);
 }
 

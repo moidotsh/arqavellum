@@ -42,7 +42,7 @@ import { RootGestureProvider } from '../components/composed';
 import { APP_DISPLAY_NAME } from '../constants';
 import { isWeb, hasDocument, hasWindow } from '../utils/platform';
 import { logger } from '../utils';
-import { initWebAnalytics, reportVisitSource } from '../utils/webAnalytics';
+import { initWebAnalytics, initSpeedInsights, reportVisitSource } from '../utils/webAnalytics';
 import { initializeNetworkListeners } from '../stores';
 import { AuthProvider, ToastProvider, ThemeProvider, useAppTheme } from '../context';
 import { AuthGuard, ToastContainer, AppErrorBoundary } from '../components/primitives';
@@ -66,7 +66,10 @@ function RootShell() {
   // and is a session-guarded no-op after a /qr report.
   useEffect(() => {
     if (!isWeb || !hasWindow() || !hasDocument()) return;
-    if (process.env.EXPO_PUBLIC_WEB_ANALYTICS === '1') initWebAnalytics();
+    if (process.env.EXPO_PUBLIC_WEB_ANALYTICS === '1') {
+      initWebAnalytics();
+      initSpeedInsights();
+    }
     reportVisitSource();
   }, []);
 
