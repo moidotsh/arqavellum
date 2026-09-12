@@ -8,18 +8,27 @@
       PWA / Add to Home Screen configuration.
 
       This file is the source-of-truth DECLARATION of which PWA tags the
-      app expects to ship with. The runtime DELIVERY mechanism is the
-      web-bootstrap useEffect in app/_layout.tsx (ensureMeta / ensureLink)
-      — Expo Web's static export (`expo export --platform web`) strips
-      every tag below from <head> except <link rel="icon"> when generating
-      dist/index.html, and the runtime injection block restores them.
+      app expects to ship with. Two DELIVERY mechanisms restore them:
 
-      The two are a deliberate mirror pair — keep them in sync in the
-      same change. The theme-color values here are arqavellum's defaults
-      (light surface for desktop, brand indigo for mobile); consumers
-      who override the `brand` slot should update both this file and
-      the matching lines in app/_layout.tsx so the deployed HTML and
-      the runtime injection agree.
+      1. scripts/inject-critical-web.ts — runs after `expo export` and
+         copies the tags below (plus the id'd <style> blocks and any
+         font preload links) into every exported dist/**/*.html <head>,
+         so the DEPLOYED first frame carries them at parse time.
+
+      2. The runtime injection in app/_layout.tsx (ensureMeta /
+         ensureLink / ensureStyle) — restores the same set after
+         hydration (dev server, and any path the export strip still
+         misses).
+
+      Expo Web's static export strips every tag below from <head>
+      except <link rel="icon"> when generating dist/index.html. The
+      three places are a deliberate mirror set — keep them in sync in
+      the same change. The theme-color values here are arqavellum's
+      defaults (light surface for desktop, brand indigo for mobile);
+      consumers who override the `brand` slot should update this file,
+      the injector's extraction, and the matching lines in
+      app/_layout.tsx so the deployed HTML and the runtime injection
+      agree.
       Full design + debugging checklist: docs/architecture/pwa-installability.md.
     -->
     <meta name="theme-color" content="#F1F5F9" media="(min-width: 701px)" />
@@ -34,7 +43,16 @@
     <meta name="apple-mobile-web-app-title" content="Arqavellum" />
 
     <title>Arqavellum</title>
-    <style>
+
+    <!--
+      The global shell CSS — keyed by id so the injector and the runtime
+      injection share one key. Consumers self-hosting fonts: declare the
+      @font-face block in an id'd <style> here and add the matching
+      <link rel="preload" as="font" crossorigin> lines — the injector
+      carries both into every exported route, so the first frame renders
+      in the real faces instead of swapping them in after hydration.
+    -->
+    <style id="global-scrollbar-css">
       html,
       body,
       #root {
