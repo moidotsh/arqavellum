@@ -4,6 +4,7 @@
 // '@components/MobilePremium'`.
 
 export { MobileAtmosphere } from './MobileAtmosphere';
+export { InkPanel } from './InkPanel';
 export type { MobileAtmosphereProps, MobileAtmosphereSurface } from './MobileAtmosphere';
 
 export { MobileSurface } from './MobileSurface';

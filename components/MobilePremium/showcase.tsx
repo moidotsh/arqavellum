@@ -34,6 +34,7 @@ import {
 // imports remain preferable for tree-shaking and to keep the
 // showcase's dependency surface explicit.
 import { MobileAtmosphere } from './MobileAtmosphere';
+import { InkPanel } from './InkPanel';
 import { MobileSurface } from './MobileSurface';
 import { MobileHeader } from './MobileHeader';
 import { MobileHomeHeader } from './MobileHomeHeader';
@@ -527,6 +528,25 @@ export function Showcase() {
               </View>
             </View>
           ))}
+          {/* InkPanel — the inverted-surface primitive (theme.drawer.style
+              'ink' composes it; any ink-language consumer surface can).
+              Text-color plate + print grain + brand edge rule. */}
+          <View style={[styles.atmosphereContainer, { height: 88 }]}>
+            <InkPanel rule>
+              <View style={{ flex: 1, justifyContent: 'center', paddingLeft: 16 }}>
+                <Text
+                  style={[
+                    styles.bodyText,
+                    theme.typography.mobileFieldLabel,
+                    { color: colors.background },
+                  ]}
+                >
+                  InkPanel (plate + grain + rule)
+                </Text>
+              </View>
+            </InkPanel>
+          </View>
+
           {/* The atmosphere-language override point, demonstrated: the
               theme declares 'aurora' or 'flat' once and every surface
               follows. This row pins the flat read with the explicit

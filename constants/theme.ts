@@ -387,6 +387,21 @@ export const theme = {
     style: 'aurora',
   },
 
+  // ── Drawer tokens ────────────────────────────────────────────────────
+  // The nav-drawer surface language override point — the same
+  // discipline as `shapes`/`atmosphere`: declare it once here and the
+  // drawer follows, no per-callsite props.
+  //   • 'sheet' (default): the glass-scrim iOS sheet this component
+  //     shipped as — blur scrim, atmosphere body, hairline edge.
+  //   • 'ink': the inverted plate (InkPanel) — the consumer whose boot
+  //     moment, route transitions, and toasts already speak the ink
+  //     language joins the drawer to that family: text-color plate +
+  //     print grain + brand edge rule, flat dim scrim (no blur), the
+  //     header slot live on the plate.
+  drawer: {
+    style: 'sheet',
+  },
+
   // ── Named type styles ─────────────────────────────────────────────────
   // Premium reads through type. Consumers import the named style and spread
   // it; they do NOT pick ad-hoc fontSize/fontWeight values for titles and
