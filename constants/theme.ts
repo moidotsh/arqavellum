@@ -25,6 +25,27 @@ type TypographyToken = Pick<
   'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing'
 >;
 
+// ── Design dialect ──────────────────────────────────────────────────────
+// The ONE family declaration. A consumer's design language is not four
+// independent flags that must agree by convention — it is one dialect
+// that presets every surface-language point below (atmosphere, drawer,
+// transition). Sub-points remain as explicit overrides: writing a
+// literal `style` on any of them beats the preset, for consumers whose
+// taste mixes deliberately.
+//   • 'glass' (default) — the starter's own look: drifting aurora orbs,
+//     the glass-scrim sheet drawer, no route transition.
+//   • 'ink' — printed matter: flat air (no orbs), the InkPanel drawer,
+//     and the ink route curtain. The curtain is consumer-implemented
+//     machinery that READS the transition axis below — the shell ships
+//     no transition primitive of its own (a future one would read the
+//     same declaration). The ink dialect's toast treatment ('chit') is
+//     likewise consumer-side until it ports.
+const DIALECT = 'glass' as 'glass' | 'ink';
+const DIALECT_PRESETS = {
+  glass: { atmosphere: 'aurora', drawer: 'sheet', transition: 'none' },
+  ink: { atmosphere: 'flat', drawer: 'ink', transition: 'curtain' },
+} as const;
+
 export const theme = {
   colors: {
     // ── Light surface (default) ────────────────────────────────────────
@@ -378,28 +399,44 @@ export const theme = {
   atmosphere: {
     /**
      * The background style the atmosphere renders.
-     * - 'aurora' (default): drifting color-field orbs over the base
-     *   tint — the starter's premium read.
+     * - 'aurora': drifting color-field orbs over the base tint — the
+     *   starter's premium read, the glass dialect's preset.
      * - 'flat': base tint + vignette only, no orbs — the editorial or
      *   retail read for consumers whose design language wants calm
      *   paper. Orb drift stops too (nothing left to animate).
+     *
+     * Defaults to the dialect preset; write a literal to override.
      */
-    style: 'aurora',
+    style: DIALECT_PRESETS[DIALECT].atmosphere,
   },
 
   // ── Drawer tokens ────────────────────────────────────────────────────
   // The nav-drawer surface language override point — the same
   // discipline as `shapes`/`atmosphere`: declare it once here and the
   // drawer follows, no per-callsite props.
-  //   • 'sheet' (default): the glass-scrim iOS sheet this component
-  //     shipped as — blur scrim, atmosphere body, hairline edge.
+  //   • 'sheet': the glass-scrim iOS sheet this component shipped as —
+  //     blur scrim, atmosphere body, hairline edge (the glass dialect's
+  //     preset).
   //   • 'ink': the inverted plate (InkPanel) — the consumer whose boot
   //     moment, route transitions, and toasts already speak the ink
   //     language joins the drawer to that family: text-color plate +
   //     print grain + brand edge rule, flat dim scrim (no blur), the
-  //     header slot live on the plate.
+  //     masthead riding ON the plate (MobileHomeHeader onPlate).
+  //     Defaults to the dialect preset; write a literal to override.
   drawer: {
-    style: 'sheet',
+    style: DIALECT_PRESETS[DIALECT].drawer,
+  },
+
+  // ── Transition tokens ────────────────────────────────────────────────
+  // The route-transition axis — the one motion declaration. 'none' (the
+  // glass dialect's preset): the shell ships no transition machinery,
+  // navigation simply swaps. 'curtain' (the ink preset): the full-bleed
+  // ink plate sweeping navigation — consumer-implemented machinery
+  // reads this declaration (their NavigationHelper/overlay); a future
+  // shell transition primitive would read the same axis. Write a
+  // literal to override the preset.
+  transition: {
+    style: DIALECT_PRESETS[DIALECT].transition,
   },
 
   // ── Named type styles ─────────────────────────────────────────────────
