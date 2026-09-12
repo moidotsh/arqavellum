@@ -4,8 +4,8 @@
   "version": "1.0.0",
   "description": "Clean, domain-agnostic PWA-first Expo+Tamagui+Supabase+Bun starter with a 47-pattern architecture constitution, 12-audit pre-commit gate, and a light-default MobilePremium design system.",
   "scripts": {
-    "start": "bun run scripts/sync-barrel-shims.ts && expo start",
-    "web": "bun run scripts/sync-barrel-shims.ts && expo start --web",
+    "start": "EXPO_PUBLIC_DEV_SURFACES=1 bun run scripts/sync-barrel-shims.ts && expo start",
+    "web": "EXPO_PUBLIC_DEV_SURFACES=1 bun run scripts/sync-barrel-shims.ts && expo start --web",
     "vercel-build": "bun run scripts/sync-barrel-shims.ts && TAMAGUI_TARGET=web EXPO_NO_DOTENV=1 expo export --platform web --output-dir dist --max-workers=1 && bun run scripts/inject-critical-web.ts",
     "lint": "eslint .",
     "lint:structure": "bun run scripts/audit-barrels.ts && bun run scripts/audit-data-layer.ts && bun run scripts/audit-state.ts && bun run scripts/audit-security.ts && bun run scripts/audit-logging-errors.ts && bun run scripts/audit-ui-theme.ts && bun run scripts/audit-component-quality.ts && bun run scripts/audit-testing-types.ts && bun run scripts/audit-pattern-compliance.ts && bun run scripts/audit-runtime-resilience.ts && bun run scripts/audit-screen-body.ts && bun run scripts/audit-mobile-content-width.ts && eslint . --config eslint.structure.config.js --quiet",

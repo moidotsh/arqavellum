@@ -2,13 +2,19 @@
 // Root layout. Provider stack + PWA bootstrap.
 //
 // Provider stack (outer → inner):
-//   TamaguiProvider(defaultTheme=colorScheme) → ThemeProvider →
-//   SafeAreaProvider → AuthProvider → ToastProvider → QueryProvider → Stack
+//   ThemeProvider → SafeAreaProvider → RootGestureProvider →
+//   AuthProvider → ToastProvider → QueryProvider → Stack
 //   + <ToastContainer/> (sibling of Stack, picks up toasts from anywhere)
 //
-// ThemeProvider sits INSIDE TamaguiProvider so the dynamic `defaultTheme`
-// (Tamagui's own light/dark) tracks the resolved colorScheme. Both stay
-// in sync — provider order is load-bearing.
+// No TamaguiProvider by default: the starter ships zero Tamagui
+// components (MobilePremium is hand-rolled RN and themes itself through
+// ThemeProvider), and the 'tamagui' barrel re-exports the whole
+// component universe (~0.8MB) behind the provider. Icons — the one real
+// Tamagui dependency — run provider-less via shims/helpers-icon.js
+// (passthrough themed(); every call site passes explicit color/size).
+// Wanting Tamagui back: mount the provider + config here (~10 lines)
+// AND remove the @tamagui/helpers-icon metro redirect — see the
+// pre-commit section and shims/helpers-icon.js.
 //
 // Three web-only useEffect blocks are load-bearing:
 //
@@ -31,10 +37,8 @@
 
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
-import { TamaguiProvider } from 'tamagui';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import config from '../tamagui.config';
+import { RootGestureProvider } from '../components/composed';
 import { APP_DISPLAY_NAME } from '../constants';
 import { isWeb, hasDocument, hasWindow } from '../utils/platform';
 import { logger } from '../utils';
@@ -161,9 +165,9 @@ function RootShell() {
   }, [colorScheme, colors]);
 
   return (
-    <TamaguiProvider config={config} defaultTheme={colorScheme}>
+    <>
       <SafeAreaProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
+        <RootGestureProvider>
           <AuthProvider>
             <AuthGuard>
               <ToastProvider>
@@ -186,9 +190,9 @@ function RootShell() {
               </ToastProvider>
             </AuthGuard>
           </AuthProvider>
-        </GestureHandlerRootView>
+        </RootGestureProvider>
       </SafeAreaProvider>
-    </TamaguiProvider>
+    </>
   );
 }
 

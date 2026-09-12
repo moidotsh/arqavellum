@@ -50,16 +50,17 @@ if (!existsSync(LUCIDE_SHIM) || !existsSync(DATE_FNS_SHIM)) {
 const BARREL_SHIMS = {
   '@tamagui/lucide-icons-2': LUCIDE_SHIM,
   'date-fns': DATE_FNS_SHIM,
+  // Not a barrel — a capability stub: themed() throws provider-less, and
+  // the starter mounts no TamaguiProvider (see shims/helpers-icon.js).
+  '@tamagui/helpers-icon': path.resolve(__dirname, 'shims/helpers-icon.js'),
 };
 // Dev surfaces (the design-system showcase under app/dev/) resolve to an
-// empty stub in production exports: the showcase is the visual source of
-// truth in dev, but its module graph must not ship in a consumer's
-// bundle. ON whenever NODE_ENV !== 'production' (expo start), or when a
-// production build sets EXPO_PUBLIC_DEV_SURFACES=1 explicitly.
+// empty stub in every export, deterministically — NODE_ENV at
+// metro-config load time is NOT reliable across invocation styles. The
+// dev scripts opt in via EXPO_PUBLIC_DEV_SURFACES=1 (see package.json).
 const DEV_DIR = path.resolve(__dirname, 'app/dev');
 const DEV_ROUTE_STUB = path.resolve(__dirname, 'shims/dev-route-stub.tsx');
-const devSurfacesEnabled =
-  process.env.NODE_ENV !== 'production' || process.env.EXPO_PUBLIC_DEV_SURFACES === '1';
+const devSurfacesEnabled = process.env.EXPO_PUBLIC_DEV_SURFACES === '1';
 const defaultResolveRequest = config.resolver.resolveRequest;
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   if (BARREL_SHIMS[moduleName]) {
