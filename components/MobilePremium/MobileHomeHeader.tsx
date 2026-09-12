@@ -49,10 +49,11 @@ export interface MobileHomeHeaderProps {
    * plate runs the panel's full height underneath) and bleed the type to
    * the background color — the real header persisting in place over the
    * plate, never a duplicate. The on-plate masthead is the poster stamp:
-   * brand + trigger only — the subtitle and the right-side chrome wait
-   * below the drawer (nothing may straddle the plate's edge or cut
-   * across its rule). Web crossfades the color on the drawer's out-cubic
-   * so the bleed reads as the plate arriving.
+   * brand + trigger only — the subtitle and the right-side chrome go
+   * INVISIBLE (never unmounted: the page behind the drawer must not
+   * shift) and untouchable, so nothing straddles the plate's edge or
+   * cuts across its rule. Web crossfades the color on the drawer's
+   * out-cubic so the bleed reads as the plate arriving.
    */
   onPlate?: boolean;
   /** Test ID. */
@@ -123,23 +124,26 @@ export function MobileHomeHeader({
           </Text>
         )}
         <View style={styles.flexSpacer} />
-        {/* Right-side chrome joins the subtitle in waiting below the
-            drawer — a lifted element would straddle the plate's edge and
-            cut across its rule. */}
-        {rightAction && !onPlate ? (
-          <View style={styles.slot}>{rightAction}</View>
-        ) : null}
+        {/* Right-side chrome goes invisible, not away — unmounting would
+            shift the page behind the drawer. Hidden also means
+            untouchable: no ghost tap targets over the plate. */}
+        <View
+          style={[styles.slot, onPlate ? styles.hidden : null]}
+          pointerEvents={onPlate ? 'none' : 'auto'}
+        >
+          {rightAction}
+        </View>
       </View>
-      {/* The on-plate masthead is the poster stamp — brand + trigger
-          only; the page tagline waits below the drawer. */}
-      {subtitle && !onPlate ? (
+      {/* The subtitle holds its space on the plate (invisible — the page
+          behind the drawer must not shift) and returns with the page. */}
+      {subtitle ? (
         <Text
           style={[
             theme.typography.mobileSubtitle,
             {
               color: onPlate ? colors.background : colors.textSecondary,
               marginTop: 4,
-              opacity: onPlate ? 0.72 : 1,
+              opacity: onPlate ? 0 : 1,
             },
             colorBleed,
           ]}
@@ -165,6 +169,10 @@ const styles = StyleSheet.create({
   // zIndex 100) so the persisting header reads over the ink plate.
   onPlate: {
     zIndex: 110,
+  },
+  // Space-holding invisible (never unmounted — layout must not shift).
+  hidden: {
+    opacity: 0,
   },
   row: {
     flexDirection: 'row',
