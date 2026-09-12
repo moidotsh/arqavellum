@@ -49,9 +49,10 @@ export interface MobileHomeHeaderProps {
    * plate runs the panel's full height underneath) and bleed the type to
    * the background color — the real header persisting in place over the
    * plate, never a duplicate. The on-plate masthead is the poster stamp:
-   * brand + trigger only, the subtitle waits below the drawer. Web
-   * crossfades the color on the drawer's out-cubic so the bleed reads
-   * as the plate arriving.
+   * brand + trigger only — the subtitle and the right-side chrome wait
+   * below the drawer (nothing may straddle the plate's edge or cut
+   * across its rule). Web crossfades the color on the drawer's out-cubic
+   * so the bleed reads as the plate arriving.
    */
   onPlate?: boolean;
   /** Test ID. */
@@ -122,7 +123,12 @@ export function MobileHomeHeader({
           </Text>
         )}
         <View style={styles.flexSpacer} />
-        {rightAction ? <View style={styles.slot}>{rightAction}</View> : null}
+        {/* Right-side chrome joins the subtitle in waiting below the
+            drawer — a lifted element would straddle the plate's edge and
+            cut across its rule. */}
+        {rightAction && !onPlate ? (
+          <View style={styles.slot}>{rightAction}</View>
+        ) : null}
       </View>
       {/* The on-plate masthead is the poster stamp — brand + trigger
           only; the page tagline waits below the drawer. */}
