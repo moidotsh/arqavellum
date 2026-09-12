@@ -41,16 +41,18 @@
 // Surface language (theme.drawer.style — the override point beside
 // shapes/atmosphere):
 //   • 'sheet' (default): the glass-scrim iOS sheet described above.
-//   • 'ink': the inverted plate — InkPanel body (text-color plate +
-//     print grain) below the cutout when brandPersistence='cutout' (the
-//     masthead persists in place; the plate slides under it), or under
-//     the header slot in 'slideout' mode. The brand rule replaces the
-//     hairline and runs the panel's FULL height — cap-to-body
-//     continuity in cutout, the platen edge in slideout. Flat dim
-//     scrim (no blur — the glass dialect dies; pass no glass cap), and
-//     the out-cubic slide curve so the motion matches ink-transition
-//     consumers (route curtains, boot plates). Item labels invert to
-//     the background color; the active row keeps the brand strip.
+//   • 'ink': the inverted plate — InkPanel (text-color plate + print
+//     grain) running the panel's FULL height. In cutout mode the plate
+//     owns its cap: the masthead rides ON it (MobileHomeHeader's
+//     onPlate stacks the real header above the overlay, its type
+//     bleeding to the background color); in 'slideout' mode it sits
+//     under the header slot. The brand rule replaces the hairline and
+//     runs the panel's FULL height — cap-to-body continuity in cutout,
+//     the platen edge in slideout. Flat dim scrim (no blur — the glass
+//     dialect dies; pass no glass cap), and the out-cubic slide curve
+//     so the motion matches ink-transition consumers (route curtains,
+//     boot plates). Item labels invert to the background color; the
+//     active row keeps the brand strip.
 
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -394,16 +396,13 @@ export function MobileNavDrawer({
             starts below the cap so the brand area stays clear. In slideout
             mode it fills the whole panel. */}
         {ink ? (
-          // The ink surface: text-color plate + grain. In cutout mode it
-          // starts below the transparent band (the masthead persists);
-          // the rule lives at the panel level for full-height continuity.
-          <InkPanel
-            rule={false}
-            style={[
-              styles.panelBackground,
-              isCutout ? { top: effectiveCutoutHeight } : null,
-            ]}
-          />
+          // The ink surface: text-color plate + grain running the panel's
+          // FULL height. In cutout mode the plate owns its cap — the
+          // masthead rides ON it (MobileHomeHeader `onPlate` stacks the
+          // real header above the overlay, its type bleeding to the
+          // background color), so the material arrives by geometry with
+          // the slide and the rule reads cap-to-body with no seam.
+          <InkPanel rule={false} style={styles.panelBackground} />
         ) : (
           <View
             pointerEvents="none"

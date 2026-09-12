@@ -15,10 +15,11 @@
 // pattern composes without the consumer hand-positioning anything.
 
 import React from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { theme, MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
+import { isWeb } from '../../utils';
 
 export interface MobileHomeHeaderProps {
   /** Brand text (the app name). Required. */
@@ -42,6 +43,15 @@ export interface MobileHomeHeaderProps {
    * row stacks above it via DOM order.
    */
   drawerGlassCap?: React.ReactNode;
+  /**
+   * The masthead rides the ink plate. While the cutout ink drawer is
+   * open, pass `onPlate` to stack this row ABOVE the drawer overlay (the
+   * plate runs the panel's full height underneath) and bleed the type to
+   * the background color — the real header persisting in place over the
+   * plate, never a duplicate. Web crossfades the color on the drawer's
+   * out-cubic so the bleed reads as the plate arriving.
+   */
+  onPlate?: boolean;
   /** Test ID. */
   testID?: string;
   /** Outer style pass-through. */
@@ -60,16 +70,29 @@ export function MobileHomeHeader({
   rightAction,
   drawerGlassCap,
   onBrandPress,
+  onPlate,
   testID,
   style,
 }: MobileHomeHeaderProps) {
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
+  const brandColor = onPlate ? colors.background : colors.text;
+  // The ink drawer's out-cubic — the type bleeds on the slide's curve.
+  // Web-only CSS; RN's TextStyle doesn't declare it (same cast the boot
+  // gradients and InkPanel grain use).
+  const colorBleed = (isWeb
+    ? { transition: 'color 300ms cubic-bezier(0.215, 0.61, 0.355, 1)' }
+    : null) as unknown as TextStyle;
 
   return (
     <View
       testID={testID}
-      style={[styles.container, { paddingTop: insets.top + 8 }, style]}
+      style={[
+        styles.container,
+        { paddingTop: insets.top + 8 },
+        onPlate ? styles.onPlate : null,
+        style,
+      ]}
     >
       {drawerGlassCap ? drawerGlassCap : null}
       <View style={styles.row}>
@@ -82,7 +105,7 @@ export function MobileHomeHeader({
             accessibilityLabel={brand}
           >
             <Text
-              style={[theme.typography.mobileTitle, { color: colors.text }]}
+              style={[theme.typography.mobileTitle, { color: brandColor }, colorBleed]}
               numberOfLines={1}
             >
               {brand}
@@ -90,7 +113,7 @@ export function MobileHomeHeader({
           </Pressable>
         ) : (
           <Text
-            style={[theme.typography.mobileTitle, { color: colors.text }]}
+            style={[theme.typography.mobileTitle, { color: brandColor }, colorBleed]}
             numberOfLines={1}
           >
             {brand}
@@ -103,7 +126,12 @@ export function MobileHomeHeader({
         <Text
           style={[
             theme.typography.mobileSubtitle,
-            { color: colors.textSecondary, marginTop: 4 },
+            {
+              color: onPlate ? colors.background : colors.textSecondary,
+              marginTop: 4,
+              opacity: onPlate ? 0.72 : 1,
+            },
+            colorBleed,
           ]}
           numberOfLines={1}
         >
@@ -122,6 +150,11 @@ const styles = StyleSheet.create({
     position: 'relative',
     paddingHorizontal: 20,
     paddingBottom: 8,
+  },
+  // On-plate masthead: above the drawer overlay (its scrim/panel ride at
+  // zIndex 100) so the persisting header reads over the ink plate.
+  onPlate: {
+    zIndex: 110,
   },
   row: {
     flexDirection: 'row',
