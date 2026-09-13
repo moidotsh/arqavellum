@@ -63,7 +63,7 @@ export default function SettingsScreen() {
           />
         </MobileSurface>
 
-        <MobileSectionEyebrow>Appearance</MobileSectionEyebrow>
+        <MobileSectionEyebrow flush={false}>Appearance</MobileSectionEyebrow>
         <MobileSurface padding={0}>
           {PREFERENCE_ORDER.map((pref, i) => {
             const isActive = preference === pref;
@@ -108,7 +108,7 @@ export default function SettingsScreen() {
           })}
         </MobileSurface>
 
-        <MobileSectionEyebrow>Reference</MobileSectionEyebrow>
+        <MobileSectionEyebrow flush={false}>Reference</MobileSectionEyebrow>
         <MobileSurface padding={0}>
           <MobileSettingsRow
             label="Design System Showcase"
