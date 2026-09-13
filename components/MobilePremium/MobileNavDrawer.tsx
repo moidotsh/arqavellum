@@ -109,6 +109,13 @@ export interface MobileNavDrawerProps {
   header?: React.ReactNode;
   /** Optional element rendered at the bottom (sign-out slot, etc.). */
   footer?: React.ReactNode;
+  /**
+   * Optional element rendered ABOVE the item list (just under the
+   * header / cutout area). Consumer-supplied account identity, context
+   * strips, etc. — the mechanism carries none of it. Sits outside the
+   * items' scroll list; keep it compact.
+   */
+  topContent?: React.ReactNode;
   /** Atmosphere surface for the drawer body (default: 'analytics'). */
   atmosphere?: MobileAtmosphereSurface;
   /**
@@ -209,6 +216,7 @@ export function MobileNavDrawer({
   activePathname,
   header,
   footer,
+  topContent,
   atmosphere = 'analytics',
   atmosphereShowOrbs,
   brandPersistence = 'slideout',
@@ -442,6 +450,8 @@ export function MobileNavDrawer({
             <View style={{ height: insets.top + 12 }} />
           )}
 
+          {topContent ? <View style={styles.topContent}>{topContent}</View> : null}
+
           <View style={styles.items}>
             {items.map((item) => (
               <DrawerItem
@@ -607,6 +617,10 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 16,
     paddingBottom: 12,
+  },
+  topContent: {
+    paddingHorizontal: 12,
+    paddingBottom: 4,
   },
   items: {
     flex: 1,
