@@ -25,6 +25,12 @@
 // those scanners and hands them to the home screen; the visit is
 // classified 'qr' here.
 //
+// Landing-path SET, not singleton: a consumer forking scan
+// attribution (per-sticker language, per-campaign codes) coins
+// additional 17-byte paths, adds stub routes for them, and EXTENDS
+// QR_LANDING_PATHS below — retired paths stay in the array (and keep
+// their routes) so codes already printed in the wild keep classifying.
+//
 // Native: every entry point no-ops (no window). Dev: the script is
 // never injected (it 404s off-Vercel and only reports in production);
 // queued events go nowhere, harmless.
@@ -54,8 +60,16 @@ const INSIGHTS_SCRIPT_SRC = '/_vercel/insights/script.js';
 const SPEED_INSIGHTS_SCRIPT_SRC = '/_vercel/speed-insights/script.js';
 const SPEED_INSIGHTS_SDK_VERSION = '2.0.0';
 
-/** The printed-QR landing path — see the header before ever changing it. */
-export const QR_LANDING_PATH = '/qr';
+/**
+ * The printed-QR landing paths — every entry classifies a scan as
+ * 'qr'. The starter ships one; consumers forking attribution extend
+ * the array (each path still ≤ 17 bytes, still routed) and never
+ * remove a legacy entry. See the header before ever changing this.
+ */
+export const QR_LANDING_PATHS: readonly string[] = ['/qr'];
+
+/** The primary printed-QR landing path (the first entry of the set). */
+export const QR_LANDING_PATH = QR_LANDING_PATHS[0];
 
 const VISIT_REPORTED_KEY = 'arqavellum-visit-source';
 
@@ -81,7 +95,7 @@ export interface VisitSourceFacts {
  */
 export function classifyVisitSource(facts: VisitSourceFacts): VisitChannel {
   const path = facts.path.replace(/\/+$/, '');
-  if (path === QR_LANDING_PATH) return 'qr';
+  if (QR_LANDING_PATHS.includes(path)) return 'qr';
   if (facts.standalone) return 'pwa';
   if (!facts.referrer) return 'direct';
   try {

@@ -8,6 +8,8 @@ import {
   visitEventName,
   reportVisitSource,
   initWebAnalytics,
+  QR_LANDING_PATHS,
+  QR_LANDING_PATH,
   type VisitSourceFacts,
 } from '../../utils/webAnalytics';
 
@@ -23,6 +25,16 @@ describe('classifyVisitSource', () => {
   it('a /qr landing (trailing slash tolerated) is a printed-code scan', () => {
     expect(classifyVisitSource(facts({ path: '/qr' }))).toBe('qr');
     expect(classifyVisitSource(facts({ path: '/qr/' }))).toBe('qr');
+  });
+
+  it('the landing-path set is the classifier — every entry classifies, and retired paths stay', () => {
+    // The starter ships one entry; the contract is that consumers
+    // EXTEND the array (never remove — printed codes stay in the wild).
+    expect(QR_LANDING_PATHS).toContain('/qr');
+    expect(QR_LANDING_PATH).toBe('/qr');
+    for (const path of QR_LANDING_PATHS) {
+      expect(classifyVisitSource(facts({ path }))).toBe('qr');
+    }
   });
 
   it('standalone launches are pwa — they carry no referrer', () => {
