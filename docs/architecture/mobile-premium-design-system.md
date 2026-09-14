@@ -717,7 +717,7 @@ Surface that forms the logical announce unit), not at every leaf.
 
 ## 10. Audit compliance notes
 
-The pre-commit gate enforces 12 structural audits + `tsc --noEmit` +
+The pre-commit gate enforces 13 structural audits + `tsc --noEmit` +
 two structural eslint rules (`S6`, `S8`). Full reference in
 `CLAUDE.md` → "Pre-commit checks." The audits that bite most often
 when writing MobilePremium work:

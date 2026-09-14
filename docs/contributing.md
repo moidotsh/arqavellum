@@ -39,7 +39,7 @@ When unsure, default to consumer-side. Promoting a consumer-specific change into
 
 ## Evolving the audit gate
 
-The 12-audit gate is the load-bearing enforcement of the constitution. Evolve it deliberately:
+The 13-audit gate is the load-bearing enforcement of the constitution. Evolve it deliberately:
 
 1. **New audit script.** Drops into `scripts/audit-*.ts`. Wire into `.husky/pre-commit` (in pre-commit order — read the existing order to find the right slot) AND `package.json` → `lint:structure`. Update `CLAUDE.md` → "The 12 audits" table in the same change. If the audit corresponds to a new S/C/D/SE/T/R code, also update `ARCHITECTURE.md` with the definition.
 

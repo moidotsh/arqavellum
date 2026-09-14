@@ -24,7 +24,7 @@
 | S17 | Date Helpers | System |
 | S18 | Tamagui Type Augmentation | System |
 | S19 | Package Manager — Bun | System |
-| S20 | Pre-commit Hooks (12 audits) | System |
+| S20 | Pre-commit Hooks (13 audits) | System |
 | C1 | Navigation System | Component |
 | C2 | Modal System | Component |
 | C3 | Responsive Architecture | Component |
@@ -165,9 +165,9 @@
 - **Rule:** Bun everywhere. Commit `bun.lock`. Never commit `package-lock.json` or `yarn.lock`.
 - **Audit:** `audit-pattern-compliance.ts` blocks both alternative lockfiles.
 
-### S20. Pre-commit Hooks (12 audits)
-- **Rule:** `.husky/pre-commit` runs `bun run lint:structure && bunx tsc --noEmit`. The 12 audits (see CLAUDE.md → Pre-commit checks) are the load-bearing enforcement layer.
-- **Audit codes vs pattern codes:** the 12 audits include SB1 and SB2 — structural audits for the mobile content-width column that follow the SB naming precedent (audit codes and constitution pattern codes are separate namespaces; SB1 already established this).
+### S20. Pre-commit Hooks (13 audits)
+- **Rule:** `.husky/pre-commit` runs `bun run lint:structure && bunx tsc --noEmit`. The 13 audits (see CLAUDE.md → Pre-commit checks) are the load-bearing enforcement layer.
+- **Audit codes vs pattern codes:** the 13 audits include SB1 and SB2 — structural audits for the mobile content-width column that follow the SB naming precedent (audit codes and constitution pattern codes are separate namespaces; SB1 already established this).
 - **Escape hatches:** `// <check>-exempt` for one-off suppressions with justification; `git commit --no-verify` for genuine emergencies only.
 
 ---
@@ -356,4 +356,4 @@ The shell DOES ship:
 - The auth flow (`app/login.tsx`, `app/register.tsx`, `app/forgot-password.tsx`)
 - The settings screen (`app/settings.tsx`)
 - The design-system showcase (`app/dev/premium.tsx`)
-- The 12-audit pre-commit gate (`scripts/audit-*.ts` + `.husky/pre-commit`)
+- The 13-audit pre-commit gate (`scripts/audit-*.ts` + `.husky/pre-commit`)

@@ -1,6 +1,6 @@
 # Arqavellum
 
-> Arqavellum is a clean, domain-agnostic PWA-first Expo+Tamagui+Supabase+Bun starter repo. It ships a 47-pattern constitution, 12-audit pre-commit gate, repository pattern, Zustand + React Query, and barrel exports — retuned for **light-default, dark-opt-in** + **PWA-first (native export is consumer extension)** + **email/password auth**. Consumers clone arqavellum, drop in their domain (products, sessions, records — whatever), override the `brand` color slot, ship.
+> Arqavellum is a clean, domain-agnostic PWA-first Expo+Tamagui+Supabase+Bun starter repo. It ships a 47-pattern constitution, 13-audit pre-commit gate, repository pattern, Zustand + React Query, and barrel exports — retuned for **light-default, dark-opt-in** + **PWA-first (native export is consumer extension)** + **email/password auth**. Consumers clone arqavellum, drop in their domain (products, sessions, records — whatever), override the `brand` color slot, ship.
 
 This file is the repo-level operating context for Claude Code sessions at the arqavellum root. It auto-loads. Read the relevant section before landing any arqavellum change.
 
@@ -25,7 +25,7 @@ Load-bearing rules that aren't obvious from the code:
 
 ## Pre-commit checks (read before committing)
 
-Arqavellum has 12 structural audits + `tsc --noEmit` + structural ESLint that run on every `git commit` via `.husky/pre-commit`. Any failure blocks the commit. Run them on the working tree **before** staging:
+Arqavellum has 13 structural audits + `tsc --noEmit` + structural ESLint that run on every `git commit` via `.husky/pre-commit`. Any failure blocks the commit. Run them on the working tree **before** staging:
 
     bun run lint:structure && bunx tsc --noEmit
 
@@ -38,7 +38,7 @@ Arqavellum has 12 structural audits + `tsc --noEmit` + structural ESLint that ru
 - **`// <check>-exempt`** — suppresses one violation within a 300-char lookback (e.g. `// s7-exempt`, `// c1-exempt`). Use sparingly with a justification; every rule exists because violations have bitten.
 - **`git commit --no-verify`** — skips the hook entirely. Reserve for genuine emergencies.
 
-### The 12 audits, in pre-commit order
+### The 13 audits, in pre-commit order
 
 | # | Script | Codes | Catches |
 |---|--------|-------|---------|
@@ -54,6 +54,7 @@ Arqavellum has 12 structural audits + `tsc --noEmit` + structural ESLint that ru
 | 10 | `audit-runtime-resilience.ts` | `[R4a]`, `[R4b]`, `[R1]` | `setInterval` without `clearInterval`; `addEventListener` without `removeEventListener`; async `useEffect` that awaits then setState/navigates without a cancellation guard. |
 | 11 | `audit-screen-body.ts` | `[SB1]` | Full-screen route in `app/` (excluding `_layout.tsx`, `+not-found.tsx`, `dev/`) missing `SCREEN_BODY_STYLE` (composing `ScreenScaffold` from `components/composed/` satisfies SB1 by delegation — the scaffold applies the policy centrally). Suppress with `// sb1-exempt`. Skipped when `CONTENT_WIDTH_MODE = 'fluid'`. |
 | 12 | `audit-mobile-content-width.ts` | `[SB2-portal]`, `[SB2-magic-number]`, `[SB2-surface]` | Portal component (imports RN `Modal` under `components/`) missing `...MOBILE_CONTENT_WIDTH_STYLE` / `...MOBILE_DIALOG_WIDTH_STYLE` spread on its panel style entry; literal numeric `maxWidth` under `components/`; `MobileSurface` re-asserting the content-width policy (the surface fills its container — the column belongs to the scaffold body or the portal panel). Suppress with `// sb2-exempt`. Skipped when `CONTENT_WIDTH_MODE = 'fluid'`. |
+| 13 | `audit-shim-sync.ts` | `[shim-sync]`, `[redirect]`, `[dead-shim]` (warn) | A named import of a shimmed barrel specifier (`@tamagui/lucide-icons-2`, `date-fns`) the shim doesn't re-export — silently `undefined` at runtime, invisible to tsc AND metro; the metro.config redirect going missing (reverts to full barrels); stale shim entries (warn-only dead bytes). Neither the compiler nor the build catches the first case — only this audit does. |
 
 Structural ESLint (`eslint.structure.config.js`) enforces two more:
 - **`[S6]`** — `{expr && <Component/>}` render leak.
@@ -186,7 +187,7 @@ This is the contract that prevents doc drift. For every change you land in code,
 | Change you're making | Update this doc | When |
 |---|---|---|
 | New pattern (S/C/D/SE/T/R code) | `ARCHITECTURE.md` (definition + rationale) + new `scripts/audit-*.ts` if statically-checkable + this file's pre-commit table. | Always. |
-| New `scripts/audit-*.ts` | This file's pre-commit table (the 12-audit grid). Run order matters — place it correctly. | Always. |
+| New `scripts/audit-*.ts` | This file's pre-commit table (the 13-audit grid). Run order matters — place it correctly. | Always. |
 | Audit exemption / regex tweak | `scripts/audit-*.ts` (canonical source). This file is the cheatsheet. | Always. |
 | Visual token change (color, spacing, typography) | `constants/theme.ts` (canonical source) + `docs/architecture/mobile-premium-design-system.md` if it affects the design system. | Always. |
 | New MobilePremium primitive | `docs/architecture/mobile-premium-design-system.md` (component inventory) + `app/dev/premium.tsx` (add to the showcase — load-bearing, the showcase IS the visual source of truth). | Always. |
