@@ -657,6 +657,11 @@ Surface that forms the logical announce unit), not at every leaf.
 
 - **Composite card labels** — the card-level `Pressable` gets a single
   `accessibilityLabel` that packs title + status + meta.
+- **Heading semantics ship in the kit** — `MobileHeader`'s nav title and
+  `MobileSectionEyebrow` declare `accessibilityRole="header"` themselves:
+  eyebrows are the section headings of every screen, so screen-reader users
+  jump eyebrow-to-eyebrow with no per-screen wiring. Don't add competing
+  header roles at the leaf level.
 - **Hero groups** — wrap the icon-chip + title + subtitle row in a
   `View` with `accessible={true}` + `accessibilityRole="header"`.
 - **List landmarks** — the grid / stack root gets
@@ -666,6 +671,10 @@ Surface that forms the logical announce unit), not at every leaf.
 - **Invisible tap zones** — overlay Pressables that exist only to
   capture taps MUST carry `accessibilityRole="button"` +
   `accessibilityLabel` + `accessibilityHint`.
+- **Transient messages announce themselves** — `Toast` items carry
+  `accessibilityLiveRegion="polite"`; `MobileAnnouncementBar` and
+  `OfflineBanner` already did. A consumer's custom transient surfaces
+  follow the same pattern instead of stealing focus.
 
 ---
 
