@@ -9,6 +9,18 @@ export { inkSurface, INK_GRAIN_BACKGROUND } from './grain';
 export { RouteCurtain } from './RouteCurtain';
 export { LangToggle } from './LangToggle';
 export type { LangToggleProps } from './LangToggle';
+export {
+  AbsorbProvider,
+  AbsorbTopBar,
+  AbsorbSpacer,
+  AbsorbStation,
+  AbsorbChromeNeutral,
+  useAbsorbFg,
+  useAbsorbBar,
+  compositeWash,
+  dimmedOver,
+} from './MobileAbsorbBar';
+export type { AbsorbFillLayer, AbsorbTone } from './MobileAbsorbBar';
 export type { MobileAtmosphereProps, MobileAtmosphereSurface } from './MobileAtmosphere';
 
 export { MobileSurface } from './MobileSurface';

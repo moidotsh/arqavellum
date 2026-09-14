@@ -68,6 +68,14 @@ import { SegmentedProgress } from './SegmentedProgress';
 import { OfflineBanner } from './OfflineBanner';
 import { MobileAnnouncementBar } from './MobileAnnouncementBar';
 import { MobileFootnote } from './MobileFootnote';
+import {
+  AbsorbProvider,
+  AbsorbTopBar,
+  AbsorbSpacer,
+  AbsorbStation,
+  useAbsorbBar,
+  compositeWash,
+} from './MobileAbsorbBar';
 import { CarouselTutorial } from './CarouselTutorial';
 import { Wizard } from './Wizard';
 import { ProgressRing } from './ProgressRing';
@@ -1244,6 +1252,11 @@ export function Showcase() {
         </View>
 
         <View style={styles.section}>
+          <MobileSectionEyebrow>Absorbing top bar (web motion)</MobileSectionEyebrow>
+          <AbsorbBarDemo />
+        </View>
+
+        <View style={styles.section}>
           <MobileSectionEyebrow>Carousel tutorial (NOT stories)</MobileSectionEyebrow>
           <MobileSurface padding={0}>
             <CarouselTutorial
@@ -1520,6 +1533,88 @@ export function Showcase() {
   );
 }
 
+
+// ── The absorbing top bar demo ──────────────────────────────────────────
+// A scroll container with coloured stations rising into a pinned strip.
+// Web (dev) plays the liquid; jsdom/native render the inert static bar —
+// the engine gates itself, the demo needs no environment check.
+
+const ABSORB_DEMO_BAR_H = 56;
+
+function AbsorbDemoChrome() {
+  const { colors } = useAppTheme();
+  const absorb = useAbsorbBar();
+  useEffect(() => {
+    absorb.reportBarHeight(ABSORB_DEMO_BAR_H);
+    // reportBarHeight is stable; the demo bar height is a constant.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // Simplified host: the title follows the tone's readable companion.
+  // A production host renders the chrome TWICE — a neutral base copy in
+  // AbsorbChromeNeutral plus a contrast copy clipped to the fill's own
+  // wave (see the primitive's header) — the demo keeps the single-copy read.
+  return (
+    <View style={styles.absorbChrome} pointerEvents="none">
+      <Text style={[styles.absorbChromeTitle, { color: absorb.tone.fg ?? colors.text }]}>
+        The bar drinks the page
+      </Text>
+    </View>
+  );
+}
+
+function AbsorbBarDemo() {
+  const { colors } = useAppTheme();
+  return (
+    <View style={styles.absorbDemo}>
+      <AbsorbProvider>
+        <ScrollView
+          style={styles.absorbScroll}
+          contentContainerStyle={styles.absorbContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <AbsorbSpacer />
+          <AbsorbStation color={compositeWash(colors.brandMuted, colors.background)}>
+            <View style={[styles.absorbCard, { backgroundColor: colors.brandMuted }]}>
+              <Text style={[styles.absorbCardText, { color: colors.text }]}>
+                An announcement wash — the strip's tint, composited over the
+                page colour (what the bar absorbs is the colour the card READS,
+                not the raw token).
+              </Text>
+            </View>
+          </AbsorbStation>
+          <AbsorbStation color={colors.text}>
+            <View style={[styles.absorbCard, { backgroundColor: colors.text }]}>
+              <Text style={[styles.absorbCardText, { color: colors.background }]}>
+                An ink plate — the fill owns the row and the chrome flips to its
+                readable companion as the ripple splits the letters.
+              </Text>
+            </View>
+          </AbsorbStation>
+          <AbsorbStation color={colors.brand}>
+            <View style={[styles.absorbCard, { backgroundColor: colors.brand }]}>
+              <Text style={[styles.absorbCardText, { color: colors.textOnBrand }]}>
+                A brand card — docking corners square as the card submerges into
+                the pool, and restore as it leaves.
+              </Text>
+            </View>
+          </AbsorbStation>
+          <AbsorbStation color={colors.card}>
+            <View style={[styles.absorbCard, { backgroundColor: colors.card }]}>
+              <Text style={[styles.absorbCardText, { color: colors.text }]}>
+                A plain paper card — no station, no fill; scroll it through and
+                the strip returns to the page's paper.
+              </Text>
+            </View>
+          </AbsorbStation>
+          <View style={styles.absorbTail} />
+        </ScrollView>
+        <AbsorbTopBar />
+        <AbsorbDemoChrome />
+      </AbsorbProvider>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   bareCheckboxRow: {
     flexDirection: 'row',
@@ -1546,6 +1641,49 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 16,
     marginBottom: 4,
+  },
+  absorbDemo: {
+    position: 'relative',
+    height: 380,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  absorbScroll: {
+    flex: 1,
+  },
+  absorbContent: {
+    padding: 16,
+    gap: 12,
+  },
+  absorbCard: {
+    borderRadius: 12,
+    padding: 18,
+    minHeight: 96,
+    justifyContent: 'center',
+  },
+  absorbCardText: {
+    fontSize: 13,
+    lineHeight: 19,
+    fontWeight: '600',
+  },
+  absorbChrome: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 56,
+    zIndex: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  absorbChromeTitle: {
+    position: 'absolute',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  absorbTail: {
+    height: 120,
   },
   spacer: {
     height: 12,
