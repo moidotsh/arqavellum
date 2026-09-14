@@ -13,7 +13,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { createPortal } from 'react-dom';
 import { CheckCircle2, XCircle, AlertTriangle, Info, X } from '@tamagui/lucide-icons-2';
 import { useToast, type Toast as ToastType, useAppTheme } from '../../context';
-import { MOBILE_DIALOG_WIDTH_STYLE } from '../../constants';
+import { MOBILE_DIALOG_WIDTH_STYLE, theme } from '../../constants';
 
 const ToastIcon = ({ type }: { type: ToastType['type'] }) => {
   const { colors } = useAppTheme();
@@ -56,6 +56,7 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
 
   return (
     <View
+      accessibilityLiveRegion="polite"
       style={[
         styles.toast,
         {
@@ -137,7 +138,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-    borderRadius: 12,
+    // The shape family token — a consumer retuning `theme.shapes` retunes
+    // the toast with every other control, no component edit.
+    borderRadius: theme.shapes.control,
     borderWidth: 1,
     paddingLeft: 12,
     paddingRight: 8,

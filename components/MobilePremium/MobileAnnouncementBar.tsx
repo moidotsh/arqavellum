@@ -62,7 +62,7 @@ export function MobileAnnouncementBar({
       {onDismiss != null ? (
         <Pressable
           onPress={onDismiss}
-          hitSlop={8}
+          hitSlop={12}
           accessibilityRole="button"
           accessibilityLabel="Dismiss announcement"
           style={({ pressed }) => [styles.dismiss, { opacity: pressed ? 0.6 : 1 }]}

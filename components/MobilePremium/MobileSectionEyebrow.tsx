@@ -52,6 +52,10 @@ export function MobileSectionEyebrow({
   return (
     <Text
       testID={testID}
+      // The page's heading semantics: screens lead their sections with
+      // eyebrows and nothing else declares header roles, so screen-reader
+      // users jump eyebrow-to-eyebrow the way sighted users scan them.
+      accessibilityRole="header"
       style={[
         EYEBROW_STYLE,
         styles.eyebrow,
