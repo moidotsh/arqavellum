@@ -28,6 +28,10 @@ export interface HamburgerButtonProps {
    * `onPlate`) so the close X reads on the plate.
    */
   color?: string;
+  /** Localized a11y label for the open state (consumers shipping non-English). */
+  openLabel?: string;
+  /** Localized a11y label for the close state. */
+  closeLabel?: string;
   /** Test ID. */
   testID?: string;
 }
@@ -36,6 +40,8 @@ export function HamburgerButton({
   onPress,
   isOpen = false,
   color,
+  openLabel = 'Open menu',
+  closeLabel = 'Close menu',
   testID,
 }: HamburgerButtonProps) {
   const { colors } = useAppTheme();
@@ -52,7 +58,7 @@ export function HamburgerButton({
       hitSlop={12}
       testID={testID}
       accessibilityRole="button"
-      accessibilityLabel={isOpen ? 'Close menu' : 'Open menu'}
+      accessibilityLabel={isOpen ? closeLabel : openLabel}
       style={({ pressed }) => [styles.button, pressed ? { opacity: 0.6 } : null]}
     >
       <View style={styles.iconBox}>

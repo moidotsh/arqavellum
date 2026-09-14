@@ -81,6 +81,14 @@ export interface MobileInputProps {
   editable?: boolean;
   /** Make the whole input area trigger `onPress` (e.g. for non-editable selectors). */
   onPress?: () => void;
+  /**
+   * Multiline entry (longer pastes — descriptions, notes): the field
+   * grows to `numberOfLines` rows and scrolls internally once full.
+   * Single-line (default) keeps the fixed 54px control height.
+   */
+  multiline?: boolean;
+  /** Rows shown when `multiline` (default 4). */
+  numberOfLines?: number;
   /** Test ID. */
   testID?: string;
   /** Outer style pass-through. */
@@ -124,6 +132,8 @@ export function MobileInput({
   accentColor,
   editable = true,
   onPress,
+  multiline = false,
+  numberOfLines = 4,
   testID,
   style,
 }: MobileInputProps) {
@@ -184,6 +194,12 @@ export function MobileInput({
                 color: colors.text,
               },
               icon ? { paddingLeft: 50 } : null,
+              // Multiline trades the fixed control height for a row-count
+              // box (22px line + 32px padding — the same metrics the 54px
+              // single-line height is built from) and anchors type at the top.
+              multiline
+                ? { height: 22 * numberOfLines + 32, textAlignVertical: 'top' as const }
+                : null,
             ]}
             value={value}
             onChangeText={onChangeText}
@@ -199,6 +215,8 @@ export function MobileInput({
             autoFocus={autoFocus}
             maxLength={maxLength}
             editable={!!editable && !isClickable}
+            multiline={multiline}
+            numberOfLines={multiline ? numberOfLines : undefined}
             onFocus={() => setIsFocused(true)}
             onBlur={() => {
               setIsFocused(false);
