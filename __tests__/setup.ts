@@ -53,6 +53,7 @@ vi.mock('expo-router', () => ({
   useLocalSearchParams: vi.fn(() => ({})),
   useGlobalSearchParams: vi.fn(() => ({})),
   usePathname: vi.fn(() => '/'),
+  useSegments: vi.fn(() => ['/']),
   Link: 'Link',
   router: {
     push: vi.fn(),

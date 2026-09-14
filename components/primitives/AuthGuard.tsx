@@ -56,7 +56,19 @@ export function markNotFoundInactive(): void {
   notFoundActive = false;
 }
 
-export function AuthGuard({ children }: { children: React.ReactNode }) {
+export function AuthGuard({
+  children,
+  enabled = true,
+}: {
+  children: React.ReactNode;
+  /**
+   * False = open mode: unauthenticated visitors render every route
+   * (the starter default — see APP_LAYOUT.authGuard in
+   * constants/layout.ts). The signed-in-away-from-auth-screens
+   * redirect runs in both modes.
+   */
+  enabled?: boolean;
+}) {
   const status = useAuthStore((s) => s.status);
   const segments = useSegments();
   const root = segments[0];
@@ -67,12 +79,18 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       typeof root === 'string' && AUTH_SEGMENTS.has(root);
     const isPublic =
       typeof root === 'string' && PUBLIC_SEGMENTS.has(root);
-    if (status === 'unauthenticated' && !inAuthGroup && !isPublic && !notFoundActive) {
+    if (
+      enabled &&
+      status === 'unauthenticated' &&
+      !inAuthGroup &&
+      !isPublic &&
+      !notFoundActive
+    ) {
       replaceWithLogin();
     } else if (status === 'authenticated' && inAuthGroup) {
       replaceWithHome();
     }
-  }, [status, root]);
+  }, [status, root, enabled]);
 
   return <>{children}</>;
 }

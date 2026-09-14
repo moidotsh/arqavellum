@@ -39,7 +39,7 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootGestureProvider } from '../components/composed';
-import { APP_DISPLAY_NAME } from '../constants';
+import { APP_DISPLAY_NAME, APP_LAYOUT } from '../constants';
 import { isWeb, hasDocument, hasWindow } from '../utils/platform';
 import { logger } from '../utils';
 import { initWebAnalytics, initSpeedInsights, reportVisitSource } from '../utils/webAnalytics';
@@ -188,7 +188,7 @@ function RootShell() {
       <SafeAreaProvider>
         <RootGestureProvider>
           <AuthProvider>
-            <AuthGuard>
+            <AuthGuard enabled={APP_LAYOUT.authGuard}>
               <ToastProvider>
                 <QueryProvider>
                   <Stack
