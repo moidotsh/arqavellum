@@ -6,13 +6,22 @@
 // ScreenScaffold anyway (the centered column + atmosphere read is the
 // same as every other screen).
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 import { ScreenScaffold } from '../components/composed';
 import { EmptyState, MobileSurface } from '../components/MobilePremium';
 import { replaceWithHome } from '../navigation';
+import { markNotFoundActive, markNotFoundInactive } from '../components/primitives/AuthGuard';
 
+// The honest dead end renders for EVERY visitor — a mistyped URL shows
+// this page, never a login wall. The mount effect exempts the screen
+// from AuthGuard's redirect (child-before-parent effect ordering — the
+// same documented guarantee the /qr screen relies on).
 export default function NotFoundScreen() {
+  useEffect(() => {
+    markNotFoundActive();
+    return () => markNotFoundInactive();
+  }, []);
   return (
     <ScreenScaffold surface="analytics">
       <View style={{ flex: 1, justifyContent: 'center' }}>

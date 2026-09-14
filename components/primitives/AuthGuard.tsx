@@ -23,6 +23,15 @@
 // surface — gating it would block consumers from evaluating the kit
 // before wiring auth. Add a segment here only when the route carries
 // no user data and serves a tooling/docs purpose.
+//
+// THE NOT-FOUND EXEMPTION: an unknown URL renders the +not-found screen
+// (shell copy, nothing to protect), and it must render — a mistyped URL
+// gets the honest dead end, never a login wall. The not-found screen
+// marks itself active from its mount effect; the guard reads the flag
+// before redirecting. Ordering is the documented child-before-parent
+// effect rule (the same guarantee the /qr screen's report-before-root-
+// layout relies on): the child's mount/cleanup both run before this
+// guard's effect on their commits.
 
 import React, { useEffect } from 'react';
 import { useSegments } from 'expo-router';
@@ -33,6 +42,19 @@ const AUTH_SEGMENTS = new Set(['login', 'register', 'forgot-password']);
 // 'qr' is the printed-code redirect stub (invariant 13) — no data,
 // hands straight to home; an unsigned scanner must never see /login.
 const PUBLIC_SEGMENTS = new Set(['dev', 'qr']);
+
+// Set by the +not-found screen's mount effect; see the header note.
+let notFoundActive = false;
+
+/** Called by app/+not-found.tsx on mount. */
+export function markNotFoundActive(): void {
+  notFoundActive = true;
+}
+
+/** Called by app/+not-found.tsx's cleanup — the screen unmounted. */
+export function markNotFoundInactive(): void {
+  notFoundActive = false;
+}
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const status = useAuthStore((s) => s.status);
@@ -45,7 +67,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       typeof root === 'string' && AUTH_SEGMENTS.has(root);
     const isPublic =
       typeof root === 'string' && PUBLIC_SEGMENTS.has(root);
-    if (status === 'unauthenticated' && !inAuthGroup && !isPublic) {
+    if (status === 'unauthenticated' && !inAuthGroup && !isPublic && !notFoundActive) {
       replaceWithLogin();
     } else if (status === 'authenticated' && inAuthGroup) {
       replaceWithHome();
