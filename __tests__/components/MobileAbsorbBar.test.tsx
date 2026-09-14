@@ -10,6 +10,7 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Text } from 'react-native';
+import { ThemeProvider } from '../../context';
 import {
   AbsorbProvider,
   AbsorbTopBar,
@@ -22,13 +23,15 @@ import {
 describe('MobileAbsorbBar render shape', () => {
   it('mounts provider + bar + stations; children render; the engine stays dormant in DOM tests', () => {
     render(
-      <AbsorbProvider>
-        <AbsorbTopBar />
-        <AbsorbSpacer />
-        <AbsorbStation color="#123456">
-          <Text>station child</Text>
-        </AbsorbStation>
-      </AbsorbProvider>,
+      <ThemeProvider>
+        <AbsorbProvider>
+          <AbsorbTopBar />
+          <AbsorbSpacer />
+          <AbsorbStation color="#123456">
+            <Text>station child</Text>
+          </AbsorbStation>
+        </AbsorbProvider>
+      </ThemeProvider>,
     );
     expect(screen.getByText('station child')).toBeTruthy();
     // The inert strip mounts (testID on the bar itself).
