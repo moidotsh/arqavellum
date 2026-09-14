@@ -22,8 +22,38 @@ import type { TextStyle } from 'react-native';
 // (RN's TextStyle.fontWeight is a union of string literals, not `string`).
 type TypographyToken = Pick<
   TextStyle,
-  'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing'
+  'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing' | 'fontFamily'
 >;
+
+// ── Type families ───────────────────────────────────────────────────────
+// The optional display pair, hoisted so typography tokens can reference
+// it inside the same object literal. A consumer whose design language is
+// printed matter declares a display face (poster titles, hero figures,
+// totals) and/or a mono face (every figure that reads as ledger output —
+// prices, stock, dates, metrics, eyebrows); body/UI text stays the
+// platform sans for legibility. Both default to undefined — the starter
+// renders the platform sans everywhere, and every read below is a no-op
+// until a consumer fills them, so declaring the axis never moves the
+// default look.
+//
+// Self-hosting recipe (web): OFL/compatible files in `public/fonts/`
+// (woff2 first, TTF fallback), the @font-face block in an id'd <style>
+// in `index.html`, restored at runtime from `app/_layout.tsx` (static
+// export strips <head> styles), plus <link rel="preload" as="font"
+// crossorigin> lines — the build-time injector copies both into every
+// exported route. Native extension: load the same files through
+// expo-font instead of the <style> block.
+export interface TypeFaces {
+  /** Display face — poster titles, hero figures, totals. */
+  display?: string;
+  /** Mono face — ledger figures: prices, stock, dates, metrics, eyebrows. */
+  mono?: string;
+}
+
+const FONTS = {
+  display: undefined,
+  mono: undefined,
+} as TypeFaces;
 
 // ── Design dialect ──────────────────────────────────────────────────────
 // The ONE family declaration. A consumer's design language is not four
@@ -468,6 +498,13 @@ export const theme = {
     style: DIALECT_PRESETS[DIALECT].transition,
   },
 
+  // ── Type families ───────────────────────────────────────────────────
+  // The same discipline as shapes/atmosphere/drawer: declare the pair
+  // ONCE here and every face-aware read (typography tokens, eyebrows,
+  // figure styles) follows — no per-callsite fontFamily threading. See
+  // the TypeFaces block above for the self-hosting recipe.
+  fonts: FONTS,
+
   // ── Named type styles ─────────────────────────────────────────────────
   // Premium reads through type. Consumers import the named style and spread
   // it; they do NOT pick ad-hoc fontSize/fontWeight values for titles and
@@ -479,6 +516,7 @@ export const theme = {
       fontWeight: '600',
       lineHeight: 28,
       letterSpacing: -0.2,
+      fontFamily: FONTS.display,
     } satisfies TypographyToken,
     mobileSubtitle: {
       fontSize: 14,
@@ -503,6 +541,7 @@ export const theme = {
       fontWeight: '600',
       lineHeight: 14,
       letterSpacing: 1.4,
+      fontFamily: FONTS.mono,
     } satisfies TypographyToken,
     mobileFieldLabel: {
       fontSize: 13,
