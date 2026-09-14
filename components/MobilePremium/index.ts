@@ -6,6 +6,7 @@
 export { MobileAtmosphere } from './MobileAtmosphere';
 export { InkPanel } from './InkPanel';
 export { inkSurface, INK_GRAIN_BACKGROUND } from './grain';
+export { RouteCurtain } from './RouteCurtain';
 export type { MobileAtmosphereProps, MobileAtmosphereSurface } from './MobileAtmosphere';
 
 export { MobileSurface } from './MobileSurface';

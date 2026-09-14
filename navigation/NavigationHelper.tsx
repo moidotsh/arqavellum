@@ -5,7 +5,7 @@
 // `hooks/useAuthNavigation.ts`). Every other file in the app navigates
 // through the helpers exported from this file — that way the call sites
 // read as intent (`replaceWithLogin()`) rather than mechanism
-// (`router.replace('/login')`), and a global navigation change (e.g.
+// (`replace('/login')`), and a global navigation change (e.g.
 // swizzling every push with a transition) lands in one place.
 //
 // Naming convention:
@@ -21,6 +21,19 @@
 
 import { router, Router } from 'expo-router';
 import { useAuthStore } from '../stores';
+import { withRouteCurtain } from '../utils';
+
+/**
+ * Every shell navigation routes through `withRouteCurtain` — the
+ * route-curtain seam declared by `theme.transition.style`. Inert under
+ * the starter's 'none' default (the call passes straight through, zero
+ * behavior change); under 'curtain' (the ink dialect's preset) the plate
+ * covers before the router fires and lifts over the arrival. Back
+ * navigation reveals 'down'; everything else drills 'up'.
+ */
+const push = (path: string) => withRouteCurtain(() => router.push(path), 'up');
+const replace = (path: string) => withRouteCurtain(() => router.replace(path), 'up');
+const back = () => withRouteCurtain(() => router.back(), 'down');
 
 /**
  * Shell navigation paths. Consumers add their own routes to a sibling
@@ -55,23 +68,23 @@ export const navigationHierarchy: Record<string, NavigationPath> = {
 // ─── Push helpers (drill in) ────────────────────────────────────────────
 
 export function navigateToHome() {
-  router.push('/');
+  push('/');
 }
 
 export function navigateToLogin() {
-  router.push('/login');
+  push('/login');
 }
 
 export function navigateToRegister() {
-  router.push('/register');
+  push('/register');
 }
 
 export function navigateToForgotPassword() {
-  router.push('/forgot-password');
+  push('/forgot-password');
 }
 
 export function navigateToSettings() {
-  router.push('/settings');
+  push('/settings');
 }
 
 /**
@@ -79,21 +92,21 @@ export function navigateToSettings() {
  * linked from any user-facing surface by default.
  */
 export function navigateToPremiumShowcase() {
-  router.push('/dev/premium');
+  push('/dev/premium');
 }
 
 // ─── Replace helpers (redirects) ────────────────────────────────────────
 
 export function replaceWithHome() {
-  router.replace('/');
+  replace('/');
 }
 
 export function replaceWithLogin() {
-  router.replace('/login');
+  replace('/login');
 }
 
 export function replaceWithRegister() {
-  router.replace('/register');
+  replace('/register');
 }
 
 /**
@@ -103,7 +116,7 @@ export function replaceWithRegister() {
  * redirect-from-deep-link case.
  */
 export function replaceWithForgotPassword() {
-  router.replace('/forgot-password');
+  replace('/forgot-password');
 }
 
 // ─── Back navigation ────────────────────────────────────────────────────
@@ -121,15 +134,15 @@ export function replaceWithForgotPassword() {
  */
 export function safeGoBack() {
   if (router.canGoBack()) {
-    router.back();
+    back();
     return;
   }
 
   const { status } = useAuthStore.getState();
   if (status === 'authenticated') {
-    router.replace('/');
+    replace('/');
   } else {
-    router.replace('/login');
+    replace('/login');
   }
 }
 
@@ -147,14 +160,14 @@ export function goBack(currentPath: NavigationPath | string) {
   if (Object.values(NavigationPath).includes(currentPath as NavigationPath)) {
     const parentPath = navigationHierarchy[currentPath] || NavigationPath.HOME;
     if (parentPath === NavigationPath.HOME) {
-      router.push('/');
+      push('/');
       return;
     }
-    router.push(`/${parentPath}`);
+    push(`/${parentPath}`);
     return;
   }
 
-  router.push('/');
+  push('/');
 }
 
 // Re-export the underlying router instance + type for consumers that

@@ -47,6 +47,13 @@ import { initializeNetworkListeners } from '../stores';
 import { AuthProvider, ToastProvider, ThemeProvider, useAppTheme } from '../context';
 import { AuthGuard, ToastContainer, AppErrorBoundary } from '../components/primitives';
 import { QueryProvider } from '../lib/react-query';
+import { RouteCurtain } from '../components/MobilePremium';
+import { curtainEnabled, markBootReady } from '../utils/routeTransition';
+
+// The curtain is theme-declared machinery (theme.transition.style — a
+// const at module scope), so the mount decision is made once. Under the
+// starter's 'none' default this is false and nothing mounts.
+const CURTAIN_ON = curtainEnabled();
 
 function RootShell() {
   const { colorScheme, colors } = useAppTheme();
@@ -56,6 +63,15 @@ function RootShell() {
   useEffect(() => {
     const cleanup = initializeNetworkListeners();
     return cleanup;
+  }, []);
+
+  // Boot-plate handshake (web only): lift the pre-JS ink cover, if the
+  // consumer pasted one into index.html (the opt-in boot recipe — see
+  // the design-system docs). Setting data-boot-ready is a no-op when no
+  // boot CSS exists.
+  useEffect(() => {
+    if (!isWeb || !hasDocument()) return;
+    markBootReady();
   }, []);
 
   // Vercel Web Analytics (web only, opt-in): classification runs
@@ -189,6 +205,7 @@ function RootShell() {
                     }}
                   />
                   <ToastContainer />
+                  {CURTAIN_ON ? <RouteCurtain /> : null}
                 </QueryProvider>
               </ToastProvider>
             </AuthGuard>

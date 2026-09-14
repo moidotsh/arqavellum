@@ -18,7 +18,9 @@
 //      metas.
 //   2. Every id'd <style> block (the global shell CSS; a consumer's
 //      self-hosted @font-face block rides the same mechanism).
-//   3. Every <link rel="preload" as="font"> for self-hosted faces —
+//   3. Every id'd <script> block (a consumer's pre-JS boot plate lifts
+//      on a handshake the root layout sets — the ink boot recipe).
+//   4. Every <link rel="preload" as="font"> for self-hosted faces —
 //      the starter ships none; consumers who add them get preloads in
 //      every exported route for free.
 //
@@ -61,7 +63,18 @@ for (const m of styleMatches) {
   });
 }
 
-// 3 — font preloads (self-hosted faces; the starter ships none).
+// 3 — every id'd <script> block (order preserved). The opt-in boot
+// plate's pre-JS lifter rides this mechanism.
+const scriptMatches = html.matchAll(/<script id="([\w-]+)"[^>]*>[\s\S]*?<\/script>/g);
+for (const m of scriptMatches) {
+  blocks.push({
+    key: `script #${m[1]}`,
+    markup: m[0],
+    present: (out) => out.includes(`id="${m[1]}"`),
+  });
+}
+
+// 4 — font preloads (self-hosted faces; the starter ships none).
 const preloads = html.match(/<link[^>]*rel="preload"[^>]*\/fonts\/[^>]*>/g) ?? [];
 if (preloads.length > 0) {
   blocks.push({
