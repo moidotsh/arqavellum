@@ -56,6 +56,15 @@ export interface MobileHomeHeaderProps {
    * out-cubic so the bleed reads as the plate arriving.
    */
   onPlate?: boolean;
+  /**
+   * Optional text color override for brand + subtitle. Hosts that
+   * float this header over animated content (an absorbing top bar —
+   * a pinned strip whose colour fills rise over the row) pass the
+   * readable companion while a fill owns the row; omit for the
+   * resting ink. `onPlate` keeps its own bleed — the drawer's plate
+   * outranks whatever moves under the bar.
+   */
+  textColorOverride?: string;
   /** Test ID. */
   testID?: string;
   /** Outer style pass-through. */
@@ -75,12 +84,15 @@ export function MobileHomeHeader({
   drawerGlassCap,
   onBrandPress,
   onPlate,
+  textColorOverride,
   testID,
   style,
 }: MobileHomeHeaderProps) {
   const insets = useSafeAreaInsets();
   const { colors } = useAppTheme();
-  const brandColor = onPlate ? colors.background : colors.text;
+  const brandColor = onPlate
+    ? colors.background
+    : (textColorOverride ?? colors.text);
   // The ink drawer's out-cubic — the type bleeds on the slide's curve.
   // Web-only CSS; RN's TextStyle doesn't declare it (same cast the boot
   // gradients and InkPanel grain use).
@@ -141,7 +153,9 @@ export function MobileHomeHeader({
           style={[
             theme.typography.mobileSubtitle,
             {
-              color: onPlate ? colors.background : colors.textSecondary,
+              color: onPlate
+                ? colors.background
+                : (textColorOverride ?? colors.textSecondary),
               marginTop: 4,
               opacity: onPlate ? 0 : 1,
             },
