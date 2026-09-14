@@ -52,6 +52,10 @@ const HAIRLINE_AT = 6;
 
 const WAVE_A = { tile: 112, height: 28, cls: 'arq-absorb-wave-a' };
 const WAVE_B = { tile: 76, height: 20, cls: 'arq-absorb-wave-b' };
+// One drift period per wave — the CSS durations and the engine's
+// mask-phase lock read the same numbers.
+const DRIFT_A_MS = 3400;
+const DRIFT_B_MS = 5200;
 
 interface WaveSpec {
   tile: number;
@@ -98,8 +102,12 @@ export interface AbsorbTone {
 interface AbsorbContextValue {
   /** The backdrop strip element — the overlap zone the engine measures. */
   barEl: React.MutableRefObject<HTMLElement | null>;
-  /** The chrome contrast copy's clip node — engine-written height. */
-  chromeClipEl: React.MutableRefObject<HTMLElement | null>;
+  /** The chrome contrast copies' clip nodes — engine-written heights.
+   *  Two copies, one per wave's mask; their union is the visible crest. */
+  chromeClipEls: {
+    a: React.MutableRefObject<HTMLElement | null>;
+    b: React.MutableRefObject<HTMLElement | null>;
+  };
   /** Live station registry (engine-owned). */
   stations: Map<string, AbsorbStationEntry>;
   /** Fill layer nodes, written to directly by the rAF loop. */
@@ -120,7 +128,7 @@ interface AbsorbContextValue {
   ping(): void;
   reportBarHeight(h: number): void;
   attachLayerEl(id: string, el: unknown): void;
-  attachChromeClip(el: unknown): void;
+  attachChromeClip(which: 'a' | 'b', el: unknown): void;
 }
 
 const EMPTY_TONE: AbsorbTone = { fg: null, bg: null };
@@ -129,7 +137,7 @@ const EMPTY_TONE: AbsorbTone = { fg: null, bg: null };
 // never mount a bar) — every member is a no-op or a rest value.
 const IDLE_CONTEXT: AbsorbContextValue = {
   barEl: { current: null },
-  chromeClipEl: { current: null },
+  chromeClipEls: { a: { current: null }, b: { current: null } },
   stations: new Map(),
   layerEls: new Map(),
   layers: [],
@@ -267,21 +275,36 @@ export function dimmedOver(color: string, alpha: number, over: string): string {
 }
 
 // The chrome clip's wave mask tiles — monochrome alpha (black below or
-// above the curve, transparent elsewhere), the SAME curve and drift
-// timing as the fill's primary meniscus so the split through the letters
-// tracks the visible wave.
-const MASK_W = WAVE_A.tile;
-const MASK_H = WAVE_A.height;
-const maskTileEnter = encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="${MASK_W}" height="${MASK_H}" viewBox="0 0 ${MASK_W} ${MASK_H}">` +
-    // s7-exempt: mask alpha — never a rendered colour, only opacity composites.
-    `<path d="M0 ${MASK_H / 2} Q ${MASK_W / 4} 0 ${MASK_W / 2} ${MASK_H / 2} T ${MASK_W} ${MASK_H / 2} L ${MASK_W} ${MASK_H} L 0 ${MASK_H} Z" fill="#000"/></svg>`,
-);
-const maskTileExit = encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="${MASK_W}" height="${MASK_H}" viewBox="0 0 ${MASK_W} ${MASK_H}">` +
-    // s7-exempt: mask alpha — never a rendered colour, only opacity composites.
-    `<path d="M0 ${MASK_H / 2} Q ${MASK_W / 4} ${MASK_H} ${MASK_W / 2} ${MASK_H / 2} T ${MASK_W} ${MASK_H / 2} L ${MASK_W} 0 L 0 0 Z" fill="#000"/></svg>`,
-);
+// above the curve, transparent elsewhere), the SAME curves and drift
+// timings as the visible meniscus. TWO specs, one per visible wave tile:
+// the meniscus is two counter-drifting curves and the chrome's mask must
+// cover their UNION (the real visible crest) — a single-wave mask leaves
+// the base copy showing through wherever the second wave crests above
+// the first (an opposite-colour square through any opaque chrome). One
+// CSS animation drives one mask-position-x, so each wave's mask rides
+// its own masked copy of the chrome; their union is exact by
+// construction.
+const MASK_A = { tile: WAVE_A.tile, height: WAVE_A.height };
+const MASK_B = { tile: WAVE_B.tile, height: WAVE_B.height };
+// The envelope overshoot covers the TALLEST crest (wave A's).
+const MASK_W = MASK_A.tile;
+const MASK_H = MASK_A.height;
+
+function maskTile(w: number, h: number, flip: boolean): string {
+  const a = h / 2;
+  const path = flip
+    ? `M0 ${a} Q ${w / 4} ${h} ${w / 2} ${a} T ${w} ${a} L ${w} 0 L 0 0 Z`
+    : `M0 ${a} Q ${w / 4} 0 ${w / 2} ${a} T ${w} ${a} L ${w} ${h} L 0 ${h} Z`;
+  // s7-exempt: mask alpha — never a rendered colour, only opacity composites.
+  return encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><path d="${path}" fill="#000"/></svg>`,
+  );
+}
+
+const maskTileAEnter = maskTile(MASK_A.tile, MASK_A.height, false);
+const maskTileAExit = maskTile(MASK_A.tile, MASK_A.height, true);
+const maskTileBEnter = maskTile(MASK_B.tile, MASK_B.height, false);
+const maskTileBExit = maskTile(MASK_B.tile, MASK_B.height, true);
 
 function ensureAbsorbCss(): void {
   if (document.getElementById('arqavellum-absorb-css') != null) return;
@@ -290,16 +313,26 @@ function ensureAbsorbCss(): void {
   el.textContent = [
     `@keyframes arq-absorb-drift-a{from{transform:translateX(0)}to{transform:translateX(-${WAVE_A.tile}px)}}`,
     `@keyframes arq-absorb-drift-b{from{transform:translateX(-${WAVE_B.tile}px)}to{transform:translateX(0)}}`,
-    `.${WAVE_A.cls}{animation:arq-absorb-drift-a 3.4s linear infinite}`,
-    `.${WAVE_B.cls}{animation:arq-absorb-drift-b 5.2s linear infinite;opacity:.65}`,
-    // The chrome contrast copy's clip: the fill's own wave as an alpha
-    // mask (tile + a solid field), drifting in lockstep with the visible
-    // meniscus. The engine writes mask-size and mask-position-y per tick
-    // so the mask's wave squashes with the fill — born flat, growing in.
-    `.arq-absorb-mask-enter{-webkit-mask-image:url("data:image/svg+xml,${maskTileEnter}"),linear-gradient(#000,#000);mask-image:url("data:image/svg+xml,${maskTileEnter}"),linear-gradient(#000,#000);-webkit-mask-repeat:repeat-x,no-repeat;mask-repeat:repeat-x,no-repeat;animation:arq-absorb-mask-drift 3.4s linear infinite}`,
-    `.arq-absorb-mask-exit{-webkit-mask-image:url("data:image/svg+xml,${maskTileExit}"),linear-gradient(#000,#000);mask-image:url("data:image/svg+xml,${maskTileExit}"),linear-gradient(#000,#000);-webkit-mask-repeat:repeat-x,no-repeat;mask-repeat:repeat-x,no-repeat;animation:arq-absorb-mask-drift 3.4s linear infinite}`,
+    `.${WAVE_A.cls}{animation:arq-absorb-drift-a ${DRIFT_A_MS}ms linear infinite}`,
+    `.${WAVE_B.cls}{animation:arq-absorb-drift-b ${DRIFT_B_MS}ms linear infinite;opacity:.65}`,
+    // The chrome contrast copy's clip: the fill's own waves as alpha
+    // masks (tile + a solid field), each drifting in lockstep with its
+    // visible wave. The engine writes mask-size and mask-position-y per
+    // tick so each mask's wave squashes with the fill — born flat,
+    // growing in. The solid field repeats in x: the drift keyframes
+    // animate ONE mask-position-x value, which applies to EVERY layer —
+    // a no-repeat field would slide off the clip's right edge with the
+    // loop and bare the right-hand chrome to the base copy mid-fill.
+    // Tiled, the 100%-wide field is x-phase-neutral.
+    `.arq-absorb-mask-enter{-webkit-mask-image:url("data:image/svg+xml,${maskTileAEnter}"),linear-gradient(#000,#000);mask-image:url("data:image/svg+xml,${maskTileAEnter}"),linear-gradient(#000,#000);-webkit-mask-repeat:repeat-x,repeat-x;mask-repeat:repeat-x,repeat-x;animation:arq-absorb-mask-drift ${DRIFT_A_MS}ms linear infinite}`,
+    `.arq-absorb-mask-exit{-webkit-mask-image:url("data:image/svg+xml,${maskTileAExit}"),linear-gradient(#000,#000);mask-image:url("data:image/svg+xml,${maskTileAExit}"),linear-gradient(#000,#000);-webkit-mask-repeat:repeat-x,repeat-x;mask-repeat:repeat-x,repeat-x;animation:arq-absorb-mask-drift ${DRIFT_A_MS}ms linear infinite}`,
+    // Wave B's mask copy — same shape, its OWN drift (the visible B tile
+    // runs 5.2s rightward, so the mask must too).
+    `.arq-absorb-mask-b-enter{-webkit-mask-image:url("data:image/svg+xml,${maskTileBEnter}"),linear-gradient(#000,#000);mask-image:url("data:image/svg+xml,${maskTileBEnter}"),linear-gradient(#000,#000);-webkit-mask-repeat:repeat-x,repeat-x;mask-repeat:repeat-x,repeat-x;animation:arq-absorb-mask-drift-b ${DRIFT_B_MS}ms linear infinite}`,
+    `.arq-absorb-mask-b-exit{-webkit-mask-image:url("data:image/svg+xml,${maskTileBExit}"),linear-gradient(#000,#000);mask-image:url("data:image/svg+xml,${maskTileBExit}"),linear-gradient(#000,#000);-webkit-mask-repeat:repeat-x,repeat-x;mask-repeat:repeat-x,repeat-x;animation:arq-absorb-mask-drift-b ${DRIFT_B_MS}ms linear infinite}`,
     `@keyframes arq-absorb-mask-drift{from{-webkit-mask-position-x:0;mask-position-x:0}to{-webkit-mask-position-x:-${MASK_W}px;mask-position-x:-${MASK_W}px}}`,
-    '@media (prefers-reduced-motion:reduce){.arq-absorb-wave-a,.arq-absorb-wave-b,.arq-absorb-mask-enter,.arq-absorb-mask-exit{animation:none}}',
+    `@keyframes arq-absorb-mask-drift-b{from{-webkit-mask-position-x:-${MASK_B.tile}px;mask-position-x:-${MASK_B.tile}px}to{-webkit-mask-position-x:0;mask-position-x:0}}`,
+    '@media (prefers-reduced-motion:reduce){.arq-absorb-wave-a,.arq-absorb-wave-b,.arq-absorb-mask-enter,.arq-absorb-mask-exit,.arq-absorb-mask-b-enter,.arq-absorb-mask-b-exit{animation:none}}',
   ].join('');
   document.head.appendChild(el);
 }
@@ -315,7 +348,8 @@ export function AbsorbProvider({ children }: { children: React.ReactNode }) {
   const [clipExit, setClipExit] = useState(false);
 
   const barEl = useRef<HTMLElement | null>(null);
-  const chromeClipEl = useRef<HTMLElement | null>(null);
+  const chromeClipA = useRef<HTMLElement | null>(null);
+  const chromeClipB = useRef<HTMLElement | null>(null);
   const stationsRef = useRef<Map<string, AbsorbStationEntry> | null>(null);
   if (stationsRef.current == null) stationsRef.current = new Map();
   const stations = stationsRef.current;
@@ -379,8 +413,9 @@ export function AbsorbProvider({ children }: { children: React.ReactNode }) {
     [layerEls],
   );
 
-  const attachChromeClip = useCallback((el: unknown) => {
-    chromeClipEl.current = nodeFrom(el);
+  const attachChromeClip = useCallback((which: 'a' | 'b', el: unknown) => {
+    const ref = which === 'a' ? chromeClipA : chromeClipB;
+    ref.current = nodeFrom(el);
   }, []);
 
   // The measurement engine. Binds to the scrolling container (the app
@@ -403,6 +438,64 @@ export function AbsorbProvider({ children }: { children: React.ReactNode }) {
     let scrolledNow = false;
     let dominantId: string | null = null;
     let clipExitNow = false;
+    // The mask copies' drifts must run in PHASE with the visible wave
+    // strips. CSS animations start at mount, and the strips' mounts
+    // (per station) never coincide with the clips' mounts (per
+    // engagement) — an unaligned mask is x-shifted off its crest, and
+    // the split line stops tracking the wave. Alignment SEEKS each
+    // clip's running animation to its strip's live phase (Web
+    // Animations currentTime — no restart, no jump), one frame after
+    // the dominant flips so the new layer's elements exist, with a
+    // bounded retry for late clip mounts.
+    let maskLockId: string | null = null;
+    const stripPhase = (strip: HTMLElement | null): number | null => {
+      if (strip == null || typeof strip.getAnimations !== 'function') return null;
+      for (const anim of strip.getAnimations()) {
+        if (anim.playState !== 'running') continue;
+        const t = Number(anim.currentTime);
+        if (Number.isFinite(t)) return t;
+      }
+      return null;
+    };
+    const seekClip = (clip: HTMLElement, phase: number): void => {
+      if (typeof clip.getAnimations !== 'function') return;
+      for (const anim of clip.getAnimations()) {
+        if (anim.playState !== 'running') continue;
+        anim.currentTime = phase;
+        return;
+      }
+    };
+    const alignMasks = (stationId: string) => {
+      const layer = layerEls.get(stationId);
+      if (layer == null) return;
+      const jobs = [
+        [chromeClipA.current, WAVE_A.cls, DRIFT_A_MS],
+        [chromeClipB.current, WAVE_B.cls, DRIFT_B_MS],
+      ] as const;
+      for (const [clip, waveCls, period] of jobs) {
+        if (clip == null) continue;
+        const box = Array.from(layer.children).find(
+          (b) =>
+            b.firstElementChild instanceof HTMLElement &&
+            (b.firstElementChild as HTMLElement).classList.contains(waveCls),
+        ) as HTMLElement | undefined;
+        const stripEl = box?.firstElementChild;
+        const phase =
+          stripEl instanceof HTMLElement ? stripPhase(stripEl) : null;
+        if (phase != null) seekClip(clip, phase % period);
+      }
+    };
+    const scheduleMaskAlign = (stationId: string, tries = 0) => {
+      window.requestAnimationFrame(() => {
+        if (dominantId !== stationId) return;
+        const ready =
+          layerEls.get(stationId) != null &&
+          chromeClipA.current != null &&
+          chromeClipB.current != null;
+        if (ready) alignMasks(stationId);
+        else if (tries < 90) scheduleMaskAlign(stationId, tries + 1);
+      });
+    };
 
     // The readable companion of a fill: whichever of the palette's two
     // poles carries contrast against it (works in both modes — the
@@ -470,6 +563,10 @@ export function AbsorbProvider({ children }: { children: React.ReactNode }) {
       // coverage reads correctly by construction (the ripple splits the
       // letters; covered halves flip, uncovered halves stay ink).
       const dominant = dominantId != null ? stations.get(dominantId) ?? null : null;
+      if (dominantId !== maskLockId) {
+        maskLockId = dominantId;
+        if (dominantId != null) scheduleMaskAlign(dominantId);
+      }
       if (dominant != null && dominantTarget > 0.004) {
         const fg = readableFg(dominant.color);
         if (engagedFg !== fg || engagedBg !== dominant.color) {
@@ -561,34 +658,46 @@ export function AbsorbProvider({ children }: { children: React.ReactNode }) {
       if (dead.length > 0) {
         for (const id of dead) stations.delete(id);
       }
-      // The chrome's contrast copy is clipped to the visible INK
+      // The chrome's contrast copies are clipped to the visible INK
       // ENVELOPE — the fill plus the wave's overshoot above it (the
       // crest band crosses the letters; without it the base ink text
       // sits on ink wave with no paper copy over it and reads as the
-      // wave painting in front of the text) — with the mask's wave
-      // squashed to the same amplitude.
-      const clip = chromeClipEl.current;
+      // wave painting in front of the text) — with each mask's wave
+      // squashed to the same amplitude. One copy per wave spec; their
+      // union is the true visible crest.
       const dom = dominantId != null ? stations.get(dominantId) : null;
-      if (clip != null && dom != null && zoneH > 0) {
+      const clipA = chromeClipA.current;
+      const clipB = chromeClipB.current;
+      if ((clipA != null || clipB != null) && dom != null && zoneH > 0) {
         const fillPx = Math.max(0, dom.cur * zoneH);
-        const km = Math.max(1, Math.min(MASK_H, fillPx));
         const envU = fillPx + Math.min(fillPx, MASK_H);
         const clipH = Math.min(zoneH, envU);
-        // When the envelope runs past the strip (deep submersion), the
-        // mask's wave rides PAST the edge with the visible meniscus —
-        // the ink has no crest inside the strip, so the letters must not
-        // be cut by a phantom wave parked at the top.
-        const over = Math.max(0, envU - zoneH);
-        clip.style.height = `${clipH.toFixed(2)}px`;
-        const tileY = dom.exit ? clipH - km + over : -over;
-        const gradY = dom.exit ? 0 : Math.max(0, tileY + km);
-        const gradH = Math.max(1, dom.exit ? Math.max(0, tileY) : clipH - gradY);
-        const sizes = `${MASK_W}px ${km.toFixed(2)}px,100% ${gradH.toFixed(2)}px`;
-        clip.style.setProperty('mask-size', sizes, '');
-        clip.style.setProperty('-webkit-mask-size', sizes, '');
-        const pos = `${tileY.toFixed(2)}px,${gradY.toFixed(2)}px`;
-        clip.style.setProperty('mask-position-y', pos, '');
-        clip.style.setProperty('-webkit-mask-position-y', pos, '');
+        for (const [clip, m] of [
+          [clipA, MASK_A],
+          [clipB, MASK_B],
+        ] as const) {
+          if (clip == null) continue;
+          const km = Math.max(1, Math.min(m.height, fillPx));
+          clip.style.height = `${clipH.toFixed(2)}px`;
+          // Each mask band anchors where ITS wave's squashed box sits:
+          // the fill's edge, one pixel of seam overlap, minus the
+          // spec's own amplitude (the boxes overlap the fill by 1px and
+          // the specs squash to different heights). Anchoring both
+          // bands at the clip's top floated the shorter wave's mask
+          // above its crest — the fill's colour riding the humps over
+          // opaque chrome. At deep submersion the band rides past the
+          // strip's edge with the visible meniscus, so no phantom wave
+          // parks over the letters.
+          const tileY = dom.exit ? fillPx - 1 : clipH - fillPx + 1 - km;
+          const gradY = dom.exit ? 0 : Math.max(0, tileY + km);
+          const gradH = Math.max(1, dom.exit ? Math.max(0, tileY) : clipH - gradY);
+          const sizes = `${m.tile}px ${km.toFixed(2)}px,100% ${gradH.toFixed(2)}px`;
+          clip.style.setProperty('mask-size', sizes, '');
+          clip.style.setProperty('-webkit-mask-size', sizes, '');
+          const pos = `${tileY.toFixed(2)}px,${gradY.toFixed(2)}px`;
+          clip.style.setProperty('mask-position-y', pos, '');
+          clip.style.setProperty('-webkit-mask-position-y', pos, '');
+        }
       }
       raf = moving ? window.requestAnimationFrame(tick) : 0;
       if (!moving) {
@@ -665,7 +774,7 @@ export function AbsorbProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<AbsorbContextValue>(
     () => ({
       barEl,
-      chromeClipEl,
+      chromeClipEls: { a: chromeClipA, b: chromeClipB },
       stations,
       layerEls,
       layers,

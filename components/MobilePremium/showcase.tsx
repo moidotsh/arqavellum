@@ -81,6 +81,7 @@ import {
   AbsorbTopBar,
   AbsorbSpacer,
   AbsorbStation,
+  AbsorbChromeNeutral,
   useAbsorbBar,
   compositeWash,
 } from './MobileAbsorbBar';
@@ -1797,15 +1798,56 @@ function AbsorbDemoChrome() {
     // reportBarHeight is stable; the demo bar height is a constant.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  // Simplified host: the title follows the tone's readable companion.
-  // A production host renders the chrome TWICE — a neutral base copy in
-  // AbsorbChromeNeutral plus a contrast copy clipped to the fill's own
-  // wave (see the primitive's header) — the demo keeps the single-copy read.
+  // The production host pattern, exercised for real: the chrome renders
+  // THREE times — the neutral base copy (the readable one), plus two
+  // inert contrast copies, each masked to one of the meniscus's two
+  // counter-drifting waves. One CSS animation drives one
+  // mask-position-x, so no single mask tracks both curves — the copies'
+  // union is the visible crest, and the base copy never shows through
+  // wherever the second wave crests above the first.
+  const makeClipRef = (which: 'a' | 'b', base: string) => (el: View | null) => {
+    absorb.attachChromeClip(which, el);
+    if (typeof HTMLElement !== 'undefined' && el instanceof HTMLElement) {
+      el.classList.remove(`${base}-enter`, `${base}-exit`);
+      el.classList.add(absorb.clipExit ? `${base}-exit` : `${base}-enter`);
+    }
+  };
+  const clipRefA = makeClipRef('a', 'arq-absorb-mask');
+  const clipRefB = makeClipRef('b', 'arq-absorb-mask-b');
+  const fg = absorb.tone.fg;
+  const title = (color: string) => (
+    <Text style={[styles.absorbChromeTitle, { color }]}>The bar drinks the page</Text>
+  );
   return (
     <View style={styles.absorbChrome} pointerEvents="none">
-      <Text style={[styles.absorbChromeTitle, { color: absorb.tone.fg ?? colors.text }]}>
-        The bar drinks the page
-      </Text>
+      {/* The base copy — always neutral, always the readable one. */}
+      <AbsorbChromeNeutral>{title(colors.text)}</AbsorbChromeNeutral>
+      {/* The contrast copies — clipped to each wave's mask, inert.
+          Identical renders: the union of their masks is what reads. */}
+      {fg != null
+        ? ([
+            { which: 'a', ref: clipRefA, testID: 'absorb-demo-clip-a' },
+            { which: 'b', ref: clipRefB, testID: 'absorb-demo-clip-b' },
+          ] as const).map(({ which, ref, testID }) => (
+            <View key={which} style={StyleSheet.absoluteFill} pointerEvents="none">
+              <View
+                testID={testID}
+                ref={ref}
+                style={[styles.absorbClip, absorb.clipExit ? styles.absorbClipExit : null]}
+              >
+                <View
+                  style={
+                    absorb.clipExit
+                      ? styles.absorbClipContentExit
+                      : styles.absorbClipContentEnter
+                  }
+                >
+                  {title(fg)}
+                </View>
+              </View>
+            </View>
+          ))
+        : null}
     </View>
   );
 }
@@ -1961,6 +2003,41 @@ const styles = StyleSheet.create({
     position: 'absolute',
     fontSize: 15,
     fontWeight: '700',
+  },
+  // The contrast copies' clip windows — engine-written height, anchored
+  // to the strip's floor while entering and its top while exiting; the
+  // content stays pinned to the strip's edge so only the window moves.
+  absorbClip: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 0,
+    overflow: 'hidden',
+  },
+  absorbClipExit: {
+    top: 0,
+    bottom: 'auto',
+  },
+  absorbClipContentEnter: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: ABSORB_DEMO_BAR_H,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  absorbClipContentExit: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    height: ABSORB_DEMO_BAR_H,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   absorbTail: {
     height: 120,
