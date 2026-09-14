@@ -216,9 +216,9 @@ via the path alias, or `../MobilePremium` relatively).
 | `MobileHeader` | 44px header (36–48 total with safe-area top). Back chevron, optional dismiss, compact title, accent dot. Optional `eyebrow` for context labels above the title. |
 | `MobileHomeHeader` | Home-screen header that puts the brand on the same row as the menu trigger. 36px brand row (brand text + optional `menuButton` + optional `rightAction`) + optional normal-case `subtitle` below. `paddingHorizontal: 20`, `maxWidth: 420`, `alignSelf: 'center'`. Pairs with `MobileNavDrawer` in cutout mode — when the drawer opens, the transparent cap at the top of the drawer panel lets this header's brand + menu button show through at the same position. The `drawerGlassCap` slot hosts a `MobileNavDrawerGlassCap` so the cutout pattern composes without hand-positioning. The `menuButton` slot is a `React.ReactNode`; the kit ships `HamburgerButton` as the standard trigger. |
 | `MobileNavDrawer` | Left-side hamburger drawer. Shell-level mechanism (slide / scrim / items / active-highlight / badge) — branding, items, and footer are consumer-supplied. An optional `topContent` element renders ABOVE the item list (just under the header / cutout area, outside the items' scroll) for consumer-supplied account identity or context strips. Two brand-persistence modes via the `brandPersistence` prop: **`'slideout'`** (default) — panel covers full screen height; brand lives in the `header` slot. **`'cutout'`** — panel leaves a transparent cutout at its top so the home header's brand + hamburger stay visible at the same position; the scrim starts at the panel's right edge and runs to the window edge at all heights, and the consumer renders `MobileNavDrawerGlassCap` over the cutout for the continuous-glass read. The `header` prop is ignored in cutout mode. Two anchor modes via the `anchor` prop: **`'window'`** (default) — panel slides from x=0 of the window. **`'column'`** — panel slides from the left edge of the centered 420pt column (computed from `useWindowDimensions`), so the drawer stays attached to centered content on any viewport. Defaults are picked by `APP_LAYOUT.navDrawerBrandPersistence` and `APP_LAYOUT.navDrawerAnchor` in `constants/layout.ts`. Slides with an iOS-sheet curve (`cubic-bezier(0.32, 0.72, 0, 1)`) behind a frosted-glass scrim (web backdrop-blur via `mobilePremium.navScrimBackdropBlur`; Android Chrome falls back to the milder `androidChromeSurfaceBlur` at higher opacity because it renders `saturate()` poorly). The panel carries a right-edge depth shadow (`mobilePremium.navPanelShadow`) placed on the panel — not the scrim — so its upward bleed lands off-screen instead of darkening the brand cutout. Active row gets a 3px brand strip on the left edge + brand-tinted background + bolder label; inactive rows pick up a hover background on pointer devices. `prefers-reduced-motion` collapses the slide to instant. The `atmosphereShowOrbs` prop toggles the body atmosphere's drifting orbs; it defaults to the theme's atmosphere style (`theme.atmosphere.style`, §5.1) — pass an explicit boolean only to override the theme for this drawer alone. |
-| `InkPanel` | Inverted-surface primitive — text-color plate + print grain + optional brand edge rule. Composed by `MobileNavDrawer` when `theme.drawer.style` is `ink`; available to any consumer surface that speaks the same language. |
+| `InkPanel` | Inverted-surface primitive — text-color plate + print grain + optional brand edge rule. Composed by `MobileNavDrawer` when `theme.drawer.style` is `ink`; available to any consumer surface that speaks the same language. The grain itself is exported (`inkSurface(background)` / `INK_GRAIN_BACKGROUND` from the kit barrel) for consumer-built ink surfaces that are not a whole panel — spread `inkSurface(colors.text)` on a View and the surface carries the same tooth. |
 | `MobileNavDrawerGlassCap` | Glass cap rendered by the consumer's home header (via `MobileHomeHeader.drawerGlassCap`) over the nav drawer's brand cutout. Crossfades in AND slides with the panel using the same 300ms iOS-sheet easing so the cutout reads as one continuous drawer surface. Replicates the scrim treatment (backgroundDeep at scrim alpha + backdrop blur + right hairline; Android Chrome fallback included). `anchor`/`columnWidth`/`width`/`height` props must match the drawer's so the cap lands exactly over the panel's cutout. `pointerEvents: 'none'` — taps reach the hamburger/X behind it. |
-| `MobileAnnouncementBar` | Owner-authored announcement strip — the one-line broadcast surface ("Pickup Friday 17–19h", "Drop 004 opens Friday"). Purely presentational like `OfflineBanner`: the consumer owns the message, mount/unmount, and any dismissed-once persistence. Optional inline action (`actionLabel` + `onAction`) and optional dismiss control (`onDismiss` — the X only renders when the handler is provided). `accessibilityLiveRegion="polite"`. |
+| `MobileAnnouncementBar` | Owner-authored announcement strip — the one-line broadcast surface ("Pickup Friday 17–19h", "Drop 004 opens Friday"). Purely presentational like `OfflineBanner`: the consumer owns the message, mount/unmount, and any dismissed-once persistence. Optional inline action (`actionLabel` + `onAction`) and optional dismiss control (`onDismiss` — the X only renders when the handler is provided; `dismissA11yLabel` localizes it). `tone="strong"` inverts the strip onto the mode's ink — for the one fact that outranks everything else on the page; caller owns when it applies. `accessibilityLiveRegion="polite"`. The message picks up `fonts.mono` when a mono face is declared. |
 | `MobileFootnote` | Page-tail colophon: hairline top rule, centered muted small-print `lines`, optional `children` slot above them for link rows (policies, contact, hours). Purely presentational — the quiet close of a surface. |
 | `HamburgerButton` | The standard `MobileHomeHeader.menuButton` trigger. Swaps Menu↔X with a coordinated rotate+crossfade (200ms) driven by `isOpen`, so the swap reads as a mechanical transformation coordinated with the drawer's slide. Pairs with the cutout mode, where the trigger stays at the same x/y while the drawer slides in. |
 | `AppShellHeader` (composed) | The one-drawer pattern pre-assembled in `components/composed/`: `MobileHomeHeader` (brand from `APP_DISPLAY_NAME`) + `HamburgerButton` + `MobileNavDrawerGlassCap` + `MobileNavDrawer` in the `APP_LAYOUT` persistence/anchor defaults, cap and drawer both locked to `MOBILE_CONTENT_MAX_WIDTH`. Consumers pass `items` (navigateTo* helpers from the navigation barrel) plus optional `subtitle` / `rightAction` / `footer` / `atmosphere` slots — no hand-wiring of the cap/anchor/columnWidth triple. Belongs to the home surface only; child screens carry the `> [title]` `MobileHeader`. |
@@ -232,6 +232,7 @@ via the path alias, or `../MobilePremium` relatively).
 | Component | Purpose |
 |---|---|
 | `MobileAlert` | Inline alert with a 24px icon circle. `variant: 'success' \| 'warning' \| 'error' \| 'info'`. |
+| `Toast` (primitives) | The transient-message surface (`ToastContainer`, mounted by the shell). Two surface languages read `theme.toast.style` (§5.3): `'card'` — bordered card, colored icon, left stripe (the glass default); `'chit'` — the ink plate with paper type, one 7px status dot, receipt-mono message when `fonts.mono` is declared, flat air. Items carry `accessibilityLiveRegion="polite"`; the card radius reads `theme.shapes.control`. |
 | `EmptyState` | The canonical empty-state primitive. Domain-neutral: consumer supplies title, optional message, optional icon, and optional action. The action renders through `MobilePrimaryButton` so the tap target + variant language (primary/secondary/ghost) match the rest of the kit — pick the variant by context (primary when EmptyState is the screen's main content, secondary/ghost when nested). Compact mode trims the vertical rhythm for nested use. No preset copy, no icon library, no variant codes — those stay consumer-side. |
 | `OfflineBanner` | Pinned connectivity / sync banner. Three variants carry distinct semantics: `'offline'` (error red — device is offline; optional pending count), `'syncing'` (brand — online and flushing pending work), `'sync-failed'` (warning amber — a sync attempt failed; pair with `actionLabel="Retry"` + `onAction`). Purely presentational: the consumer owns network state, queue state, and mount/unmount. No store subscription, no polling, no auto-hide. Respects its parent's layout — does not pin itself to the screen. Uses `accessibilityLiveRegion="polite"` so screen readers announce state changes; the `status` role is omitted because RN's `AccessibilityRole` enum does not include it. |
 | `StatCard` | Small card showing one labeled metric — `label`, large `value`, optional `subtitle`, optional `icon`, optional `accentColor`. Three variants: `'plain'` (default card surface), `'accent'` (brand-tinted background), `'outline'` (hairline border). Three sizes: `'sm'`, `'md'`, `'lg'` (control padding + value font size). Optional `onPress` turns the card into a Pressable with `role="button"`; without `onPress` it is a non-interactive View with `role="text"`. Press feedback via `usePressedStyle` (scale + opacity; opacity-only under reduced motion). |
@@ -441,6 +442,42 @@ consumer whose brand is warm-toned may prefer warmer orb hues for
 `components/premium/shared/atmospherePalettes.ts` directly — the file
 is the source of truth, no override mechanism needed (copy-then-customize
 model).
+
+### 5.3 The toast surface is a theme token
+
+Transient system messages are a surface **language** decision too, and
+follow the same one-declaration discipline — `theme.toast.style` in
+`constants/theme.ts`, preset by `theme.dialect` ('card' for glass,
+'chit' for ink), literal-overridable:
+
+- `'card'` (default) — the bordered card: colored icon per type, left
+  accent stripe, elevation shadow.
+- `'chit'` — the ink chit: the mode's ink plate (`colors.text`, bone in
+  dark) with paper type, ONE 7px status dot carrying the semantic tint,
+  receipt-mono message (12px/700, tabular figures) when `theme.fonts.mono`
+  is declared, flat air — no shadow, no stripe, no icon triad.
+
+### 5.4 Type families (`theme.fonts`)
+
+The optional display pair follows the same override-point discipline:
+`theme.fonts.display` (poster titles, hero figures, totals) and
+`theme.fonts.mono` (ledger figures — prices, stock, dates, metrics,
+eyebrows). Both default to `undefined`: the starter renders the
+platform sans everywhere, `mobileTitle`/`mobileEyebrow` only pick a
+family up when one is declared, and the toast chit / announcement
+message read `fonts.mono` the same way — declaring the axis never moves
+the default look. Body/UI text deliberately stays the platform sans for
+legibility.
+
+Self-hosting recipe (web): font files in `public/fonts/` (woff2 first),
+the `@font-face` block in an id'd `<style>` in `index.html`, restored
+at runtime from `app/_layout.tsx` (static export strips `<head>`
+styles), plus `<link rel="preload" as="font" crossorigin>` lines — the
+build-time injector (`scripts/inject-critical-web.ts`) copies both the
+style block and the preloads into every exported route. The native
+extension loads the same files through expo-font. The full recipe (with
+the mirror-trio discipline: index.html, root layout, injector) lives in
+the `TypeFaces` block of `constants/theme.ts`.
 
 ---
 
