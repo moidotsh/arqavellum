@@ -27,9 +27,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { isWeb, hasDocument } from './platform';
-// s5-exempt — importing the stores BARREL here would close a cycle
-// (stores/networkStore reads the utils barrel); the storage LEAF module
-// is cycle-free and is the same module the barrel re-exports.
 import { zustandStorage } from './storage';
 
 // ─── Language type ─────────────────────────────────────────────────────
