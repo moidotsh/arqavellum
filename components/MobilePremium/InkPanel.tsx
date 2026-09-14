@@ -17,10 +17,7 @@
 import React from 'react';
 import { StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useAppTheme } from '../../context';
-
-/** Print-noise overlay for inverted surfaces — web only, ~5% opacity. */
-const INK_GRAIN_BACKGROUND =
-  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='0.05'/></svg>\")";
+import { INK_GRAIN_BACKGROUND } from './grain';
 
 export interface InkPanelProps {
   children?: React.ReactNode;
