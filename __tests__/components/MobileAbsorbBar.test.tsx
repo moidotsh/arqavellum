@@ -34,8 +34,10 @@ describe('MobileAbsorbBar render shape', () => {
       </ThemeProvider>,
     );
     expect(screen.getByText('station child')).toBeTruthy();
-    // The inert strip mounts (testID on the bar itself).
-    expect(screen.getByTestId('absorb-bar')).toBeTruthy();
+    // The inert strip mounts (RN-web renders testID as the bare
+    // `testid` attribute — not DTL's data-testid default).
+    expect(document.querySelector('view[testid="absorb-bar"]')).toBeTruthy();
+    expect(document.querySelector('view[testid="absorb-station"]')).toBeTruthy();
   });
 });
 
