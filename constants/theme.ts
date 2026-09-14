@@ -59,21 +59,21 @@ const FONTS = {
 // The ONE family declaration. A consumer's design language is not four
 // independent flags that must agree by convention — it is one dialect
 // that presets every surface-language point below (atmosphere, drawer,
-// transition). Sub-points remain as explicit overrides: writing a
+// toast, transition). Sub-points remain as explicit overrides: writing a
 // literal `style` on any of them beats the preset, for consumers whose
 // taste mixes deliberately.
 //   • 'glass' (default) — the starter's own look: drifting aurora orbs,
-//     the glass-scrim sheet drawer, no route transition.
+//     the glass-scrim sheet drawer, the bordered-card toast, no route
+//     transition.
 //   • 'ink' — printed matter: flat air (no orbs), the InkPanel drawer,
-//     and the ink route curtain. The curtain is consumer-implemented
-//     machinery that READS the transition axis below — the shell ships
-//     no transition primitive of its own (a future one would read the
-//     same declaration). The ink dialect's toast treatment ('chit') is
-//     likewise consumer-side until it ports.
+//     the ink chit toast, and the ink route curtain. The curtain is
+//     consumer-implemented machinery that READS the transition axis
+//     below — the shell ships no transition primitive of its own (a
+//     future one would read the same declaration).
 const DIALECT = 'glass' as 'glass' | 'ink';
 const DIALECT_PRESETS = {
-  glass: { atmosphere: 'aurora', drawer: 'sheet', transition: 'none' },
-  ink: { atmosphere: 'flat', drawer: 'ink', transition: 'curtain' },
+  glass: { atmosphere: 'aurora', drawer: 'sheet', toast: 'card', transition: 'none' },
+  ink: { atmosphere: 'flat', drawer: 'ink', toast: 'chit', transition: 'curtain' },
 } as const;
 
 export const theme = {
@@ -486,6 +486,19 @@ export const theme = {
     style: DIALECT_PRESETS[DIALECT].drawer,
   },
 
+  // ── Toast tokens ────────────────────────────────────────────────────
+  // The transient-message surface language, same discipline as the
+  // family above. 'card' is the bordered card with colored icons — the
+  // glass dialect's default. 'chit' is the ink treatment — the
+  // announcement strip's strong tone, floating: ink plate
+  // (`colors.text`, bone in dark), paper type, one 7px status dot,
+  // receipt-mono message when `fonts.mono` is declared, flat air (no
+  // shadow, no stripe, no icon triad). Defaults to the dialect preset;
+  // write a literal to override.
+  toast: {
+    style: DIALECT_PRESETS[DIALECT].toast,
+  },
+
   // ── Transition tokens ────────────────────────────────────────────────
   // The route-transition axis — the one motion declaration. 'none' (the
   // glass dialect's preset): the shell ships no transition machinery,
@@ -560,6 +573,10 @@ export type ColorScheme = 'light' | 'dark';
 // the starter default; a consumer declares 'flat' to turn the orbs off
 // app-wide in one place.
 export type AtmosphereStyle = 'aurora' | 'flat';
+
+// The toast surface styles (`theme.toast.style`) — the bordered card the
+// glass dialect presets vs the floating ink chit the ink dialect presets.
+export type ToastStyle = 'card' | 'chit';
 
 // Convenience aliases — the resolved palette shape for either mode. Both
 // `light` and `dark` are structurally identical, so the union collapses to
