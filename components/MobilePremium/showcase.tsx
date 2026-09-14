@@ -15,6 +15,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View, type ViewStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Link } from 'expo-router';
 import { Sun, Moon, Monitor, Mail, Lock, Eye, EyeOff, Settings, Bell, Info, ChevronRight, Home, Package, TrendingUp, Search } from '@tamagui/lucide-icons-2';
 import { theme, APP_LAYOUT, SCREEN_BODY_STYLE } from '../../constants';
 import { useAppTheme, useToast, type ColorSchemePreference } from '../../context';
@@ -55,6 +56,13 @@ import { MobileNavDrawer } from './MobileNavDrawer';
 import type { MobileNavDrawerItem } from './MobileNavDrawer';
 import { MobileNavDrawerGlassCap } from './MobileNavDrawerGlassCap';
 import { HamburgerButton } from './HamburgerButton';
+import { RouteCurtain } from './RouteCurtain';
+import { LangToggle } from './LangToggle';
+import {
+  createStringsCatalog,
+  useLangStore,
+  useRouteTransitionStore,
+} from '../../utils';
 import { SkeletonBlock } from './SkeletonBlock';
 import { SegmentedControl } from './SegmentedControl';
 import { FilterChip } from './FilterChip';
@@ -375,6 +383,209 @@ function ContainerVariantDemo() {
   );
 }
 
+
+// ── The theme-axes playground ───────────────────────────────────────────
+// Dev-only previewer: mutates the LIVE theme object so both languages of
+// each render-read axis (atmosphere, toast) can be previewed in place.
+// The declaration in constants/theme.ts stays the consumer's single
+// point; this panel is a previewer, not a second declaration site, and
+// everything resets on reload.
+
+function ThemeAxesDemo() {
+  const { colors } = useAppTheme();
+  const { showToast } = useToast();
+  const [atmoStyle, setAtmoStyle] = useState(theme.atmosphere.style);
+  const [toastStyle, setToastStyle] = useState(theme.toast.style);
+
+  const axisRow = (label: string, value: string) => (
+    <View key={label} style={styles.axisRow}>
+      <Text style={[styles.axisLabel, { color: colors.textMuted }]}>{label}</Text>
+      <Text style={[styles.axisValue, { color: colors.text }]}>{value}</Text>
+    </View>
+  );
+
+  return (
+    <MobileSurface>
+      <Text style={[styles.bodyText, { color: colors.textSecondary, marginBottom: 12 }]}>
+        One declaration — theme.dialect — presets the whole surface-language family:
+        atmosphere, drawer, toast, transition. Each axis can also be written literally
+        for deliberately mixed taste. Live previews below; the rest of the panel reads
+        the current declaration.
+      </Text>
+
+      {axisRow('theme.dialect', "'glass' — the starter preset")}
+      {axisRow(
+        'theme.drawer.style',
+        `'${theme.drawer.style}' — both languages demo under Drawer below`,
+      )}
+      {axisRow(
+        'theme.transition.style',
+        `'${theme.transition.style}' — the curtain demo below drives the machinery directly`,
+      )}
+      {axisRow(
+        'theme.shapes',
+        `surface ${theme.shapes.surface} · sheet ${theme.shapes.sheet} · control ${theme.shapes.control} · tile ${theme.shapes.tile} · tag ${theme.shapes.tag === 999 ? '999 (round)' : theme.shapes.tag}`,
+      )}
+      {axisRow(
+        'theme.fonts',
+        theme.fonts.display != null || theme.fonts.mono != null
+          ? 'declared — the printed-matter pair is live'
+          : 'platform sans (declare display/mono for the poster/receipt pair)',
+      )}
+
+      <View style={styles.axisToggleRow}>
+        <Text style={[styles.axisLabel, { color: colors.textMuted }]}>atmosphere</Text>
+        <SegmentedControl
+          variant="selection"
+          segments={[
+            { label: 'Aurora', value: 'aurora' },
+            { label: 'Flat', value: 'flat' },
+          ]}
+          value={atmoStyle}
+          onChange={(v: 'aurora' | 'flat') => {
+            theme.atmosphere.style = v;
+            setAtmoStyle(v);
+          }}
+          accessibilityLabel="Atmosphere language"
+        />
+      </View>
+      <Text style={[styles.axisHint, { color: colors.textMuted }]}>
+        Watch the drifting orbs behind this page stop and start — every MobileAtmosphere
+        follows the one declaration.
+      </Text>
+
+      <View style={styles.axisToggleRow}>
+        <Text style={[styles.axisLabel, { color: colors.textMuted }]}>toast</Text>
+        <SegmentedControl
+          variant="selection"
+          segments={[
+            { label: 'Card', value: 'card' },
+            { label: 'Chit', value: 'chit' },
+          ]}
+          value={toastStyle}
+          onChange={(v: 'card' | 'chit') => {
+            theme.toast.style = v;
+            setToastStyle(v);
+            showToast('success', `Toast surface: ${v === 'chit' ? 'the ink chit' : 'the bordered card'}.`);
+          }}
+          accessibilityLabel="Toast surface language"
+        />
+      </View>
+      <Text style={[styles.axisHint, { color: colors.textMuted }]}>
+        The toggle emits a live toast — the ink chit is the announcement strip's strong
+        tone, floating: ink plate, one status dot, receipt mono when fonts.mono is declared.
+      </Text>
+
+      <View style={[styles.axisRow, { marginTop: 14 }]}>
+        <Text style={{ color: colors.brand, fontSize: 24, fontWeight: '800' }}>
+          brand
+        </Text>
+        <Text style={{ color: colors.textMuted, fontSize: 12, marginLeft: 8, flex: 1 }}>
+          fills, borders, display type (≥19px bold) — a 3:1 slot
+        </Text>
+      </View>
+      <View style={styles.axisRow}>
+        <Text style={{ color: colors.brandText, fontSize: 13, fontWeight: '700' }}>
+          brandText
+        </Text>
+        <Text style={{ color: colors.textMuted, fontSize: 12, marginLeft: 8, flex: 1 }}>
+          10–15px labels, eyebrows, links — the AA companion (a saturated brand darkens
+          it in light mode until it clears 4.5:1)
+        </Text>
+      </View>
+    </MobileSurface>
+  );
+}
+
+// ── The route curtain demo ──────────────────────────────────────────────
+// theme.transition.style = 'curtain' (the ink dialect's preset) plays this
+// on every navigation in the real app; under the starter's 'none' the
+// overlay never mounts. The buttons drive the machinery directly so the
+// move is visible under any theme.
+
+function CurtainDemo() {
+  const { colors } = useAppTheme();
+  const begin = useRouteTransitionStore((s) => s.beginSnapReveal);
+  return (
+    <MobileSurface>
+      <Text style={[styles.bodyText, { color: colors.textSecondary, marginBottom: 12 }]}>
+        The ink plate sweeping navigation — cover, platen rule + eyebrow + stamp, then the
+        lift with a paper chaser trailing. The stamp echoes the route registry's title;
+        safety valves end every cycle. Reduced motion never mounts it.
+      </Text>
+      <View style={styles.toastRow}>
+        <Pressable
+          onPress={() => begin('up')}
+          style={[styles.toastChip, { backgroundColor: colors.text, borderColor: colors.text }]}
+          accessibilityRole="button"
+          accessibilityLabel="Play the curtain reveal up"
+        >
+          <Text style={[styles.toastChipLabel, { color: colors.background }]}>Reveal up</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => begin('down')}
+          style={[styles.toastChip, { backgroundColor: colors.text, borderColor: colors.text }]}
+          accessibilityRole="button"
+          accessibilityLabel="Play the curtain reveal down"
+        >
+          <Text style={[styles.toastChipLabel, { color: colors.background }]}>Reveal down</Text>
+        </Pressable>
+        <Link
+          href="/not-a-real-route"
+          style={[styles.toastChip, { borderColor: colors.border }]}
+          accessibilityLabel="Open the not-found page"
+        >
+          <Text style={[styles.toastChipLabel, { color: colors.brandText }]}>Not-found page</Text>
+        </Link>
+      </View>
+      <RouteCurtain />
+    </MobileSurface>
+  );
+}
+
+// ── The i18n seam demo ──────────────────────────────────────────────────
+const LANG_DEMO = createStringsCatalog(
+  {
+    greeting: 'Welcome to the kit',
+    cta: 'Start browsing',
+    note: 'One tap re-renders every mounted surface — the catalog is typed, so a missing translation is a compile error.',
+  },
+  {
+    fr: {
+      greeting: 'Bienvenue dans le kit',
+      cta: 'Parcourir',
+      note: 'Un geste re-rend chaque surface montée — le catalogue est typé, une traduction manquante est une erreur de compilation.',
+    },
+  },
+);
+
+function LangDemo() {
+  const { colors } = useAppTheme();
+  const t = LANG_DEMO.useT();
+  const lang = useLangStore((s) => s.lang);
+  return (
+    <MobileSurface>
+      <Text style={[styles.bodyText, { color: colors.textSecondary, marginBottom: 12 }]}>
+        The typed bilingual catalog over the persisted lang store — the shell's opt-in i18n
+        seam. Content is not chrome: catalogs carry UI strings only.
+      </Text>
+      <LangToggle />
+      <View style={{ marginTop: 14 }}>
+        <Text style={[theme.typography.mobileTitle, { color: colors.text, fontSize: 20 }]}>
+          {t.greeting}
+        </Text>
+        <Text style={[styles.bodyText, { color: colors.textSecondary, marginTop: 6 }]}>
+          {t.cta}. {t.note}
+        </Text>
+        <Text style={[styles.axisHint, { color: colors.textMuted, marginTop: 8 }]}>
+          live lang: {lang} · persisted per browser · mirrors fall back to the source
+          language
+        </Text>
+      </View>
+    </MobileSurface>
+  );
+}
+
 export function Showcase() {
   const { colors } = useAppTheme();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -390,6 +601,7 @@ export function Showcase() {
   const [selectedId, setSelectedId] = useState<string | null>('option-a');
   const [multiSelectedIds, setMultiSelectedIds] = useState<string[]>(['feature-1']);
   const [inputValue, setInputValue] = useState('');
+  const [multiNote, setMultiNote] = useState('');
   const [submitValue, setSubmitValue] = useState('');
   const [lastSubmitted, setLastSubmitted] = useState<string | null>(null);
   const [searchValue, setSearchValue] = useState('');
@@ -513,6 +725,8 @@ export function Showcase() {
                 isOpen={drawerOpen}
                 onPress={() => setDrawerOpen((prev) => !prev)}
                 color={demoOnPlate ? colors.background : undefined}
+                openLabel="Ouvrir le menu"
+                closeLabel="Fermer le menu"
               />
             }
             drawerGlassCap={
@@ -533,6 +747,11 @@ export function Showcase() {
         <View style={styles.section}>
           <MobileSectionEyebrow>Theme</MobileSectionEyebrow>
           <ThemeSelector />
+        </View>
+
+        <View style={styles.section}>
+          <MobileSectionEyebrow>Theme axes — the dialect family</MobileSectionEyebrow>
+          <ThemeAxesDemo />
         </View>
 
         <MobileStepRail current={2} total={5} accentColor={colors.brand} />
@@ -688,6 +907,15 @@ export function Showcase() {
               }
               maxLength={80}
             />
+            <MobileInput
+              label="Long note (multiline)"
+              value={multiNote}
+              onChangeText={setMultiNote}
+              placeholder="Paste a description — the field grows to four rows and scrolls internally once full…"
+              multiline
+              numberOfLines={4}
+              maxLength={400}
+            />
           </MobileSurface>
         </View>
 
@@ -832,6 +1060,16 @@ export function Showcase() {
         <View style={styles.section}>
           <MobileSectionEyebrow>Toast (auto-dismissing alerts)</MobileSectionEyebrow>
           <ToastDemo />
+        </View>
+
+        <View style={styles.section}>
+          <MobileSectionEyebrow>Route curtain (theme.transition.style)</MobileSectionEyebrow>
+          <CurtainDemo />
+        </View>
+
+        <View style={styles.section}>
+          <MobileSectionEyebrow>Language toggle (the i18n seam)</MobileSectionEyebrow>
+          <LangDemo />
         </View>
 
         <View style={styles.section}>
@@ -1641,6 +1879,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: 16,
     marginBottom: 4,
+  },
+  axisRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 8,
+    paddingVertical: 5,
+  },
+  axisLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    minWidth: 132,
+  },
+  axisValue: {
+    fontSize: 12.5,
+    flex: 1,
+  },
+  axisHint: {
+    fontSize: 11.5,
+    lineHeight: 16,
+    marginTop: 6,
+    marginBottom: 8,
+  },
+  axisToggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    marginTop: 10,
   },
   absorbDemo: {
     position: 'relative',
