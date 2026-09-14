@@ -1234,6 +1234,12 @@ export function Showcase() {
             onDismiss={() => {}}
           />
           <View style={styles.spacer} />
+          <MobileAnnouncementBar
+            tone="strong"
+            message="Last day — the drop closes tonight at 22:00."
+            onDismiss={() => {}}
+          />
+          <View style={styles.spacer} />
           <MobileFootnote lines={['All prices CAD. Examples shown for layout.', 'Starter shell — replace this fine print.']} />
         </View>
 

@@ -22,6 +22,14 @@ export interface MobileAnnouncementBarProps {
   onAction?: () => void;
   /** When set, renders the dismiss (X) control and forwards the press. */
   onDismiss?: () => void;
+  /**
+   * 'strong' inverts the strip onto the mode's ink — for the one fact
+   * that outranks everything else on the page (e.g. a last-day window).
+   * Purely presentational; the caller owns when it applies.
+   */
+  tone?: 'default' | 'strong';
+  /** Localized dismiss label — consumers shipping non-English chrome. */
+  dismissA11yLabel?: string;
   /** Test ID. */
   testID?: string;
   /** Outer style pass-through. */
@@ -33,19 +41,33 @@ export function MobileAnnouncementBar({
   actionLabel,
   onAction,
   onDismiss,
+  tone = 'default',
+  dismissA11yLabel = 'Dismiss announcement',
   testID,
   style,
 }: MobileAnnouncementBarProps) {
   const { colors } = useAppTheme();
   const hasAction = actionLabel != null && onAction != null;
+  const strong = tone === 'strong';
+  const ink = colors.text;
+  const paper = colors.background;
 
   return (
     <View
       testID={testID}
       accessibilityLiveRegion="polite"
-      style={[styles.shell, { backgroundColor: colors.brandMuted, borderColor: colors.cardBorder }, style]}
+      style={[
+        styles.shell,
+        strong
+          ? { backgroundColor: ink, borderColor: ink }
+          : { backgroundColor: colors.brandMuted, borderColor: colors.cardBorder },
+        style,
+      ]}
     >
-      <Text style={[styles.message, { color: colors.text }]} numberOfLines={2}>
+      <Text
+        style={[styles.message, { color: strong ? paper : colors.text }]}
+        numberOfLines={2}
+      >
         {message}
       </Text>
       {hasAction ? (
@@ -56,7 +78,15 @@ export function MobileAnnouncementBar({
           accessibilityLabel={actionLabel}
           style={({ pressed }) => [styles.action, { opacity: pressed ? 0.6 : 1 }]}
         >
-          <Text style={[styles.actionText, { color: colors.brand }]}>{actionLabel}</Text>
+          <Text
+            style={[
+              styles.actionText,
+              { color: strong ? paper : colors.brandText },
+              strong && styles.actionTextStrong,
+            ]}
+          >
+            {actionLabel}
+          </Text>
         </Pressable>
       ) : null}
       {onDismiss != null ? (
@@ -64,10 +94,10 @@ export function MobileAnnouncementBar({
           onPress={onDismiss}
           hitSlop={12}
           accessibilityRole="button"
-          accessibilityLabel="Dismiss announcement"
+          accessibilityLabel={dismissA11yLabel}
           style={({ pressed }) => [styles.dismiss, { opacity: pressed ? 0.6 : 1 }]}
         >
-          <X size={16} color={colors.textMuted} />
+          <X size={16} color={strong ? `${paper}B3` : colors.textMuted} />
         </Pressable>
       ) : null}
     </View>
@@ -91,6 +121,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '500',
     lineHeight: 17,
+    // The broadcast reads as ledger output when a mono face is declared.
+    fontFamily: theme.fonts.mono,
   },
   action: {
     flexShrink: 0,
@@ -100,6 +132,12 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: 13,
     fontWeight: '600',
+  },
+  // On the ink plate the action reads as paper type, underlined so it
+  // still reads as tappable without the brand hue.
+  actionTextStrong: {
+    fontWeight: '800',
+    textDecorationLine: 'underline',
   },
   dismiss: {
     flexShrink: 0,
