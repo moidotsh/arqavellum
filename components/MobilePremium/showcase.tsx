@@ -191,11 +191,15 @@ function ToastDemo() {
 
 function AnimationDemo() {
   const { colors } = useAppTheme();
-  const fadeIn = useFadeIn({ animateOnMount: false, duration: 600 });
-  const scaleIn = useScaleIn({ animateOnMount: false, duration: 600, useSpring: true });
-  const popIn = usePopIn({ animateOnMount: false });
+  // Animate on mount: the resting state must be the settled grid — with
+  // mount animation off, the fade/scale/pop cards rest invisible and the
+  // translateY card rests displaced into the surface's clipped corner.
+  // Replay re-runs the same choreography on demand.
+  const fadeIn = useFadeIn({ animateOnMount: true, duration: 600 });
+  const scaleIn = useScaleIn({ animateOnMount: true, duration: 600, useSpring: true });
+  const popIn = usePopIn({ animateOnMount: true });
   const shake = useShake({ intensity: 8, cycles: 3 });
-  const translateY = useTranslateY({ animateOnMount: false, initialValue: 24, duration: 500 });
+  const translateY = useTranslateY({ animateOnMount: true, initialValue: 24, duration: 500 });
 
   const [counterTarget, setCounterTarget] = useState('0');
   const counter = useAnimatedCounter(counterTarget);
@@ -435,19 +439,23 @@ function ThemeAxesDemo() {
 
       <View style={styles.axisToggleRow}>
         <Text style={[styles.axisLabel, { color: colors.textMuted }]}>atmosphere</Text>
-        <SegmentedControl
-          variant="selection"
-          segments={[
-            { label: 'Aurora', value: 'aurora' },
-            { label: 'Flat', value: 'flat' },
-          ]}
-          value={atmoStyle}
-          onChange={(v: 'aurora' | 'flat') => {
-            theme.atmosphere.style = v;
-            setAtmoStyle(v);
-          }}
-          accessibilityLabel="Atmosphere language"
-        />
+        {/* Bounded slot: the control fills its container width, so a row
+            slot must flex it or the track overflows the card. */}
+        <View style={styles.axisToggleControl}>
+          <SegmentedControl
+            variant="selection"
+            segments={[
+              { label: 'Aurora', value: 'aurora' },
+              { label: 'Flat', value: 'flat' },
+            ]}
+            value={atmoStyle}
+            onChange={(v: 'aurora' | 'flat') => {
+              theme.atmosphere.style = v;
+              setAtmoStyle(v);
+            }}
+            accessibilityLabel="Atmosphere language"
+          />
+        </View>
       </View>
       <Text style={[styles.axisHint, { color: colors.textMuted }]}>
         Watch the drifting orbs behind this page stop and start — every MobileAtmosphere
@@ -456,20 +464,22 @@ function ThemeAxesDemo() {
 
       <View style={styles.axisToggleRow}>
         <Text style={[styles.axisLabel, { color: colors.textMuted }]}>toast</Text>
-        <SegmentedControl
-          variant="selection"
-          segments={[
-            { label: 'Card', value: 'card' },
-            { label: 'Chit', value: 'chit' },
-          ]}
-          value={toastStyle}
-          onChange={(v: 'card' | 'chit') => {
-            theme.toast.style = v;
-            setToastStyle(v);
-            showToast('success', `Toast surface: ${v === 'chit' ? 'the ink chit' : 'the bordered card'}.`);
-          }}
-          accessibilityLabel="Toast surface language"
-        />
+        <View style={styles.axisToggleControl}>
+          <SegmentedControl
+            variant="selection"
+            segments={[
+              { label: 'Card', value: 'card' },
+              { label: 'Chit', value: 'chit' },
+            ]}
+            value={toastStyle}
+            onChange={(v: 'card' | 'chit') => {
+              theme.toast.style = v;
+              setToastStyle(v);
+              showToast('success', `Toast surface: ${v === 'chit' ? 'the ink chit' : 'the bordered card'}.`);
+            }}
+            accessibilityLabel="Toast surface language"
+          />
+        </View>
       </View>
       <Text style={[styles.axisHint, { color: colors.textMuted }]}>
         The toggle emits a live toast — the ink chit is the announcement strip's strong
@@ -1907,6 +1917,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 12,
     marginTop: 10,
+  },
+  axisToggleControl: {
+    flex: 1,
+    minWidth: 0,
   },
   absorbDemo: {
     position: 'relative',

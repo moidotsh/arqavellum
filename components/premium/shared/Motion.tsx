@@ -248,8 +248,13 @@ export function Crossfade({
           propagation for initial visibility, which left carousel/wizard
           slides rendering empty on some web builds. The outgoing layer's
           fade-out + drift still carries the crossfade feel; the incoming
-          child simply appears underneath as the old one fades away. */}
-      <View key={`in-${current.key}`}>{current.element}</View>
+          child simply appears underneath as the old one fades away.
+          While the key is unchanged the LIVE children render — a re-render
+          that changes only content (a theme flip) must re-ink the slide
+          rather than replay the mount-time snapshot. */}
+      <View key={`in-${current.key}`}>
+        {index === current.key ? children : current.element}
+      </View>
     </View>
   );
 }
