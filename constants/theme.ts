@@ -501,11 +501,11 @@ export const theme = {
 
   // ── Transition tokens ────────────────────────────────────────────────
   // The route-transition axis — the one motion declaration. 'none' (the
-  // glass dialect's preset): the shell ships no transition machinery,
-  // navigation simply swaps. 'curtain' (the ink preset): the full-bleed
-  // ink plate sweeping navigation — consumer-implemented machinery
-  // reads this declaration (their NavigationHelper/overlay); a future
-  // shell transition primitive would read the same axis. Write a
+  // glass dialect's preset): the curtain machinery stays retired —
+  // withRouteCurtain passes straight through and the overlay never
+  // mounts. 'curtain' (the ink preset): the shell's RouteCurtain plays
+  // — the full-bleed ink plate sweeping navigation (cover, stamp,
+  // paper-chaser lift), wired through NavigationHelper. Write a
   // literal to override the preset.
   transition: {
     style: DIALECT_PRESETS[DIALECT].transition,

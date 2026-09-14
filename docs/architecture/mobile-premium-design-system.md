@@ -217,6 +217,7 @@ via the path alias, or `../MobilePremium` relatively).
 | `MobileHomeHeader` | Home-screen header that puts the brand on the same row as the menu trigger. 36px brand row (brand text + optional `menuButton` + optional `rightAction`) + optional normal-case `subtitle` below. `paddingHorizontal: 20`, `maxWidth: 420`, `alignSelf: 'center'`. Pairs with `MobileNavDrawer` in cutout mode — when the drawer opens, the transparent cap at the top of the drawer panel lets this header's brand + menu button show through at the same position. The `drawerGlassCap` slot hosts a `MobileNavDrawerGlassCap` so the cutout pattern composes without hand-positioning. The `menuButton` slot is a `React.ReactNode`; the kit ships `HamburgerButton` as the standard trigger. |
 | `MobileNavDrawer` | Left-side hamburger drawer. Shell-level mechanism (slide / scrim / items / active-highlight / badge) — branding, items, and footer are consumer-supplied. An optional `topContent` element renders ABOVE the item list (just under the header / cutout area, outside the items' scroll) for consumer-supplied account identity or context strips. Two brand-persistence modes via the `brandPersistence` prop: **`'slideout'`** (default) — panel covers full screen height; brand lives in the `header` slot. **`'cutout'`** — panel leaves a transparent cutout at its top so the home header's brand + hamburger stay visible at the same position; the scrim starts at the panel's right edge and runs to the window edge at all heights, and the consumer renders `MobileNavDrawerGlassCap` over the cutout for the continuous-glass read. The `header` prop is ignored in cutout mode. Two anchor modes via the `anchor` prop: **`'window'`** (default) — panel slides from x=0 of the window. **`'column'`** — panel slides from the left edge of the centered 420pt column (computed from `useWindowDimensions`), so the drawer stays attached to centered content on any viewport. Defaults are picked by `APP_LAYOUT.navDrawerBrandPersistence` and `APP_LAYOUT.navDrawerAnchor` in `constants/layout.ts`. Slides with an iOS-sheet curve (`cubic-bezier(0.32, 0.72, 0, 1)`) behind a frosted-glass scrim (web backdrop-blur via `mobilePremium.navScrimBackdropBlur`; Android Chrome falls back to the milder `androidChromeSurfaceBlur` at higher opacity because it renders `saturate()` poorly). The panel carries a right-edge depth shadow (`mobilePremium.navPanelShadow`) placed on the panel — not the scrim — so its upward bleed lands off-screen instead of darkening the brand cutout. Active row gets a 3px brand strip on the left edge + brand-tinted background + bolder label; inactive rows pick up a hover background on pointer devices. `prefers-reduced-motion` collapses the slide to instant. The `atmosphereShowOrbs` prop toggles the body atmosphere's drifting orbs; it defaults to the theme's atmosphere style (`theme.atmosphere.style`, §5.1) — pass an explicit boolean only to override the theme for this drawer alone. |
 | `InkPanel` | Inverted-surface primitive — text-color plate + print grain + optional brand edge rule. Composed by `MobileNavDrawer` when `theme.drawer.style` is `ink`; available to any consumer surface that speaks the same language. The grain itself is exported (`inkSurface(background)` / `INK_GRAIN_BACKGROUND` from the kit barrel) for consumer-built ink surfaces that are not a whole panel — spread `inkSurface(colors.text)` on a View and the surface carries the same tooth. |
+| `RouteCurtain` | The ink dialect's navigation transition (§5.5) — root-mounted, driven by `theme.transition.style = 'curtain'` through `utils/routeTransition.ts`'s phase machine + NavigationHelper's `withRouteCurtain` seam. Not a per-screen primitive: it mounts once above the stack and never renders inside a scaffold, so it has no showcase section (the visual source of truth is declaring the dialect and navigating). Unmounted entirely under the 'none' default; `data-testid="route-curtain"` for walkers. |
 | `MobileNavDrawerGlassCap` | Glass cap rendered by the consumer's home header (via `MobileHomeHeader.drawerGlassCap`) over the nav drawer's brand cutout. Crossfades in AND slides with the panel using the same 300ms iOS-sheet easing so the cutout reads as one continuous drawer surface. Replicates the scrim treatment (backgroundDeep at scrim alpha + backdrop blur + right hairline; Android Chrome fallback included). `anchor`/`columnWidth`/`width`/`height` props must match the drawer's so the cap lands exactly over the panel's cutout. `pointerEvents: 'none'` — taps reach the hamburger/X behind it. |
 | `MobileAnnouncementBar` | Owner-authored announcement strip — the one-line broadcast surface ("Pickup Friday 17–19h", "Drop 004 opens Friday"). Purely presentational like `OfflineBanner`: the consumer owns the message, mount/unmount, and any dismissed-once persistence. Optional inline action (`actionLabel` + `onAction`) and optional dismiss control (`onDismiss` — the X only renders when the handler is provided; `dismissA11yLabel` localizes it). `tone="strong"` inverts the strip onto the mode's ink — for the one fact that outranks everything else on the page; caller owns when it applies. `accessibilityLiveRegion="polite"`. The message picks up `fonts.mono` when a mono face is declared. |
 | `MobileFootnote` | Page-tail colophon: hairline top rule, centered muted small-print `lines`, optional `children` slot above them for link rows (policies, contact, hours). Purely presentational — the quiet close of a surface. |
@@ -478,6 +479,69 @@ style block and the preloads into every exported route. The native
 extension loads the same files through expo-font. The full recipe (with
 the mirror-trio discipline: index.html, root layout, injector) lives in
 the `TypeFaces` block of `constants/theme.ts`.
+
+### 5.5 The route curtain (`theme.transition.style`)
+
+Navigation motion is a dialect decision, declared once —
+`theme.transition.style` in `constants/theme.ts`, preset by
+`theme.dialect` ('none' for glass, 'curtain' for ink):
+
+- `'none'` (default) — the machinery stays retired. `withRouteCurtain`
+  passes every navigation straight through and the overlay never
+  mounts; wiring costs nothing.
+- `'curtain'` — `RouteCurtain` (root-mounted, above the stack) plays
+  printed matter, not a fade: an ink plate (`colors.text` + the
+  `inkSurface` grain) sweeps over the outgoing page with a paper
+  chaser trailing; the platen rule draws in the brand accent, an
+  eyebrow rises, and the destination stamps on in the display face
+  (letterpress overshoot); the plate lifts — up drilling in, down
+  backing out — rule leading, paper chasing it off.
+
+Mechanics worth knowing (all in `utils/routeTransition.ts`):
+
+- **Fixed-beat navigation.** The router fires a set 170ms after the
+  cover begins — navigation never depends on an animation frame
+  ticking.
+- **Snap mode.** Navigations the helper didn't intercept (browser
+  back, URL entry) get the same reveal from the overlay's path watch:
+  the render that swaps the route renders the plate already covering,
+  so the swap frame is never visible.
+- **The stamp never invents copy.** `routeCurtainCopy` echoes the
+  route registry (`navigation/routeMetadata.ts` — the same map
+  Copy-for-AI reads; one registry, two consumers), then the shell
+  routes' own header titles, then the wordmark.
+- **Safety valves.** A cover whose path never moved reveals anyway
+  (520ms); a reveal whose panel callback was lost still ends (life
+  ceiling). The app never strands under a curtain.
+- **Retirement paths.** Web-only, never in DOM tests, never under
+  `prefers-reduced-motion` — all three collapse to plain navigation.
+
+#### The boot plate (opt-in FCP cover)
+
+The curtain's cold-boot sibling: a pre-JS ink cover painted by pure
+CSS before any script arrives, lifted by the handshake the root layout
+sets (`markBootReady()` → `<html data-boot-ready>` — already wired).
+Paste this id'd pair into `index.html`; the build-time injector copies
+id'd styles AND scripts into every exported route automatically:
+
+```html
+<!-- Boot plate — pre-JS cover, lifted by data-boot-ready (root layout). -->
+<style id="arq-boot-css">
+  html:not([data-boot-ready]) body::after{content:'';position:fixed;inset:0;z-index:2147483000;background:#0F172A}
+  @media (prefers-color-scheme: dark){html:not([data-boot-ready]) body::after{background:#F1F5F9}}
+  @media (prefers-reduced-motion: reduce){html:not([data-boot-ready]) body::after{display:none}}
+</style>
+<script id="arq-boot-js">
+  // CSS failsafe: if JS never arrives, lift the plate after 4.6s.
+  setTimeout(function(){document.documentElement.dataset.bootReady='1'},4600);
+</script>
+```
+
+The plate color is the mode's ink (`colors.text` — dark slate in
+light, bone in dark; the media query mirrors both). Elaborate on the
+geometry (paper chaser, lift animation) in the CSS if the dialect
+wants it — the contract is just the two ids and the
+`data-boot-ready` handshake.
 
 ---
 
