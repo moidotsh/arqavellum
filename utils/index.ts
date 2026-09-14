@@ -21,3 +21,4 @@ export * from './date-helpers';
 export * from './activityGrid';
 export * from './buildAiPayload';
 export * from './routeTransition';
+export * from './i18n';

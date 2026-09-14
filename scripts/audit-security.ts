@@ -11,10 +11,10 @@
  *         Suppress with `// s12-exempt`.
  *
  *   SE2 — no direct `@react-native-async-storage/async-storage` imports
- *         outside the allowlist (`stores/storage.ts`), and every allowed
+ *         outside the allowlist (`utils/storage.ts`), and every allowed
  *         import must carry a `// asyncstorage-exempt: <reason>` comment
  *         at the import line. Ensures all storage access is funnelled
- *         through the `stores/storage` wrapper.
+ *         through the `utils/storage` wrapper.
  *
  *   S10 — no `Alert.alert(` / `showAlert(` calls whose same or next 5
  *         lines reference `error.message` / `err.message` / `e.message`
@@ -177,7 +177,7 @@ function auditS12(files: string[]): Violation[] {
 // Both must pass; failing either is a violation.
 
 const SE2_ALLOWLIST = new Set<string>([
-  'stores/storage.ts',
+  'utils/storage.ts',
 ]);
 
 const SE2_IMPORT_REGEX =
@@ -203,7 +203,7 @@ function auditSE2(files: string[]): Violation[] {
           file: rel,
           line: i + 1,
           message:
-            'direct AsyncStorage import outside allowlist — use stores/storage wrapper, or add to allowlist + `// asyncstorage-exempt: <reason>`',
+            'direct AsyncStorage import outside allowlist — use utils/storage wrapper, or add to allowlist + `// asyncstorage-exempt: <reason>`',
         });
         return;
       }
