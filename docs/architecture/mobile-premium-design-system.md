@@ -613,17 +613,40 @@ heuristic in `MobileActionFooter`). The `ScrollView` content padding
 
 Atmosphere palette stops are 6–10% alpha against `theme.colors.light.backgroundDeep`
 (`#F1F5F9`). Foreground text uses `colors.text` (`#0F172A`),
-`colors.textSecondary` (`#475569`), `colors.textMuted` (`#64748B`).
-The weakest combo (`textMuted` on a dim atmosphere region) is the
-floor — if you're tempted to go dimmer, don't.
+`colors.textSecondary` (`#475569`), `colors.textMuted` (`#5D6B7E`).
 
-WCAG AA contrast ratios (computed against the light surface):
+The discipline is **measured AA on the darkest surface the token rides**,
+not on white: a token that passes on `card` can fail on `backgroundDeep`
+(`textMuted`'s previous slate `#64748B` measured 4.34:1 there — under the
+4.5:1 bar — and the 500-level status hues measured 2.2–3.8:1 as small text
+anywhere). When retuning a palette, recompute every text-bearing token
+against `backgroundDeep` (light) / `card` (dark) in the same change.
+
+WCAG AA contrast ratios (computed against the light surfaces):
 
 | Foreground | On `background` (#FFFFFF) | On `backgroundDeep` (#F1F5F9) |
 |---|---|---|
-| `text` (#0F172A) | 16.9:1 ✓ AAA | 15.2:1 ✓ AAA |
-| `textSecondary` (#475569) | 8.3:1 ✓ AAA | 7.4:1 ✓ AAA |
-| `textMuted` (#64748B) | 5.0:1 ✓ AA | 4.5:1 ✓ AA |
+| `text` (#0F172A) | 17.9:1 ✓ AAA | 16.3:1 ✓ AAA |
+| `textSecondary` (#475569) | 7.6:1 ✓ AAA | 6.9:1 ✓ AAA |
+| `textMuted` (#5D6B7E) | 5.4:1 ✓ AA | 5.0:1 ✓ AA |
+| `brandText` (#4F46E5) | 6.3:1 ✓ AA | 5.7:1 ✓ AA |
+| `status.success` (#047857) | 5.5:1 ✓ AA | 5.0:1 ✓ AA |
+| `status.warning` (#B45309) | 5.0:1 ✓ AA | 4.6:1 ✓ AA |
+| `status.error` (#B91C1C) | 6.5:1 ✓ AA | 5.9:1 ✓ AA |
+| `status.info` (#2563EB) | 5.2:1 ✓ AA | 4.7:1 ✓ AA |
+
+Two slot rules follow from the same math:
+
+- **`brandText` is the AA text companion of `brand`.** `brand` is a
+  fill/large-type slot — 3:1 covers fills, borders, and display type
+  (≥19px bold / ≥24px). Small brand text (10–15px labels, eyebrows,
+  links) reads `brandText`, which consumers with a saturated brand hue
+  darken (brighten in dark mode) until it clears 4.5:1. The starter's
+  indigo passes both ways, so both slots ship the same hue family.
+- **`textOnBrand` follows the fill, not the habit.** A brand bright
+  enough that white no longer clears AA on it overrides `textOnBrand`
+  to a near-black ink — labels must read on the fill they actually sit
+  on.
 
 ### 9.5 Screen-reader labels
 
