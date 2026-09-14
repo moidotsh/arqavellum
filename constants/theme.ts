@@ -64,9 +64,12 @@ export const theme = {
       cardBorder: 'rgba(15, 23, 42, 0.06)',
       cardBorderHover: 'rgba(15, 23, 42, 0.12)',
 
-      // Text colors
+      // Text colors. `textMuted` clears WCAG AA (4.5:1) on the DARKEST
+      // light background it rides (backgroundDeep #F1F5F9 — the previous
+      // slate #64748B measured 4.34 there; meta text, sublabels, and
+      // eyebrows all read this token on that surface).
       text: '#0F172A',
-      textMuted: '#64748B',
+      textMuted: '#5D6B7E',
       textSecondary: '#475569',
 
       // Interactive element colors — the `brand` slot.
@@ -81,23 +84,41 @@ export const theme = {
       buttonBackground: '#4F46E5',
       buttonBackgroundDisabled: 'rgba(79, 70, 229, 0.5)',
 
-      // Semantic status colors (iOS-style — consistent across consumers)
+      // The brand slot's TEXT companion — the same hue adjusted until it
+      // clears WCAG AA (4.5:1) as small text (10–15px labels, eyebrows,
+      // links) on the paper surfaces. `brand` itself is a fill/large-type
+      // slot: it needs 3:1 for fills, borders, and display type (≥19px
+      // bold / ≥24px), not 4.5:1. Saturated brand hues (oranges, bright
+      // greens) fail 4.5:1 as small text — those consumers darken
+      // `brandText` here and keep `brand` for fills; the starter's indigo
+      // already passes (6.3:1 on card), so the default mirrors `brand`
+      // and nothing moves.
+      brandText: '#4F46E5',
+
+      // Semantic status colors (iOS-style — consistent across consumers).
+      // Measured AA as TEXT: every hue here clears 4.5:1 on card AND on
+      // backgroundDeep (the darkest light surface) — the vivid 500-level
+      // hues this family once shipped measured 2.2–3.8:1 as small text.
+      // Dark mode keeps the brighter hues (they measure 6–10:1 there).
       status: {
-        success: '#10B981',
-        warning: '#F59E0B',
-        error: '#EF4444',
-        info: '#3B82F6',
+        success: '#047857',
+        warning: '#B45309',
+        error: '#B91C1C',
+        info: '#2563EB',
       },
 
       // Re-export aliases for call sites that read `success` and `alert`
       // at the top level (alternative to `status.success` / `status.error`).
-      success: '#10B981',
-      alert: '#EF4444',
+      success: '#047857',
+      alert: '#B91C1C',
 
       // Text color for content rendered on top of the brand color slot
       // (e.g. MobilePrimaryButton label, selected-state check icon). Pure
       // white regardless of which brand hue the consumer picked — every
-      // default brand shade is dark enough that white reads cleanly.
+      // default brand shade is dark enough that white reads cleanly. A
+      // consumer whose brand is BRIGHT (a saturated orange/yellow/green)
+      // overrides this to a near-black ink instead — the label must clear
+      // AA on the fill, and white never will there.
       textOnBrand: '#FFFFFF',
 
       // Secondary text on brand surfaces (uppercase eyebrows, helper lines,
@@ -115,8 +136,8 @@ export const theme = {
       // (same value, both names) so consumers don't have to remember which
       // "muted" to use.
       textColors: {
-        muted: '#64748B',
-        secondary: '#64748B',
+        muted: '#5D6B7E',
+        secondary: '#5D6B7E',
         tertiary: '#94A3B8',
       },
 
@@ -246,6 +267,14 @@ export const theme = {
       brandSoft: 'rgba(99, 102, 241, 0.20)',
       buttonBackground: '#6366F1',
       buttonBackgroundDisabled: 'rgba(99, 102, 241, 0.4)',
+
+      // Text companion of `brand` (see `light.brandText`). Brightened the
+      // same way `brandHover` is — small text on dark surfaces needs MORE
+      // contrast against the surface, not less. The starter's dark brand
+      // already measures 5.6:1 on `card`, so the default simply mirrors
+      // the brightened step; a saturated dark-mode brand brightens this
+      // further until it clears 4.5:1.
+      brandText: '#818CF8',
 
       // Semantic status colors — brightened for dark contrast.
       status: {
