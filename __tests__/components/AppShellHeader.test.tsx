@@ -5,11 +5,12 @@
 //   - the hamburger opens the drawer (destinations render)
 //   - tapping a destination fires its onPress and closes the drawer
 
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { ThemeProvider } from '../../context';
 import { AppShellHeader } from '../../components/composed/AppShellHeader';
+import { theme } from '../../constants';
 import type { MobileNavDrawerItem } from '../../components/MobilePremium';
 
 function Wrap({ children }: { children: ReactNode }) {
@@ -31,6 +32,12 @@ function findButton(container: HTMLElement, label: string): Element {
 }
 
 describe('AppShellHeader', () => {
+  afterEach(() => {
+    // The dialect tests below flip the live token — restore the
+    // starter default so no other test inherits an ink drawer.
+    (theme.drawer as { style: 'glass' | 'ink' }).style = 'glass';
+  });
+
   it('renders the brand from the display-name slot', () => {
     const { container } = render(
       <Wrap>
@@ -54,6 +61,31 @@ describe('AppShellHeader', () => {
     fireEvent.click(findButton(container, 'Open menu'));
 
     expect(container.textContent).toContain('Home');
+    expect(container.textContent).toContain('Items');
+    expect(container.textContent).toContain('Settings');
+  });
+
+  it('under glass, the glass cap layers under the masthead', () => {
+    const { container } = render(
+      <Wrap>
+        <AppShellHeader items={makeItems()} />
+      </Wrap>,
+    );
+    expect(container.querySelector('[testid="app-shell-glass-cap"]')).not.toBeNull();
+  });
+
+  it('under ink, the cap retires and the masthead rides the plate', () => {
+    (theme.drawer as { style: 'glass' | 'ink' }).style = 'ink';
+    const { container } = render(
+      <Wrap>
+        <AppShellHeader items={makeItems()} />
+      </Wrap>,
+    );
+    expect(container.querySelector('[testid="app-shell-glass-cap"]')).toBeNull();
+
+    // Destinations still open + render (ledger styling is style-level —
+    // textContent keeps the source case).
+    fireEvent.click(findButton(container, 'Open menu'));
     expect(container.textContent).toContain('Items');
     expect(container.textContent).toContain('Settings');
   });
