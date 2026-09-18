@@ -135,7 +135,9 @@ export function SegmentedControl<T>({
                 justifyContent: 'center',
                 paddingHorizontal: 12,
                 borderRadius: theme.shapes.control,
-                backgroundColor: active ? colors.brand : 'transparent',
+                // Selection is INK INVERSION, not the accent — the
+                // brand slot belongs to a screen's one verb.
+                backgroundColor: active ? colors.text : 'transparent',
               }}
             >
               <Text
@@ -143,7 +145,7 @@ export function SegmentedControl<T>({
                   styles.label,
                   {
                     color: active
-                      ? colors.textOnBrand
+                      ? colors.background
                       : chromeless
                         ? colors.text
                         : colors.textSecondary,
@@ -174,6 +176,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     letterSpacing: 0,
+    // Selection labels are markings — when the consumer declares a
+    // mono face, segments speak it.
+    fontFamily: theme.fonts.mono,
   },
 });
 
