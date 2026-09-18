@@ -27,7 +27,7 @@ import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
 
 export type FigureSize = 'hero' | 'display' | 'md' | 'sm';
-export type FigureTone = 'ink' | 'brand' | 'plate';
+export type FigureTone = 'ink' | 'brand' | 'plate' | 'focus';
 export type FigureAlign = 'left' | 'center' | 'right';
 
 export interface FigureProps {
@@ -39,7 +39,11 @@ export interface FigureProps {
   label?: string;
   /** Figure scale. Default 'md'. */
   size?: FigureSize;
-  /** 'ink' (default) reads text color; 'brand' the brand slot; 'plate' is paper-type for ink plates. */
+  /**
+   * 'ink' (default) reads text color; 'brand' the brand slot; 'plate' is
+   * paper-type for ink plates; 'focus' reads the focus register's text
+   * color (mode-independent "doing" surfaces — see colors.focus).
+   */
   tone?: FigureTone;
   /** Default 'left'. */
   align?: FigureAlign;
@@ -95,7 +99,13 @@ export function Figure({
   const alignment =
     align === 'center' ? 'center' : align === 'right' ? 'flex-end' : 'flex-start';
   const valueColor =
-    tone === 'brand' ? colors.brand : tone === 'plate' ? colors.background : colors.text;
+    tone === 'brand'
+      ? colors.brand
+      : tone === 'plate'
+        ? colors.background
+        : tone === 'focus'
+          ? colors.focus.text
+          : colors.text;
 
   return (
     <View
@@ -114,7 +124,14 @@ export function Figure({
             style={[
               styles.unit,
               unitStyleFor(size),
-              { color: tone === 'plate' ? colors.brandOnInk : colors.textMuted },
+              {
+                color:
+                  tone === 'plate'
+                    ? colors.brandOnInk
+                    : tone === 'focus'
+                      ? colors.focus.muted
+                      : colors.textMuted,
+              },
             ]}
           >
             {unit}
@@ -122,7 +139,13 @@ export function Figure({
         ) : null}
       </View>
       {label ? (
-        <Text style={[styles.label, { color: colors.textMuted }]} numberOfLines={1}>
+        <Text
+          style={[
+            styles.label,
+            { color: tone === 'focus' ? colors.focus.muted : colors.textMuted },
+          ]}
+          numberOfLines={1}
+        >
           {label}
         </Text>
       ) : null}

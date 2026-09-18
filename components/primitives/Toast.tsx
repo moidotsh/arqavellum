@@ -44,8 +44,8 @@ function ToastItem({ toast, onDismiss }: ToastItemProps) {
   // surface: `colors.text` plate in light, bone in dark; paper
   // (`colors.background`) is its type.
   const chit = theme.toast.style === 'chit';
-  const ink = colors.text;
-  const paper = colors.background;
+  const ink = colors.focus.background;
+  const paper = colors.focus.text;
 
   // Type tint at 15% opacity for the LEFT accent stripe only — keeps
   // type identification without compromising readability. The body

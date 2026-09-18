@@ -51,12 +51,21 @@ type TypographyToken = Pick<
 export interface TypeFaces {
   /** Display face — poster titles, hero figures, totals. */
   display?: string;
+  /**
+   * Condensed position of the display face — for consumers whose
+   * display face carries a width axis. Declared as a second
+   * @font-face over the SAME variable file with `font-stretch` pinned:
+   * one download, two families, and RN code never touches fontStretch
+   * (which RN's TextStyle does not carry).
+   */
+  displayCondensed?: string;
   /** Mono face — ledger figures: prices, stock, dates, metrics, eyebrows. */
   mono?: string;
 }
 
 const FONTS = {
   display: undefined,
+  displayCondensed: undefined,
   mono: undefined,
 } as TypeFaces;
 
@@ -210,6 +219,26 @@ export const theme = {
 
       // Alert background tint for error containers.
       alertBackground: 'rgba(239, 68, 68, 0.08)',
+
+      // ── The focus register ─────────────────────────────────────────────
+      // A mode-independent surface family for "doing" surfaces — live
+      // capture, active sessions, focus modes: dark in BOTH palettes
+      // (an instrument, not a document). Consumers override the values;
+      // the structure ships so focus-reading primitives (the chit
+      // toast, curtains, focus screens) have one place to read. Not a
+      // third color scheme — useAppTheme() still resolves two.
+      focus: {
+        background: '#0F1218',
+        surface: '#171B24',
+        surfaceAlt: '#1D2230',
+        border: '#272E3F',
+        text: '#F1F5FA',
+        muted: '#93A0B4',
+        signal: '#818CF8',
+        onSignal: '#0F1218',
+        track: '#232A3A',
+        signalSoft: 'rgba(129, 140, 248, 0.16)',
+      },
 
       // ── Mobile premium primitive kit tokens ───────────────────────────
       // Consumed by components/MobilePremium/*. Light-tuned tokens for
@@ -379,6 +408,26 @@ export const theme = {
 
       // Alert background tint for error containers (dark-mode red wash).
       alertBackground: 'rgba(248, 113, 113, 0.12)',
+
+      // ── The focus register ─────────────────────────────────────────────
+      // A mode-independent surface family for "doing" surfaces — live
+      // capture, active sessions, focus modes: dark in BOTH palettes
+      // (an instrument, not a document). Consumers override the values;
+      // the structure ships so focus-reading primitives (the chit
+      // toast, curtains, focus screens) have one place to read. Not a
+      // third color scheme — useAppTheme() still resolves two.
+      focus: {
+        background: '#0F1218',
+        surface: '#171B24',
+        surfaceAlt: '#1D2230',
+        border: '#272E3F',
+        text: '#F1F5FA',
+        muted: '#93A0B4',
+        signal: '#818CF8',
+        onSignal: '#0F1218',
+        track: '#232A3A',
+        signalSoft: 'rgba(129, 140, 248, 0.16)',
+      },
 
       // ── Mobile premium primitive kit tokens (dark) ───────────────────
       // Mirrors the light `mobilePremium` block, retuned for dark surfaces:

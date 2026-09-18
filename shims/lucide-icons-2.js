@@ -5,7 +5,9 @@
 
 export { AlertCircle } from '@tamagui/lucide-icons-2/dist/esm/icons/AlertCircle.mjs';
 export { AlertTriangle } from '@tamagui/lucide-icons-2/dist/esm/icons/AlertTriangle.mjs';
+export { BarChart2 } from '@tamagui/lucide-icons-2/dist/esm/icons/BarChart2.mjs';
 export { Bell } from '@tamagui/lucide-icons-2/dist/esm/icons/Bell.mjs';
+export { CalendarDays } from '@tamagui/lucide-icons-2/dist/esm/icons/CalendarDays.mjs';
 export { Check } from '@tamagui/lucide-icons-2/dist/esm/icons/Check.mjs';
 export { CheckCircle2 } from '@tamagui/lucide-icons-2/dist/esm/icons/CheckCircle2.mjs';
 export { ChevronDown } from '@tamagui/lucide-icons-2/dist/esm/icons/ChevronDown.mjs';
@@ -26,6 +28,7 @@ export { Monitor } from '@tamagui/lucide-icons-2/dist/esm/icons/Monitor.mjs';
 export { Moon } from '@tamagui/lucide-icons-2/dist/esm/icons/Moon.mjs';
 export { Package } from '@tamagui/lucide-icons-2/dist/esm/icons/Package.mjs';
 export { Palette } from '@tamagui/lucide-icons-2/dist/esm/icons/Palette.mjs';
+export { Play } from '@tamagui/lucide-icons-2/dist/esm/icons/Play.mjs';
 export { Plus } from '@tamagui/lucide-icons-2/dist/esm/icons/Plus.mjs';
 export { Search } from '@tamagui/lucide-icons-2/dist/esm/icons/Search.mjs';
 export { Settings } from '@tamagui/lucide-icons-2/dist/esm/icons/Settings.mjs';
