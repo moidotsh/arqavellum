@@ -22,7 +22,12 @@ import type { TextStyle } from 'react-native';
 // (RN's TextStyle.fontWeight is a union of string literals, not `string`).
 type TypographyToken = Pick<
   TextStyle,
-  'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing' | 'fontFamily'
+  | 'fontSize'
+  | 'fontWeight'
+  | 'lineHeight'
+  | 'letterSpacing'
+  | 'fontFamily'
+  | 'fontVariant'
 >;
 
 // ── Type families ───────────────────────────────────────────────────────
@@ -558,6 +563,55 @@ export const theme = {
     } satisfies TypographyToken,
     mobileFieldLabel: {
       fontSize: 13,
+      fontWeight: '600',
+      lineHeight: 16,
+      letterSpacing: 0.1,
+    } satisfies TypographyToken,
+    // ── Figure language ────────────────────────────────────────────────
+    // Numbers are content too, so the scale names their slots. Every
+    // figure token carries tabular figures by construction — a call
+    // site cannot forget them — and picks a declared face up the same
+    // way mobileTitle/mobileEyebrow do (display for hero/stat figures,
+    // mono for in-row ledger facts).
+    mobileDisplay: {
+      fontSize: 56,
+      fontWeight: '800',
+      lineHeight: 56,
+      letterSpacing: -2,
+      fontVariant: ['tabular-nums'],
+      fontFamily: FONTS.display,
+    } satisfies TypographyToken,
+    mobileFigure: {
+      fontSize: 22,
+      fontWeight: '700',
+      lineHeight: 26,
+      letterSpacing: -0.3,
+      fontVariant: ['tabular-nums'],
+      fontFamily: FONTS.display,
+    } satisfies TypographyToken,
+    mobileItemTitle: {
+      fontSize: 14,
+      fontWeight: '600',
+      lineHeight: 20,
+      letterSpacing: 0,
+    } satisfies TypographyToken,
+    mobileLedger: {
+      fontSize: 13,
+      fontWeight: '500',
+      lineHeight: 18,
+      letterSpacing: 0,
+      fontVariant: ['tabular-nums'],
+      fontFamily: FONTS.mono,
+    } satisfies TypographyToken,
+    mobileMeta: {
+      fontSize: 12,
+      fontWeight: '400',
+      lineHeight: 16,
+      letterSpacing: 0,
+      fontVariant: ['tabular-nums'],
+    } satisfies TypographyToken,
+    mobileTag: {
+      fontSize: 12,
       fontWeight: '600',
       lineHeight: 16,
       letterSpacing: 0.1,
