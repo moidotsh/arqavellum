@@ -72,6 +72,7 @@ import { FilterChipGroup } from './FilterChipGroup';
 import { DisclosureRow } from './DisclosureRow';
 import { EmptyState } from './EmptyState';
 import { Figure } from './Figure';
+import { TallyStrip } from './TallyStrip';
 import { StatCard } from './StatCard';
 import { Avatar } from './Avatar';
 import { SegmentedProgress } from './SegmentedProgress';
@@ -1440,6 +1441,30 @@ export function Showcase() {
             <Figure value="4,250" unit="kg" label="this week" size="sm" align="right" />
           </View>
         </View>
+
+        <View style={styles.section}>
+          <MobileSectionEyebrow rule>Tallies — the counting mark (TallyStrip)</MobileSectionEyebrow>
+          {/* A sequence as tally strokes: struck marks are done, the
+              NEXT mark is the one accent stroke, ghosts are slots
+              ahead. Groups of five cross. Decoration by contract — the
+              ledger beside it carries the same info as text. */}
+          <View style={styles.figureRow}>
+            <TallyStrip struck={2} next ghost={2} size="lg" />
+          </View>
+          <View style={styles.spacer} />
+          <View style={styles.figureRow}>
+            <TallyStrip struck={5} next ghost={2} size="sm" />
+            <View style={styles.figureGap} />
+            <TallyStrip struck={3} size="sm" />
+            <View style={styles.figureGap} />
+            <TallyStrip struck={0} next ghost={4} size="sm" />
+          </View>
+          <View style={styles.spacer} />
+          <View style={styles.figureRow}>
+            <TallyStrip struck={7} ghost={1} size="sm" animateLastStrike />
+          </View>
+        </View>
+
 
         <View style={styles.section}>
           <MobileSectionEyebrow>Stat cards</MobileSectionEyebrow>

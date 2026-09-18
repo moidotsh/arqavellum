@@ -682,6 +682,20 @@ export const theme = {
       fontVariant: ['tabular-nums'],
       fontFamily: FONTS.mono,
     } satisfies TypographyToken,
+    // Counter — THE working figure at display size: live values a user
+    // changes mid-task (a timer, a quantity stepper, a live total).
+    // Rides the MONO face (tabular by construction — changing digits
+    // hold their columns and cannot jitter) and is the one place the
+    // mono face is allowed above 30px. No-op until `fonts.mono` is
+    // declared.
+    mobileCounter: {
+      fontSize: 56,
+      fontWeight: '700',
+      lineHeight: 60,
+      letterSpacing: -1,
+      fontVariant: ['tabular-nums'],
+      fontFamily: FONTS.mono,
+    } satisfies TypographyToken,
     mobileMeta: {
       fontSize: 12,
       fontWeight: '400',

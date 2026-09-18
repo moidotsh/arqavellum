@@ -85,6 +85,8 @@ export { EmptyState } from './EmptyState';
 export type { EmptyStateProps, EmptyStateAction } from './EmptyState';
 
 export { Figure } from './Figure';
+export { TallyStrip } from './TallyStrip';
+export type { TallyStripProps, TallySize } from './TallyStrip';
 export type { FigureProps, FigureSize, FigureTone, FigureAlign } from './Figure';
 
 export { StatCard } from './StatCard';
