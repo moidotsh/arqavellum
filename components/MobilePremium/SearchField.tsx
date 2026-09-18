@@ -133,7 +133,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 16,
     paddingBottom: 8,
-    paddingTop: 8,
+    paddingTop: 8,    // Suppress WebKit's UA focus ring — the kit's animated ring + the
+    // accent border carry focus (a system-blue glow reads as a second
+    // accent).
+    outlineWidth: 0,
   },
   iconSlot: {
     position: 'absolute',

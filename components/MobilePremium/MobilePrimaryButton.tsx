@@ -144,9 +144,14 @@ export function MobilePrimaryButton({
   // wash. `text` resolves per mode (near-black in light, near-white in
   // dark) and holds AA on the brand-tinted wash in both; `textOnBrand`
   // is tuned for the full-brand pairing and sinks into dark-mode washes.
+  // Ghost stays quiet secondary ink by default (an unaccented text
+  // action — the accent belongs to the primary verb); it takes the
+  // accent only when the consumer passes one (destructive deletes).
   const textColor = isPrimary
     ? (disabled || loading ? colors.text : colors.textOnBrand)
-    : accent;
+    : isGhost && !accentColor
+      ? colors.textSecondary
+      : accent;
   const showLeadingIcon = icon && iconPosition === 'left';
   const showTrailingIcon = icon && iconPosition === 'right';
 
@@ -218,7 +223,7 @@ const styles = StyleSheet.create({
   buttonSm: {
     alignSelf: 'flex-start',
     minHeight: 36,
-    borderRadius: 10,
+    borderRadius: theme.shapes.control,
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
