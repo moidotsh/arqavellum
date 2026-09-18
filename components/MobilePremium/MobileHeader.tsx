@@ -66,10 +66,10 @@ export interface MobileHeaderProps {
 }
 
 const NAV_TITLE_STYLE = {
-  fontSize: 15,
-  fontWeight: '600',
+  fontSize: 16,
+  fontWeight: '700',
   lineHeight: 20,
-  letterSpacing: 0.1,
+  letterSpacing: -0.2,
 } as const;
 
 /**
@@ -229,9 +229,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    // 44×44 — the touch-target floor (RN-web hitSlop does not expand
+    // the DOM hit area; measured).
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
   },

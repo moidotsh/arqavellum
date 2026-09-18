@@ -130,6 +130,13 @@ export const theme = {
       // and nothing moves.
       brandText: '#4F46E5',
 
+      // Brand-hue accent for content on the INK PLATE (the inverted
+      // surface: drawer, chits, curtain). Light mode's plate is the
+      // slate ink #0F172A — a lightened indigo reads on it (8.96:1).
+      // Same companion discipline as brandText: one hue, adjusted for
+      // its surface. NOT a second accent slot.
+      brandOnInk: '#A5B4FC',
+
       // Semantic status colors (iOS-style — consistent across consumers).
       // Measured AA as TEXT: every hue here clears 4.5:1 on card AND on
       // backgroundDeep (the darkest light surface) — the vivid 500-level
@@ -310,6 +317,11 @@ export const theme = {
       // the brightened step; a saturated dark-mode brand brightens this
       // further until it clears 4.5:1.
       brandText: '#818CF8',
+
+      // Brand-hue accent for the INK PLATE (see `light.brandOnInk`).
+      // Dark mode's plate is bone #F1F5F9 — a deepened indigo reads on
+      // it (9.07:1).
+      brandOnInk: '#3730A3',
 
       // Semantic status colors — brightened for dark contrast.
       status: {
@@ -573,6 +585,14 @@ export const theme = {
     // site cannot forget them — and picks a declared face up the same
     // way mobileTitle/mobileEyebrow do (display for hero/stat figures,
     // mono for in-row ledger facts).
+    mobileHero: {
+      fontSize: 56,
+      fontWeight: '800',
+      lineHeight: 60,
+      letterSpacing: -2,
+      fontVariant: ['tabular-nums'],
+      fontFamily: FONTS.display,
+    } satisfies TypographyToken,
     mobileDisplay: {
       fontSize: 56,
       fontWeight: '800',
