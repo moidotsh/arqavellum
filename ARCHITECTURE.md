@@ -81,7 +81,7 @@
 - **Prohibited:** Scattered `Platform.OS === 'web'` checks, `navigator.userAgent` reads, `process.platform` reads in component code.
 
 ### S2. Animation Hooks (premium/shared/Motion)
-- **Rule:** Use the motion primitives in `components/premium/shared/Motion.tsx` — `FadeIn`, `Crossfade`, `Shake`, `usePressedStyle`, `useFocusRing`, `useReducedMotion`.
+- **Rule:** Use the motion primitives in `components/premium/shared/Motion.tsx` — `FadeIn`, `Crossfade`, `usePressedStyle`, `useFocusRing`, `useReducedMotion` — plus the `useShake` hook (`hooks/useShakeAnimation.ts`).
 - **Usage:** `<FadeIn duration={DURATION.moderate}>...</FadeIn>`
 - **Prohibited:** `useRef(new Animated.Value(...))` boilerplate in components. Reanimated's `useAnimatedStyle` is permitted only when Motion primitives can't express the animation.
 
@@ -185,7 +185,7 @@
 - **Prohibited:** `<Modal visible={...}>` from `react-native`.
 
 ### C3. Responsive Architecture
-- **Rule:** Use `useResponsive()` (consumers add) or `useWindowDimensions()`. Container-level responsiveness uses `useContainerVariant()` (defined in `constants/breakpoints.ts`).
+- **Rule:** Use `useWindowDimensions()` (window-level) or the container-query system (`useContainerQuery`, `useContainerVariant`). Consumers rebuilding a window-level breakpoint system on `Dimensions` add their files to the C3 exempt list in `audit-ui-theme.ts`.
 - **Audit:** `audit-ui-theme.ts` blocks `Dimensions.get('window')` and `Dimensions.get('screen')`.
 - **Prohibited:** `Dimensions.get('window').width` in component code.
 

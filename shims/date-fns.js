@@ -5,12 +5,10 @@
 
 export { default as addMonths } from 'date-fns/addMonths.js';
 export { default as format } from 'date-fns/format.js';
-export { default as formatDistanceToNow } from 'date-fns/formatDistanceToNow.js';
 export { default as isAfter } from 'date-fns/isAfter.js';
 export { default as isBefore } from 'date-fns/isBefore.js';
 export { default as isSameDay } from 'date-fns/isSameDay.js';
 export { default as isSameMonth } from 'date-fns/isSameMonth.js';
-export { default as isYesterday } from 'date-fns/isYesterday.js';
 export { default as parseISO } from 'date-fns/parseISO.js';
 export { default as startOfDay } from 'date-fns/startOfDay.js';
 export { default as startOfMonth } from 'date-fns/startOfMonth.js';

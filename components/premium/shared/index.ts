@@ -4,7 +4,6 @@
 
 export {
   FadeIn,
-  Shake,
   Crossfade,
   usePressedStyle,
   useFocusRing,
@@ -16,7 +15,6 @@ export {
 } from './Motion';
 export type {
   FadeInProps,
-  ShakeProps,
   CrossfadeProps,
   UseFocusRingOptions,
 } from './Motion';

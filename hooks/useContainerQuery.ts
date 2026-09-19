@@ -131,17 +131,4 @@ export function useContainerQuery(
   return containerInfo;
 }
 
-/**
- * Alternative hook that returns a callback to measure on demand.
- * Useful for components that need manual control over when to measure.
- */
-export function useContainerMeasure() {
-  const measureContainer = useCallback((element: any): ContainerMeasurement => {
-    const { width, height } = measureElement(element);
-    return computeContainerInfo(width, height);
-  }, []);
-
-  return measureContainer;
-}
-
 export default useContainerQuery;

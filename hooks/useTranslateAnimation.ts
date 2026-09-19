@@ -1,7 +1,7 @@
 // hooks/useTranslateAnimation.ts
-// Reusable 1-D translate animations — eliminates the
+// Vertical translate animation — eliminates the
 // `useRef(new Animated.Value(...)) + useEffect(timing)` boilerplate for
-// the common entrance/exit translate pattern.
+// the common entrance translate pattern.
 //
 // For combined fade+slide entrances, prefer useFadeSlide.ts (already in
 // this repo) — it parallelizes opacity + translate in a single animation.
@@ -19,7 +19,7 @@ export interface TranslateAnimationOptions {
   duration?: number;
   /** Delay before animation starts in ms (default: 0) */
   delay?: number;
-  /** Initial translate value (default: 20 for Y, 0 for X) */
+  /** Initial translate value (default: 20) */
   initialValue?: number;
   /** Final translate value (default: 0) */
   finalValue?: number;
@@ -92,68 +92,6 @@ export function useTranslateY(options: TranslateAnimationOptions = {}): UseTrans
     animate,
     reset,
     animatedValue: translateY,
-  };
-}
-
-/**
- * Return type for useTranslateX hook.
- */
-export interface UseTranslateXReturn {
-  /** Animated translate X value */
-  translateX: Animated.Value;
-  /** Style object with transform — spread onto an Animated.View */
-  style: { transform: [{ translateX: Animated.Value }] };
-  /** Start the animation manually */
-  animate: () => void;
-  /** Reset to initial value */
-  reset: () => void;
-  /** Animated value for chaining */
-  animatedValue: Animated.Value;
-}
-
-/**
- * Hook for translateX animations (slide-in/slide-out horizontally).
- */
-export function useTranslateX(options: TranslateAnimationOptions = {}): UseTranslateXReturn {
-  const {
-    duration = DURATION.moderate,
-    delay = 0,
-    initialValue = 0,
-    finalValue = 0,
-    animateOnMount = true,
-    easing = Easing.out(Easing.ease),
-  } = options;
-
-  const translateX = useRef(new Animated.Value(initialValue)).current;
-
-  const animate = useCallback(() => {
-    const animation = Animated.timing(translateX, {
-      toValue: finalValue,
-      duration,
-      delay,
-      easing,
-      useNativeDriver: !isWeb,
-    });
-    animation.start();
-    return animation;
-  }, [translateX, duration, delay, easing, finalValue]);
-
-  const reset = useCallback(() => {
-    translateX.setValue(initialValue);
-  }, [translateX, initialValue]);
-
-  useEffect(() => {
-    if (animateOnMount) {
-      animate();
-    }
-  }, [animateOnMount, animate]);
-
-  return {
-    translateX,
-    style: { transform: [{ translateX }] },
-    animate,
-    reset,
-    animatedValue: translateX,
   };
 }
 

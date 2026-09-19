@@ -36,7 +36,7 @@ import React, {
 import { StyleSheet, View, type ViewStyle } from 'react-native';
 import { useAppTheme } from '../../context';
 import { hasWindow, isWeb } from '../../utils';
-import { prefersReducedMotionSync } from './MobileMotion';
+import { prefersReducedMotionSync } from '../premium/shared';
 
 // ── Tuning ──────────────────────────────────────────────────────────────
 // The rise is near-sticky (the fill meets the card's edge at first

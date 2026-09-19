@@ -1,6 +1,6 @@
 // services/index.ts
 // Barrel for the services layer. Consumers add concrete services
-// (e.g. WorkoutService, ProgressionService) here.
+// (e.g. RecordService, CatalogService) here.
 
 export { BaseQueueService } from './base';
 export {

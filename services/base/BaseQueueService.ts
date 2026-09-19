@@ -3,7 +3,7 @@
 // in-memory queue, async storage persistence, subscribe/notify, and
 // a merge-aware loadQueue that doesn't blow away items added during
 // the load window. Consumers extend this per-domain (e.g.
-// `WorkoutQueueService extends BaseQueueService<PendingWorkout>`).
+// `ItemQueueService extends BaseQueueService<PendingItem>`).
 
 import { zustandStorage } from '../../stores';
 import { logger, type LogContext } from '../../utils/logger';

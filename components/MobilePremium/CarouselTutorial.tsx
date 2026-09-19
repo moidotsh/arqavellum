@@ -24,7 +24,7 @@
 
 import React, { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
-import { theme, MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
+import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
 import { Crossfade, usePressedStyle } from '../premium/shared';
 import { MobilePrimaryButton, type MobilePrimaryButtonProps } from './MobilePrimaryButton';
@@ -61,14 +61,6 @@ export interface CarouselTutorialProps {
   testID?: string;
   style?: StyleProp<ViewStyle>;
 }
-
-const EYEBROW_STYLE = {
-  fontSize: theme.typography.mobileEyebrow.fontSize,
-  fontWeight: theme.typography.mobileEyebrow.fontWeight as any,
-  lineHeight: theme.typography.mobileEyebrow.lineHeight,
-  letterSpacing: theme.typography.mobileEyebrow.letterSpacing,
-  fontFamily: theme.typography.mobileEyebrow.fontFamily,
-} as const;
 
 function clamp(v: number, lo: number, hi: number): number {
   return Math.max(lo, Math.min(hi, v));

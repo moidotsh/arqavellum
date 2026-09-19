@@ -1,6 +1,6 @@
 // utils/validation.ts
 // Generic, domain-agnostic input validation. Domain-specific validation
-// (workouts, products, sessions, etc.) lives in consumer repos — usually
+// (products, sessions, records, etc.) lives in consumer repos — usually
 // co-located with the repository that needs it. Keeping this file slim is
 // load-bearing: every helper here ends up in every consumer.
 

@@ -6,7 +6,6 @@
 import { useMemo } from 'react';
 import { Animated } from 'react-native';
 import { isWeb, isNative, isIOS, isAndroid } from '../utils';
-import { DURATION } from '../constants';
 
 export interface UsePlatformAnimationReturn {
   isWeb: boolean;

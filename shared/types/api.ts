@@ -1,6 +1,6 @@
 // shared/types/api.ts
 // Generic API response shapes. No domain types — consumers add their own
-// (workout, product, etc.) in their own shared/types/ files. This file is
+// (record, product, etc.) in their own shared/types/ files. This file is
 // the load-bearing D6 type separation: repository-normalized types are the
 // only shape allowed in UI code (audit-testing-types T1).
 

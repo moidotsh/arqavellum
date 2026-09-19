@@ -1,6 +1,6 @@
 // lib/react-query/queryKeys.ts
 // Centralized query-key factory. Arqavellum ships only the cross-cutting keys
-// (auth, user) — domain keys (workouts, products, sessions, etc.) land in
+// (auth, user) — domain keys (products, sessions, records, etc.) land in
 // consumers via hooks/queries/* and append to this object.
 
 export const queryKeys = {

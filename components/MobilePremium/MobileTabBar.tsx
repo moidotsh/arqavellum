@@ -38,7 +38,7 @@ export interface MobileTabBarItem {
 }
 
 export interface MobileTabBarCenterAction {
-  /** Accessibility label for the raised action (e.g. "Start workout"). */
+  /** Accessibility label for the raised action (e.g. "Start run"). */
   label: string;
   icon: React.ReactNode;
   onPress: () => void;

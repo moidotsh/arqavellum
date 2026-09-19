@@ -7,12 +7,11 @@
 //   Enter       → <FadeIn>           (mount-time fade + slide up)
 //   Transition  → <Crossfade>        (step-to-step crossfade + drift)
 //   Respond     → RESPOND_PRESSED + useFocusRing + usePressedStyle
-//   Shake       → <Shake>            (error feedback)
+//   Shake       → useShake           (hooks/useShakeAnimation — error feedback)
 //
 // All primitives honor `prefers-reduced-motion`:
 //   • FadeIn collapses to a fade-only (no slide).
 //   • Crossfade collapses to a fade-only (no drift).
-//   • Shake collapses to a no-op (the surrounding error UI conveys it).
 //   • Respond's press/focus scales collapse to opacity-only.
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -25,7 +24,6 @@ import {
   type ViewStyle,
 } from 'react-native';
 import {
-  useControlledShake,
   useFadeSlide,
   usePlatformAnimation,
   useReducedMotion,
@@ -88,28 +86,6 @@ export function FadeIn({
       {children}
     </Animated.View>
   );
-}
-
-// ─────────────────────────────────────────────────────────────────────
-// SHAKE — error feedback
-// ─────────────────────────────────────────────────────────────────────
-
-export interface ShakeProps {
-  children: React.ReactNode;
-  /** Fire a shake on this round. */
-  shake: boolean;
-  /** Called when the shake completes (use to clear the trigger). */
-  onComplete?: () => void;
-  style?: StyleProp<ViewStyle>;
-}
-
-/**
- * Controlled shake for error feedback. Wraps the useControlledShake hook so
- * screens import motion from one place.
- */
-export function Shake({ children, shake, onComplete, style }: ShakeProps) {
-  const { style: animStyle } = useControlledShake({ trigger: shake, onComplete });
-  return <Animated.View style={[animStyle, style]}>{children}</Animated.View>;
 }
 
 // ─────────────────────────────────────────────────────────────────────

@@ -2,11 +2,11 @@
 // Generic offline mutation queue. Consumers type this per-domain:
 //
 //   import { OfflineQueueService } from '@services';
-//   import type { PendingWorkout } from '@shared/types';
-//   export class WorkoutQueueService extends OfflineQueueService<PendingWorkout> {
-//     protected storageKey = 'myapp_workout_queue';
-//     protected syncItem(item: PendingWorkout): Promise<boolean> {
-//       return workoutRepository.create(item).then(r => r.success);
+//   import type { PendingItem } from '@shared/types';
+//   export class ItemQueueService extends OfflineQueueService<PendingItem> {
+//     protected storageKey = 'myapp_item_queue';
+//     protected syncItem(item: PendingItem): Promise<boolean> {
+//       return itemRepository.create(item).then(r => r.success);
 //     }
 //   }
 //

@@ -51,7 +51,7 @@ Three motion primitives cover every animation:
 - **Transition** (`Crossfade`) — content swaps while the shell stays.
 - **Respond** (`usePressedStyle`, `useFocusRing`) — micro-feedback on tap and focus.
 
-Plus a `Shake` variant for error feedback. **No bespoke hero animations
+Plus the `useShake` hook for error feedback. **No bespoke hero animations
 per screen.** If you reach for `Animated.timing` outside the motion
 primitives, you are almost certainly reinventing something that already
 exists.
@@ -136,7 +136,7 @@ Every motion primitive honors `prefers-reduced-motion`:
 
 - `FadeIn` collapses to fade-only, ≤200ms.
 - `Crossfade` collapses to fade-only.
-- `Shake` collapses to no-op.
+- `useShake` callers gate the trigger on the same flag.
 - Respond's press/focus scale collapses to opacity-only.
 - `MobileAtmosphere` halts the drift **and** snaps the palette (no
   crossfade between surface palettes).
@@ -172,12 +172,11 @@ Same-folder imports go to the relative source (`./MobileHeader`); the
 rest of the app imports from the kit barrel (`@components/MobilePremium`
 via the path alias, or `../MobilePremium` relatively).
 
-### Motion (from `MobileMotion.tsx`, re-exported from `components/premium/shared/`)
+### Motion (from `components/premium/shared/Motion.tsx`; the kit barrel re-exports the same surface)
 
 | Primitive | Purpose |
 |---|---|
 | `FadeIn` | Mount-time fade + slide-up. Collapses to fade-only ≤200ms under reduced motion. |
-| `Shake` | Error feedback on a mountable element. |
 | `Crossfade` | Content swap while the shell stays put. |
 | `usePressedStyle` | Press scale (0.98 + 0.9 opacity); opacity-only under reduced motion. |
 | `useFocusRing` | Focus affordance for inputs. |
@@ -578,7 +577,7 @@ wants it — the contract is just the two ids and the
 ## 6. Motion language, in detail
 
 The motion primitives live in `components/premium/shared/Motion.tsx`
-and are re-exported via `components/MobilePremium/MobileMotion.tsx`
+and are re-exported via the kit barrel (`components/MobilePremium/index.ts`)
 and the kit barrel.
 
 ### Enter — `FadeIn`
@@ -844,7 +843,7 @@ exemption marker.
 
 ### 11.1 Adding a primitive
 
-1. Read `MobileMotion.tsx`, `MobileSurface.tsx`, and `MobileHeader.tsx` first — the conventions (file header doc-comment, prop interface with JSDoc, `as any` cast on `fontWeight`, `theme` import from `../../constants`, named + default export) are load-bearing.
+1. Read `components/premium/shared/Motion.tsx`, `MobileSurface.tsx`, and `MobileHeader.tsx` first — the conventions (file header doc-comment, prop interface with JSDoc, `as any` cast on `fontWeight`, `theme` import from `../../constants`, named + default export) are load-bearing.
 2. New file in `components/MobilePremium/`. Header comment must articulate the design constraint the primitive satisfies (the 490px budget, the reduced-motion contract, etc.).
 3. Add the named export **and** default export.
 4. Re-export from `components/MobilePremium/index.ts`.

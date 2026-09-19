@@ -180,8 +180,25 @@ export { ActivityGridPreview } from './ActivityGridPreview';
 export { CopyForAiButton } from './CopyForAiButton';
 export type { CopyForAiButtonProps } from './CopyForAiButton';
 
-// Motion re-export (alias of components/premium/shared).
-export * from './MobileMotion';
+// Motion re-export — the canonical source is components/premium/shared
+// (the kit-internals layer); the kit barrel carries the same surface so
+// consumers import motion and primitives from one place.
+export {
+  FadeIn,
+  Crossfade,
+  usePressedStyle,
+  useFocusRing,
+  pressStyle,
+  RESPOND_PRESSED,
+  prefersReducedMotionSync,
+  useReducedMotion,
+  Pressable,
+} from '../premium/shared';
+export type {
+  FadeInProps,
+  CrossfadeProps,
+  UseFocusRingOptions,
+} from '../premium/shared';
 
 // NOTE: `showcase` is deliberately NOT re-exported from this barrel.
 // It's a dev visualization, not a primitive, and re-exporting it here

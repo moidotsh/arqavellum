@@ -3,8 +3,8 @@
 // after `duration` ms (default 4000); pass `duration: 0` for sticky toasts.
 //
 // The context registers itself as the global toast callback on mount so
-// `utils/crossPlatformAlert.ts` can emit toasts from outside React (e.g.
-// from a service or a Zustand action) via `utils/toastEventEmitter.ts`.
+// any non-React module (a service, a Zustand action) can emit
+// toasts from outside the tree via `utils/toastEventEmitter.ts`.
 
 import React, { createContext, useCallback, useContext, useState, useEffect } from 'react';
 import { setGlobalToastCallback, type ToastType } from '../utils/toastEventEmitter';
@@ -45,7 +45,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Register this context's showToast as the global toast callback so
-  // utils/crossPlatformAlert.ts (and any non-React code) can emit toasts.
+  // any non-React code (services, stores) can emit toasts.
   useEffect(() => {
     setGlobalToastCallback(showToast);
     return () => setGlobalToastCallback(null);

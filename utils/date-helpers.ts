@@ -1,10 +1,11 @@
 // utils/date-helpers.ts
-// Date utilities for consistent parsing/formatting. Complements the
-// lighter-weight formatters in shared/utils/formatters.ts (which depend
-// on date-fns directly); these helpers handle the local-vs-UTC edge
-// cases that bite date-only strings.
+// Date utilities for consistent parsing/formatting — the single owner of
+// date formatting in the shell. These helpers handle the local-vs-UTC
+// edge cases that bite date-only strings: `new Date('2024-03-20')` lands
+// at UTC midnight, which shifts to the previous calendar day in western
+// longitudes.
 
-import { parseISO, startOfDay, format, isYesterday } from 'date-fns';
+import { parseISO, startOfDay } from 'date-fns';
 
 /**
  * Parse a date string as local time to avoid UTC timezone issues.
@@ -41,6 +42,18 @@ function toDate(date: Date | string): Date {
 }
 
 /**
+ * Format a Date as a local YYYY-MM-DD string (the kit's wire format —
+ * DatePickerField, CalendarGrid, and the activity grid all speak it).
+ * Built from local components so the day never drifts across timezones.
+ */
+export function toYmd(date: Date): string {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+/**
  * Format a date for display in the UI using Intl.DateTimeFormat.
  */
 export function formatDateForDisplay(
@@ -54,53 +67,6 @@ export function formatDateForDisplay(
   const d = toDate(date);
   if (isNaN(d.getTime())) return '';
   return d.toLocaleDateString('en-US', options);
-}
-
-/**
- * Compact month-year label: 'Jun 2025' | '' (invalid).
- */
-export function formatMonthYear(date: Date | string): string {
-  const d = toDate(date);
-  if (isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-}
-
-/**
- * Format a date with time for display.
- */
-export function formatDateTimeForDisplay(date: Date | string): string {
-  const d = toDate(date);
-  if (isNaN(d.getTime())) return '';
-  return d.toLocaleString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
-
-/**
- * Format time only (no date).
- */
-export function formatTimeForDisplay(date: Date | string): string {
-  const d = toDate(date);
-  if (isNaN(d.getTime())) return '';
-  return d.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-}
-
-/**
- * Parse a date string safely. Returns null if invalid.
- */
-export function parseDateString(dateString: string): Date | null {
-  if (!dateString) return null;
-  const d = parseLocalDate(dateString);
-  return isNaN(d.getTime()) ? null : d;
 }
 
 /**
@@ -139,112 +105,10 @@ export function getDaysBetween(start: Date | string, end: Date | string): number
   return Math.round(diffTime / (1000 * 60 * 60 * 24));
 }
 
-/**
- * Relative time string ("2 hours ago", "in 3 days").
- * Returns '' for invalid dates.
- */
-export function getRelativeTime(date: Date | string, relativeTo: Date = new Date()): string {
-  const d = toDate(date);
-  if (isNaN(d.getTime())) return '';
-
-  const diffMs = d.getTime() - relativeTo.getTime();
-  const diffSeconds = Math.round(diffMs / 1000);
-  const diffMinutes = Math.round(diffSeconds / 60);
-  const diffHours = Math.round(diffMinutes / 60);
-  const diffDays = Math.round(diffHours / 24);
-
-  const isPast = diffMs < 0;
-  const absDiffSec = Math.abs(diffSeconds);
-  const absDiffMin = Math.abs(diffMinutes);
-  const absDiffHour = Math.abs(diffHours);
-  const absDiffDay = Math.abs(diffDays);
-
-  if (absDiffSec < 60) {
-    return isPast ? 'just now' : 'in a few seconds';
-  }
-  if (absDiffMin < 60) {
-    return isPast
-      ? `${absDiffMin} minute${absDiffMin > 1 ? 's' : ''} ago`
-      : `in ${absDiffMin} minute${absDiffMin > 1 ? 's' : ''}`;
-  }
-  if (absDiffHour < 24) {
-    return isPast
-      ? `${absDiffHour} hour${absDiffHour > 1 ? 's' : ''} ago`
-      : `in ${absDiffHour} hour${absDiffHour > 1 ? 's' : ''}`;
-  }
-  if (absDiffDay < 7) {
-    return isPast
-      ? `${absDiffDay} day${absDiffDay > 1 ? 's' : ''} ago`
-      : `in ${absDiffDay} day${absDiffDay > 1 ? 's' : ''}`;
-  }
-
-  return formatDateForDisplay(d);
-}
-
-/** Midnight of the given date (or now). */
-export function getStartOfDay(date: Date | string = new Date()): Date {
-  const d = toDate(date);
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
-}
-
-/** End of day (23:59:59.999) of the given date. */
-export function getEndOfDay(date: Date | string = new Date()): Date {
-  const d = toDate(date);
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999);
-}
-
 /** Add days to a date (negative subtracts). Returns a new Date. */
 export function addDays(date: Date | string, days: number): Date {
   const d = toDate(date);
   const result = new Date(d);
   result.setDate(result.getDate() + days);
   return result;
-}
-
-/** True when the date is in the past. */
-export function isPast(date: Date | string): boolean {
-  const d = toDate(date);
-  return d.getTime() < Date.now();
-}
-
-/** True when the date is in the future. */
-export function isFuture(date: Date | string): boolean {
-  const d = toDate(date);
-  return d.getTime() > Date.now();
-}
-
-/**
- * Eyebrow-style group label: 'TODAY' | 'YESTERDAY' | 'JUN 15'.
- * Used as section headers above date-grouped lists.
- */
-export function formatDateGroupLabel(dateStr: string): string {
-  const d = parseLocalDate(dateStr);
-  if (isToday(d)) return 'TODAY';
-  if (isYesterday(d)) return 'YESTERDAY';
-  return format(d, 'MMM d').toUpperCase();
-}
-
-/**
- * Sentence-case variant of `formatDateGroupLabel` for inline row use.
- */
-export function formatSessionDateLabel(dateStr: string): string {
-  const d = parseLocalDate(dateStr);
-  if (isToday(d)) return 'Today';
-  if (isYesterday(d)) return 'Yesterday';
-  return format(d, 'MMM d');
-}
-
-/**
- * Long-form duration: "2 hr 30 min" | "45 min".
- */
-export function formatDurationLong(minutes: number): string {
-  if (minutes < 60) {
-    return `${minutes} min`;
-  }
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  if (mins === 0) {
-    return `${hours} hr`;
-  }
-  return `${hours} hr ${mins} min`;
 }

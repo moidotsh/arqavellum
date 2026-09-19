@@ -195,7 +195,7 @@ This is the contract that prevents doc drift. For every change you land in code,
 | Visual token change (color, spacing, typography) | `constants/theme.ts` (canonical source) + `docs/architecture/mobile-premium-design-system.md` if it affects the design system. | Always. |
 | New MobilePremium primitive | `docs/architecture/mobile-premium-design-system.md` (component inventory) + `app/dev/premium.tsx` (add to the showcase — load-bearing, the showcase IS the visual source of truth). | Always. |
 | New animation/utility hook (`hooks/use*.ts`) | `hooks/index.ts` barrel + `app/dev/premium.tsx` (add an interactive demo if the hook has visible output). | Always. |
-| New utility (`utils/*.ts` or `shared/utils/*.ts`) | The folder barrel (`utils/index.ts` / `shared/utils/index.ts`). | Always. |
+| New utility (`utils/*.ts`) | The folder barrel (`utils/index.ts`). | Always. |
 | New navigation route / push-replace helper | `navigation/NavigationHelper.tsx` (extend `NavigationPath` enum + `navigationHierarchy` map per step 9 of the consumer guide). | Always. |
 | New route wired to `<CopyForAiButton>` (consumer-side) | `navigation/routeMetadata.ts` → `ROUTE_AI_METADATA` map (add the route title + context label entry in the same change). | Always. |
 | New PWA-installability change (manifest, service worker, runtime injection, icons) | `docs/architecture/pwa-installability.md`. Runtime injection block in `app/_layout.tsx` and `index.html` (if present) must stay in sync. | Always. |
