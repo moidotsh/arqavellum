@@ -220,6 +220,22 @@ export const theme = {
       // Alert background tint for error containers.
       alertBackground: 'rgba(239, 68, 68, 0.08)',
 
+      // ── The categorical meter ramp ────────────────────────────────────
+      // Six steps + a rim for consumers that DRAW quantities as
+      // proportional meter segments (stacks, gauges, tallies). The rim
+      // guarantees each step's edge on light grounds where the pale
+      // steps fail raw 3:1. Values are the starter's family — consumers
+      // retune freely; only the STRUCTURE syncs.
+      meter: {
+        step1: '#4338CA',
+        step2: '#0E7490',
+        step3: '#B45309',
+        step4: '#15803D',
+        step5: '#E7E5E4',
+        step6: '#6B7280',
+        rim: '#0F172A',
+      },
+
       // ── The focus register ─────────────────────────────────────────────
       // A mode-independent surface family for "doing" surfaces — live
       // capture, active sessions, focus modes: dark in BOTH palettes
@@ -269,6 +285,13 @@ export const theme = {
         // Lighter than the dark kit's glow because the surface is already
         // bright; we want a soft elevation cue, not a heavy vignette.
         surfaceGlow: '0 8px 32px rgba(15, 23, 42, 0.08), 0 2px 8px rgba(15, 23, 42, 0.04)',
+
+        // The instrument lift — a reserved, heavier shadow for the ONE
+        // docked instrument a screen may carry (a logger, a composer):
+        // the flat surface language stays, and a single physical object
+        // is allowed to sit ON it. Nothing else should use this.
+        instrumentShadow:
+          '0 -2px 6px rgba(15, 23, 42, 0.10), 0 -12px 32px rgba(15, 23, 42, 0.14)',
 
         // Backdrop blur for web (saturate is safe on light surfaces).
         surfaceBackdropBlur: 'blur(24px) saturate(160%)',
@@ -409,6 +432,22 @@ export const theme = {
       // Alert background tint for error containers (dark-mode red wash).
       alertBackground: 'rgba(248, 113, 113, 0.12)',
 
+      // ── The categorical meter ramp ────────────────────────────────────
+      // Six steps + a rim for consumers that DRAW quantities as
+      // proportional meter segments (stacks, gauges, tallies). The rim
+      // guarantees each step's edge on light grounds where the pale
+      // steps fail raw 3:1. Values are the starter's family — consumers
+      // retune freely; only the STRUCTURE syncs.
+      meter: {
+        step1: '#818CF8',
+        step2: '#22D3EE',
+        step3: '#FBBF24',
+        step4: '#4ADE80',
+        step5: '#F5F5F4',
+        step6: '#9CA3AF',
+        rim: '#0F172A',
+      },
+
       // ── The focus register ─────────────────────────────────────────────
       // A mode-independent surface family for "doing" surfaces — live
       // capture, active sessions, focus modes: dark in BOTH palettes
@@ -445,6 +484,11 @@ export const theme = {
         surfaceGradientBottom: 'rgba(226, 232, 240, 0.01)',
 
         surfaceGlow: '0 8px 32px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.30)',
+
+        // The instrument lift (see light's comment) — the one docked
+        // instrument's reserved shadow, heavier at night.
+        instrumentShadow:
+          '0 -2px 6px rgba(0, 0, 0, 0.4), 0 -12px 32px rgba(0, 0, 0, 0.55)',
 
         surfaceBackdropBlur: 'blur(24px) saturate(140%)',
 

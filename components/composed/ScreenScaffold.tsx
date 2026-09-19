@@ -12,10 +12,12 @@
 //     / drawer lives on the home header only; child screens go back
 //     with the chevron.
 
-import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useCallback, useRef } from 'react';
+import { Animated, ScrollView, StyleSheet, View } from 'react-native';
 import { useAppTheme } from '../../context';
 import { SCREEN_BODY_STYLE, DESKTOP_LAYOUT_MODE } from '../../constants';
+import { isWeb } from '../../utils/platform';
+import { useReducedMotion } from '../premium/shared';
 import { MobileAtmosphere, MobileHeader, type MobileAtmosphereSurface } from '../MobilePremium';
 
 interface ScreenScaffoldProps {
@@ -49,6 +51,14 @@ interface ScreenScaffoldProps {
   paddingBottom?: number;
   /** Fixed overlay chrome rendered after the body (action footers, trays). */
   footer?: React.ReactNode;
+  /**
+   * The compress bar — a 48px restatement (`title` + optional `figure`)
+   * that rides the top of the scroll body: empty while the page's hero
+   * statement is on screen, crossfading in as it scrolls away (scroll-
+   * linked, transform/opacity only; static at full opacity under
+   * reduced motion). The big words hand off to the carried words.
+   */
+  compact?: { title: string; figure?: React.ReactNode };
   children: React.ReactNode;
 }
 
@@ -65,9 +75,23 @@ export function ScreenScaffold({
   bodyMaxWidth,
   paddingBottom = 24,
   footer,
+  compact,
   children,
 }: ScreenScaffoldProps) {
   const { colors } = useAppTheme();
+  const reduced = useReducedMotion();
+  // The compress fade — 0 while the hero is on screen, 1 once it has
+  // scrolled one runway past. DOM-safe: the value exists everywhere,
+  // the listener only updates it where scroll fires, and under
+  // reduced motion (or off-web) the bar renders statically.
+  const compress = useRef(new Animated.Value(reduced || !isWeb ? 1 : 0)).current;
+  const handleScroll = useCallback(
+    (e: { nativeEvent: { contentOffset: { y: number } } }) => {
+      if (!compact || reduced || !isWeb) return;
+      compress.setValue(Math.max(0, Math.min(1, e.nativeEvent.contentOffset.y / 56)));
+    },
+    [compact, reduced, compress],
+  );
   // Desktop lifts answer to the repository-level mode: shelved means the
   // constrained mobile column at any viewport width, lift props inert.
   const liftedBodyMaxWidth = DESKTOP_LAYOUT_MODE === 'multi-column' ? bodyMaxWidth : undefined;
@@ -82,7 +106,32 @@ export function ScreenScaffold({
     <View style={[styles.fill, { backgroundColor: colors.background }]}>
       <MobileAtmosphere surface={surface} />
       {resolvedHeader}
+      {compact ? (
+        <View
+          pointerEvents="none"
+          style={[styles.compactBar, { borderBottomColor: colors.border }]}
+          testID="compact-bar"
+        >
+          <Animated.Text
+            style={[
+              styles.compactTitle,
+              { color: colors.text },
+              reduced || !isWeb ? null : { opacity: compress },
+            ]}
+            numberOfLines={1}
+          >
+            {compact.title}
+          </Animated.Text>
+          {compact.figure ? (
+            <Animated.View style={reduced || !isWeb ? null : { opacity: compress }}>
+              {compact.figure}
+            </Animated.View>
+          ) : null}
+        </View>
+      ) : null}
       <ScrollView
+        onScroll={handleScroll}
+        scrollEventThrottle={16}
         style={liftedBodyMaxWidth != null ? [SCREEN_BODY_STYLE, { maxWidth: liftedBodyMaxWidth }] : SCREEN_BODY_STYLE}
         contentContainerStyle={{
           paddingBottom: footer ? Math.max(paddingBottom, FOOTER_INSET) : paddingBottom,
@@ -97,6 +146,21 @@ export function ScreenScaffold({
 
 const styles = StyleSheet.create({
   fill: { flex: 1 },
+  compactBar: {
+    height: 48,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+  },
+  compactTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: -0.2,
+    flex: 1,
+  },
   column: {
     width: '100%',
     alignSelf: 'center',
