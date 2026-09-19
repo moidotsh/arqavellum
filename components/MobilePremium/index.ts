@@ -200,9 +200,10 @@ export type {
   UseFocusRingOptions,
 } from '../premium/shared';
 
-// NOTE: `showcase` is deliberately NOT re-exported from this barrel.
-// It's a dev visualization, not a primitive, and re-exporting it here
-// closes a four-step require cycle (primitives barrel → LoadingOverlay
-// → this barrel → showcase → primitives barrel). The single consumer
-// (`app/dev/premium.tsx`) imports showcase directly from
-// `./components/MobilePremium/showcase`. See docs/contributing.md.
+// NOTE: nothing inside `showcase/` is re-exported from this barrel.
+// The showcase is a dev visualization, not a primitive, and re-exporting
+// it here closes a four-step require cycle (primitives barrel →
+// LoadingOverlay → this barrel → showcase → primitives barrel) that
+// Metro warns about. The single consumer (`app/dev/premium.tsx`)
+// imports directly from `./components/MobilePremium/showcase` (the
+// folder's index). See docs/contributing.md.

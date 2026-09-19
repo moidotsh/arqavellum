@@ -20,7 +20,7 @@
 //     strict WAI-ARIA grid semantics on web can layer host-level
 //     aria-role="grid" / aria-role="row" attributes themselves (same
 //     pattern the showcase documents for tabpanel at
-//     components/MobilePremium/showcase.tsx in the SegmentedControl
+//     components/MobilePremium/showcase/ (index.tsx) in the SegmentedControl
 //     `variant="tabs"` demo).
 //   • Each day cell is role="button" (Pressable) with accessibilityState={{
 //     selected }} for the active day and accessibilityState={{ disabled }}

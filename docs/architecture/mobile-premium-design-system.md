@@ -298,7 +298,7 @@ via the path alias, or `../MobilePremium` relatively).
 
 ### Dev tooling
 
-`showcase.tsx` (mounted at `/dev/premium` via `app/dev/premium.tsx`)
+`components/MobilePremium/showcase/` (mounted at `/dev/premium` via `app/dev/premium.tsx`)
 is a dev-only visual review tool that renders every primitive against
 a light background in a 490px-tall frame so the visual language can
 be reviewed in isolation. **The showcase IS the visual source of
@@ -847,7 +847,7 @@ exemption marker.
 2. New file in `components/MobilePremium/`. Header comment must articulate the design constraint the primitive satisfies (the 490px budget, the reduced-motion contract, etc.).
 3. Add the named export **and** default export.
 4. Re-export from `components/MobilePremium/index.ts`.
-5. **Add it to the showcase** (`components/MobilePremium/showcase.tsx`). The showcase IS the visual source of truth — primitives not in the showcase don't exist as far as a consumer can tell.
+5. **Add it to the showcase** (`components/MobilePremium/showcase/` — a section in `index.tsx`, or a demo component in `demos/` when it needs local state). The showcase IS the visual source of truth — primitives not in the showcase don't exist as far as a consumer can tell.
 
 ### 11.2 Adding an atmosphere surface
 
@@ -855,7 +855,7 @@ exemption marker.
 2. Add the 3-orb palette to the `PALETTES` record with a comment explaining what the surface is for.
 3. Use a hue from the existing `LIGHT_HUES` map — do not introduce a new hex.
 4. Update the surface table in §5 of this doc.
-5. Add a row to the showcase's `SURFACES` array.
+5. Add a row to the showcase's `SURFACES` array (`components/MobilePremium/showcase/data.ts`).
 
 ### 11.3 Adding a gated screen (consumer-side)
 
@@ -928,6 +928,6 @@ sections that are missing — at minimum, mark changed sections with the
 new state.
 
 When you add or change a primitive, **update the showcase in the same
-change** (`components/MobilePremium/showcase.tsx`).
+change** (`components/MobilePremium/showcase/`).
 
 When you change the gating logic, update §7 and §8 together.
