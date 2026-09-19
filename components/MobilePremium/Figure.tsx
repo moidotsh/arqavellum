@@ -22,7 +22,7 @@
 // value. No trend computation, no data fetching, no domain semantics.
 
 import React from 'react';
-import { StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { StyleSheet, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
 
@@ -53,17 +53,26 @@ export interface FigureProps {
   style?: StyleProp<ViewStyle>;
 }
 
-function valueStyleFor(size: FigureSize) {
+function valueStyleFor(size: FigureSize): TextStyle {
   switch (size) {
     case 'hero':
-      return theme.typography.mobileHero;
+      // A figure at hero scale rides the counter token — the mono
+      // display rank. A word token must never carry a numeral.
+      return { ...theme.typography.mobileCounter };
     case 'display':
-      return theme.typography.mobileDisplay;
+      // The figure-statement: the statement rank's size/leading with
+      // the mono face + tabular figures composed in — figures are
+      // ALWAYS mono at every rank, whatever the consumer's ramp.
+      return {
+        ...theme.typography.mobileDisplay,
+        fontFamily: theme.fonts.mono,
+        fontVariant: ['tabular-nums'],
+      };
     case 'sm':
-      return theme.typography.mobileLedger;
+      return { ...theme.typography.mobileLedger };
     case 'md':
     default:
-      return theme.typography.mobileFigure;
+      return { ...theme.typography.mobileFigure };
   }
 }
 
