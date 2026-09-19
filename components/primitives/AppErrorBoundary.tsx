@@ -91,7 +91,7 @@ export class AppErrorBoundary extends Component<Props, State> {
       fontSize: 14,
       fontWeight: 500,
       border: 'none',
-      borderRadius: 8,
+      borderRadius: 0,
       cursor: 'pointer',
     };
 

@@ -104,7 +104,7 @@ export function MobileAlert({
         style,
       ]}
     >
-      <View style={[styles.iconCircle, { backgroundColor: `${accent}26` }]}>
+      <View style={[styles.iconPlate, { backgroundColor: `${accent}26` }]}>
         <Icon size={14} color={accent} strokeWidth={2.5} />
       </View>
       <View style={styles.text}>
@@ -128,7 +128,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 10,
-    borderRadius: 12,
+    // A notice is a ruled plate, not a rounded chip — the alert rides
+    // the same shape language as every other control.
+    borderRadius: theme.shapes.control,
     borderWidth: 1,
     paddingHorizontal: 12,
     paddingVertical: 10,
@@ -136,10 +138,10 @@ const styles = StyleSheet.create({
     // is owned by the layer above (SB1 screen body / portal panel).
     width: '100%',
   },
-  iconCircle: {
+  iconPlate: {
     width: 24,
     height: 24,
-    borderRadius: 12,
+    borderRadius: theme.shapes.control,
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 1,

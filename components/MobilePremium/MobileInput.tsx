@@ -4,10 +4,13 @@
 // Preserves the 490px test fit by keeping the same input height. The
 // premium signal comes from:
 //
-//   • Considered label rhythm — uses typography.mobileFieldLabel (13/600),
+//   • Considered label rhythm — uses typography.mobileFieldLabel,
 //     with the label sitting tighter to the input (gap 6 vs 8 in legacy).
-//   • Animated focus ring — useFocusRing draws a 1.5px ring at -1px inset
-//     that fades in/out, plus a web-only box-shadow glow.
+//   • Focus is an ink moment — the ring rides the host's shape (no
+//     corner the field doesn't have), snaps (no fade), wears no halo,
+//     and reads the mode's ink, never the brand slot: on any consumer
+//     whose brand reads as an alarm hue, a brand focus ring is
+//     indistinguishable from the error state.
 //   • Refined error state — the error text moves to a dedicated slot
 //     beneath the input (not in the helper-text slot), so the label row
 //     never reflows on error.
@@ -75,7 +78,7 @@ export interface MobileInputProps {
   rightIcon?: React.ReactNode;
   /** Press handler for the right icon. */
   onRightIconPress?: () => void;
-  /** Accent color (default theme brand). */
+  /** Accent color (default theme ink — pass to borrow the brand deliberately). */
   accentColor?: string;
   /** Disabled state. */
   editable?: boolean;
@@ -135,13 +138,19 @@ export function MobileInput({
 }: MobileInputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const { colors } = useAppTheme();
-  const accent = accentColor ?? colors.brand;
+  // Focus is an ink moment: the field you are writing in reads the
+  // mode's ink, not the brand slot. Pass accentColor to borrow the
+  // brand deliberately.
+  const accent = accentColor ?? colors.text;
   const resolvedError = error ?? errorText;
   const hasError = !!resolvedError;
 
-  const { ringStyle, glowStyle } = useFocusRing({
+  // The ring rides the host's shape and snaps — no halo.
+  const { ringStyle } = useFocusRing({
     color: accent,
     focused: isFocused && !hasError,
+    duration: 0,
+    radius: theme.shapes.control,
   });
 
   // Border / background / label respond to focus + error — the shared
@@ -166,7 +175,7 @@ export function MobileInput({
           </View>
         ) : null}
 
-        <View style={[styles.inputInner, glowStyle]}>
+        <View style={styles.inputInner}>
           <TextInput
             style={[
               styles.input,

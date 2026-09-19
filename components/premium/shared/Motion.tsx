@@ -270,6 +270,11 @@ export interface UseFocusRingOptions {
   focused: boolean;
   /** Animation duration (ms). Default 220ms. */
   duration?: number;
+  /**
+   * The ring's corner radius — pass the host's own shape so the ring
+   * never invents a corner the trigger doesn't have. Default 0.
+   */
+  radius?: number;
 }
 
 /**
@@ -280,7 +285,7 @@ export interface UseFocusRingOptions {
  *
  * Under `prefers-reduced-motion`, the ring snaps instead of animating.
  */
-export function useFocusRing({ color, focused, duration = 220 }: UseFocusRingOptions) {
+export function useFocusRing({ color, focused, duration = 220, radius = 0 }: UseFocusRingOptions) {
   const { useNativeDriver } = usePlatformAnimation();
   const reduced = useReducedMotion();
   const opacity = useRef(new Animated.Value(focused ? 1 : 0)).current;
@@ -302,13 +307,13 @@ export function useFocusRing({ color, focused, duration = 220 }: UseFocusRingOpt
       left: -1,
       right: -1,
       bottom: -1,
-      borderRadius: 14,
+      borderRadius: radius,
       borderWidth: 1.5,
       borderColor: color,
       opacity,
       pointerEvents: 'none',
     }),
-    [color, opacity],
+    [color, radius, opacity],
   );
 
   const glowStyle: StyleProp<ViewStyle> = useMemo(() => {
