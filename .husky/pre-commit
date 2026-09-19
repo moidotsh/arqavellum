@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────
-# arqavellum local quality gate. 12 structural audits + tsc + structural eslint.
+# arqavellum local quality gate. 13 structural audits + tsc + structural eslint.
 # Fast checks only — test suite is deferred to CI. Runs in a few seconds.
 # ─────────────────────────────────────────────────────────────────────
 
@@ -118,6 +118,18 @@ echo "→ Running portal-content-width audit…" >&2
 bun run scripts/audit-mobile-content-width.ts || {
   echo "" >&2
   echo "  ERROR: Portal content-width violations found. See above." >&2
+  echo "  (skip with --no-verify if you genuinely need to.)" >&2
+  echo "" >&2
+  exit 1
+}
+
+# Shim-sync audit (shim-sync/redirect/dead-shim): hard fail. The only
+# check that catches silently-undefined named imports from the shimmed
+# barrels — invisible to both tsc and metro.
+echo "→ Running shim-sync audit…" >&2
+bun run scripts/audit-shim-sync.ts || {
+  echo "" >&2
+  echo "  ERROR: Shim-sync violations found. See above." >&2
   echo "  (skip with --no-verify if you genuinely need to.)" >&2
   echo "" >&2
   exit 1
