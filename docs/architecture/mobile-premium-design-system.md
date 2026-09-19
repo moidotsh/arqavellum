@@ -183,6 +183,7 @@ via the path alias, or `../MobilePremium` relatively).
 | `useFocusRing` | Focus affordance for inputs. |
 | `Pressable` | Re-exported RN `Pressable` for convenience. |
 | `prefersReducedMotionSync`, `useReducedMotion` | Read the reduced-motion media query. |
+| `useCompressFade` | Scroll-linked 0→1 fade for compact restatement bars (consumed by `ScreenScaffold`'s `compact` prop). Static-eligible under reduced motion / off-web. |
 
 ### Atmosphere
 

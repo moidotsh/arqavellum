@@ -12,12 +12,11 @@
 //     / drawer lives on the home header only; child screens go back
 //     with the chevron.
 
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback } from 'react';
 import { Animated, ScrollView, StyleSheet, View } from 'react-native';
 import { useAppTheme } from '../../context';
 import { SCREEN_BODY_STYLE, DESKTOP_LAYOUT_MODE } from '../../constants';
-import { isWeb } from '../../utils/platform';
-import { useReducedMotion } from '../premium/shared';
+import { useCompressFade } from '../premium/shared';
 import { MobileAtmosphere, MobileHeader, type MobileAtmosphereSurface } from '../MobilePremium';
 
 interface ScreenScaffoldProps {
@@ -79,18 +78,15 @@ export function ScreenScaffold({
   children,
 }: ScreenScaffoldProps) {
   const { colors } = useAppTheme();
-  const reduced = useReducedMotion();
-  // The compress fade — 0 while the hero is on screen, 1 once it has
-  // scrolled one runway past. DOM-safe: the value exists everywhere,
-  // the listener only updates it where scroll fires, and under
-  // reduced motion (or off-web) the bar renders statically.
-  const compress = useRef(new Animated.Value(reduced || !isWeb ? 1 : 0)).current;
+  // The compress fade (the shared motion primitive): 0 while the hero
+  // is on screen, 1 once it has scrolled past. Static-eligible under
+  // reduced motion / off-web — the bar renders its restatement.
+  const { compress, handleScroll: fadeScroll, static: fadeStatic } = useCompressFade(!!compact);
   const handleScroll = useCallback(
     (e: { nativeEvent: { contentOffset: { y: number } } }) => {
-      if (!compact || reduced || !isWeb) return;
-      compress.setValue(Math.max(0, Math.min(1, e.nativeEvent.contentOffset.y / 56)));
+      fadeScroll(e);
     },
-    [compact, reduced, compress],
+    [fadeScroll],
   );
   // Desktop lifts answer to the repository-level mode: shelved means the
   // constrained mobile column at any viewport width, lift props inert.
@@ -116,14 +112,14 @@ export function ScreenScaffold({
             style={[
               styles.compactTitle,
               { color: colors.text },
-              reduced || !isWeb ? null : { opacity: compress },
+              fadeStatic ? null : { opacity: compress },
             ]}
             numberOfLines={1}
           >
             {compact.title}
           </Animated.Text>
           {compact.figure ? (
-            <Animated.View style={reduced || !isWeb ? null : { opacity: compress }}>
+            <Animated.View style={fadeStatic ? null : { opacity: compress }}>
               {compact.figure}
             </Animated.View>
           ) : null}
