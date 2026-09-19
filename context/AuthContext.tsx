@@ -15,6 +15,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { AuthService, type AuthSession } from '../utils/supabase';
 import { logger } from '../utils';
 import { useAuthStore } from '../stores';
+import { DEV_AUTH_EMAIL } from '../constants';
 import { registerAuthErrorHandler } from '../lib/react-query';
 
 interface AuthContextValue {
@@ -69,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ) {
       const mockSession: AuthSession = {
         userId: 'dev-user',
-        email: 'dev@arqavellum.app',
+        email: DEV_AUTH_EMAIL,
         accessToken: 'dev-access-token',
         refreshToken: 'dev-refresh-token',
       };

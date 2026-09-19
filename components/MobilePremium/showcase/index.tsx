@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Mail, Lock, Eye, EyeOff, Settings, Bell, Info, ChevronRight, Home, Package, TrendingUp, Search } from '@tamagui/lucide-icons-2';
-import { theme, APP_LAYOUT, SCREEN_BODY_STYLE } from '../../../constants';
+import { theme, APP_LAYOUT, SCREEN_BODY_STYLE, APP_DISPLAY_NAME } from '../../../constants';
 import { useAppTheme } from '../../../context';
 // Direct imports from each primitive file (not the barrel). The
 // showcase is intentionally NOT re-exported by the MobilePremium
@@ -87,6 +87,7 @@ import { CurtainDemo } from './demos/CurtainDemo';
 import { LangDemo } from './demos/LangDemo';
 import { AbsorbBarDemo } from './demos/AbsorbBarDemo';
 import { TabBarDemo } from './demos/TabBarDemo';
+import { ShellHeaderDemo } from './demos/ShellHeaderDemo';
 
 
 export function Showcase() {
@@ -245,6 +246,16 @@ export function Showcase() {
             shifts and nothing straddles the plate&apos;s rule. Consumers set the row face via
             itemLabelStyle (e.g. a ledger mono) and declare the language once in the theme.
           </Text>
+        </View>
+
+        <View style={styles.section}>
+          <MobileSectionEyebrow>AppShellHeader — the composed one-drawer pattern</MobileSectionEyebrow>
+          {/* The home header wired to the cutout drawer, pre-assembled in
+              components/composed: brand from APP_DISPLAY_NAME + the
+              hamburger + MobileNavDrawer in the APP_LAYOUT defaults, locked
+              to the content column. The section above shows the pieces;
+              this is the assembly a consumer's home surface mounts. */}
+          <ShellHeaderDemo />
         </View>
 
         <View style={styles.section}>
@@ -597,7 +608,7 @@ export function Showcase() {
               variant="subtle"
               testID="showcase-copy-for-ai-subtle"
               payload={buildAiPayload({
-                appName: 'arqavellum',
+                appName: APP_DISPLAY_NAME,
                 route: '/dev/premium',
                 title: 'Showcase',
                 contextLabel: 'Design system reference',
@@ -621,7 +632,7 @@ export function Showcase() {
                 <CopyForAiButton
                   testID="showcase-copy-for-ai-ghost"
                   payload={buildAiPayload({
-                    appName: 'arqavellum',
+                    appName: APP_DISPLAY_NAME,
                     route: '/dev/premium',
                     title: 'Showcase',
                   })}

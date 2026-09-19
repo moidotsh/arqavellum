@@ -36,6 +36,7 @@
 // queued events go nowhere, harmless.
 
 import { isWeb, hasDocument, hasWindow } from './platform';
+import { STORAGE_KEYS } from '../constants';
 
 declare global {
   interface Window {
@@ -71,7 +72,7 @@ export const QR_LANDING_PATHS: readonly string[] = ['/qr'];
 /** The primary printed-QR landing path (the first entry of the set). */
 export const QR_LANDING_PATH = QR_LANDING_PATHS[0];
 
-const VISIT_REPORTED_KEY = 'arqavellum-visit-source';
+const VISIT_REPORTED_KEY = STORAGE_KEYS.visitSource;
 
 export type VisitChannel = 'qr' | 'pwa' | 'link' | 'direct' | 'internal';
 

@@ -28,6 +28,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { isWeb, hasDocument } from './platform';
 import { zustandStorage } from './storage';
+import { STORAGE_KEYS } from '../constants';
 
 // ─── Language type ─────────────────────────────────────────────────────
 
@@ -73,7 +74,7 @@ export const useLangStore = create<LangState>()(
       },
     }),
     {
-      name: 'arqavellum-lang',
+      name: STORAGE_KEYS.langStore,
       storage: createJSONStorage(() => zustandStorage),
       merge: (persisted, current) => ({
         ...current,

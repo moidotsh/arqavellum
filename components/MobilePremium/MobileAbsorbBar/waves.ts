@@ -7,6 +7,7 @@
 // the paper above the fill); exiting, the tile flips — solid above the
 // curve, crests hanging down toward the floor like the last drips.
 import { type ViewStyle } from 'react-native';
+import { DOM_IDS } from '../../../constants';
 
 // ── Tuning ──────────────────────────────────────────────────────────────
 // The rise is near-sticky (the fill meets the card's edge at first
@@ -121,9 +122,9 @@ const maskTileBEnter = maskTile(MASK_B.tile, MASK_B.height, false);
 const maskTileBExit = maskTile(MASK_B.tile, MASK_B.height, true);
 
 export function ensureAbsorbCss(): void {
-  if (document.getElementById('arqavellum-absorb-css') != null) return;
+  if (document.getElementById(DOM_IDS.absorbCss) != null) return;
   const el = document.createElement('style');
-  el.id = 'arqavellum-absorb-css';
+  el.id = DOM_IDS.absorbCss;
   el.textContent = [
     `@keyframes arq-absorb-drift-a{from{transform:translateX(0)}to{transform:translateX(-${WAVE_A.tile}px)}}`,
     `@keyframes arq-absorb-drift-b{from{transform:translateX(-${WAVE_B.tile}px)}to{transform:translateX(0)}}`,

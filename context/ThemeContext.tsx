@@ -17,12 +17,12 @@ import React, {
   useState,
 } from 'react';
 import { Appearance, useColorScheme as useNativeColorScheme } from 'react-native';
-import { theme, type ColorScheme, type ColorPalette } from '../constants';
+import { theme, STORAGE_KEYS, type ColorScheme, type ColorPalette } from '../constants';
 import { isWeb, hasWindow } from '../utils/platform';
 import { zustandStorage } from '../stores';
 import { logger } from '../utils';
 
-const STORAGE_KEY = 'arqavellum:color-scheme';
+const STORAGE_KEY = STORAGE_KEYS.colorScheme;
 
 // 'system' lets the user opt back in to OS-level prefers-color-scheme.
 // The resolved value is then 'light' | 'dark' based on Appearance API

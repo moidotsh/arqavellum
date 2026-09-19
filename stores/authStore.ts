@@ -35,6 +35,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { zustandStorage } from './storage';
+import { STORAGE_KEYS } from '../constants';
 
 export type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'unauthenticated';
 
@@ -94,7 +95,7 @@ export const useAuthStore = create<AuthState>()(
       reset: () => set(initialState),
     }),
     {
-      name: 'arqavellum-auth',
+      name: STORAGE_KEYS.authStore,
       storage: createJSONStorage(() => zustandStorage),
       // Auth state is fully re-derived on every boot — AuthProvider's
       // mount-time setStatus('loading') + restoreSession() decide the
