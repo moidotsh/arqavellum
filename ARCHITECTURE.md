@@ -95,8 +95,8 @@
 - **Quick Reference:**
   - Server state → React Query (`hooks/queries/`, `hooks/mutations/`)
   - Client state → Zustand (`stores/`)
-  - Theme/responsive only → Context (limited use — TamaguiProvider, ResponsiveProvider)
-- **Duplication Prohibition:** If a Zustand store exists for a domain, Context MUST NOT be used for the same state.
+  - Shell chrome (theme palette, toast queue) → Context (`context/ThemeContext.tsx`, `context/ToastContext.tsx`)
+- **Duplication Prohibition:** If a Zustand store exists for a domain, Context MUST NOT be used for the same state. (Documented exception: `AuthContext` mirrors the session into `authStore` so `AuthGuard`/`safeGoBack()` read live auth status without subscribing to the provider — the context remains the source of truth; see the header of `context/AuthContext.tsx`.)
 - **Prohibited:** Mixing server state in Zustand; new Contexts for UI state that a Zustand store could hold.
 
 ### S5. Barrel Exports
@@ -229,7 +229,7 @@
 - **Audit:** Same hook as D2 (`audit-state.ts`).
 
 ### D4. Offline Queue System
-- **Rule:** Mutations that must survive network drops go through `services/offlineQueueService.ts` (extends `BaseQueueService<T>`). The queue persists to AsyncStorage and flushes on reconnect (driven by `stores/networkStore.ts`).
+- **Rule:** Mutations that must survive network drops go through `services/offlineQueueService.ts` (extends `BaseQueueService<T>`). The queue persists to storage and flushes on reconnect — the flush wiring is consumer-side by design: the shell ships no concrete queue, so the consumer who types the queue subscribes `stores/networkStore.ts`'s `useIsOnline` to their queue's `flush()` in the same change.
 
 ### D5. Repository Pattern
 - **Rule:** Data access goes through repositories in `utils/supabase/repositories/`. Every repository method returns `Promise<RepositoryResult<T>>`. Concrete repositories are standalone classes with static methods — consumers drop new files into this folder and re-export via the barrel.
@@ -345,15 +345,16 @@ Arqavellum ships with deliberate gaps that consumers fill. The shell doesn't shi
 - Domain stores — consumers add to `stores/`
 - Domain routes — consumers replace the placeholder home + add domain routes to `app/`
 - Domain services — consumers add to `services/`
-- Navigation helper — consumers create `navigation/NavigationHelper.tsx` with their route map
-- Loading primitives — consumers add `LoadingSpinner`, `LoadingOverlay`, `AppLoading` (or import from a shared kit)
+- Domain React Query hooks — consumers add to `hooks/queries/` + `hooks/mutations/` (the worked chain: repository → `queryKeys` factory → `useQuery`/`useMutation` → invalidation)
 
 The shell DOES ship:
 - All cross-cutting utilities (`utils/*`)
-- The light theme + tokens (`constants/theme.ts`)
+- Both theme palettes + tokens (`constants/theme.ts` — light default, dark opt-in)
 - The MobilePremium kit (`components/MobilePremium/*`)
 - The premium motion primitives (`components/premium/shared/*`)
 - The auth flow (`app/login.tsx`, `app/register.tsx`, `app/forgot-password.tsx`)
 - The settings screen (`app/settings.tsx`)
 - The design-system showcase (`app/dev/premium.tsx`)
+- The navigation helper (`navigation/NavigationHelper.tsx` — consumers EXTEND it with domain routes; see CLAUDE.md → "How to consume" step 9)
+- The loading primitives (`components/primitives/{LoadingSpinner,LoadingOverlay,AppLoading}.tsx` — consumers wrap these, never `ActivityIndicator` directly)
 - The 13-audit pre-commit gate (`scripts/audit-*.ts` + `.husky/pre-commit`)

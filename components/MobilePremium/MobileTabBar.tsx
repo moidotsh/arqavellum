@@ -1,20 +1,20 @@
 // components/MobilePremium/MobileTabBar.tsx
 //
-// The Desk's bottom chrome (docs/architecture/signal-thesis.md §6): a
-// flat steel bar with the app's primary verb raised at its center —
-// START before a session, RESUME (pulsing) during one. Four flanking
-// tabs + the center action = five destinations, all in the thumb arc.
+// The kit's bottom chrome: a flat bar with the app's primary verb
+// raised at its center — START before a run, RESUME (pulsing) during
+// one. Four flanking tabs + the center action = five destinations,
+// all in the thumb arc.
 //
-// The SIGNAL read:
+// The read:
 //   • Bar = card surface with a 1px hairline top edge. Flat — no blur,
 //     no glow, no floating dock.
-//   • Active tab: ink label + a 2px signal notch centered on the top
-//     edge. Inactive: muted. Labels ride the mono face, tracked caps —
+//   • Active tab: ink label + a 2px notch centered on the top edge.
+//     Inactive: muted. Labels ride the mono face, tracked caps —
 //     instrument markings, not iOS tabs.
-//   • Center action: a 56px signal circle raised past the bar top,
-//     ink glyph, road-sign contrast. `active` runs the one ambient
-//     animation in the system — a 1.6s opacity/scale breath — which
-//     collapses to static under reduced motion.
+//   • Center action: a 56px circle raised past the bar top, ink glyph,
+//     road-sign contrast. `active` runs the one ambient animation in
+//     the system — a 1.6s opacity/scale breath — which collapses to
+//     static under reduced motion.
 //
 // The bar owns no routing: consumers pass onPress callbacks (their
 // NavigationHelper). Domain-neutral by construction — the shell ports

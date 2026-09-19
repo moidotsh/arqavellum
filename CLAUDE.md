@@ -114,7 +114,7 @@ This is the load-bearing consumer guide. Following these steps in order yields a
    - Record parent→child relationships in `navigationHierarchy` (drives `goBack(currentPath)` — falls back to root when no parent is recorded).
    - Add `navigateTo<Screen>()` (push — drill-in) and/or `replaceWith<Screen>()` (replace — redirect) helpers. The convention is load-bearing: `navigateTo` = add to back stack, `replaceWith` = redirect away.
    - Update the existing `app/{login,register,forgot-password}.tsx` callsites if you rename an arqavellum route.
-10. **Extend loading primitives:** arqavellum ships `components/primitives/{LoadingSpinner,LoadingOverlay,AppLoading}.tsx`. Audit C4 expects `ActivityIndicator` to live only inside these three files. Add domain-specific loading wrappers as composed components that import these primitives — don't sprinkling `ActivityIndicator` directly into domain code.
+10. **Extend loading primitives:** arqavellum ships `components/primitives/{LoadingSpinner,LoadingOverlay,AppLoading}.tsx`. Audit C4 sanctions exactly four `ActivityIndicator` sites: those three files plus the inline button spinner in `MobilePrimaryButton.tsx`. Add domain-specific loading wrappers as composed components that import these primitives — don't sprinkling `ActivityIndicator` directly into domain code.
 11. **Verify:** `bun install && bun run web`. The home route opens signed-out (the launchpad, with the showcase link). Visit `/dev/premium` to confirm the design system renders (every primitive, all 7 atmosphere palettes, every animation hook, the container-variant probe). Visit `/login`, `/register`, `/settings` to confirm the auth scaffolding works.
 
 ### When to add PIN auth

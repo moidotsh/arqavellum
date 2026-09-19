@@ -1,8 +1,13 @@
 // stores/networkStore.ts
-// Online/offline detection. Drives the offline queue (mutations queue
-// locally while offline, flush on reconnect). Arqavellum is PWA-first so
-// this is web-only — window online/offline events. A consumer adding
-// native targets would extend `initializeListeners` with NetInfo.
+// Online/offline detection for the shell. Records connectivity and
+// exposes `useIsOnline()` / `getNetworkStatus()` for banner and queue
+// surfaces. Flush-on-reconnect wiring is deliberately consumer-side:
+// the offline queue is consumer-typed (services/offlineQueueService.ts),
+// so the consumer subscribes `useNetworkStore` → their queue's
+// `flush()` in the same change that defines the queue. Arqavellum is
+// PWA-first so this is web-only — window online/offline events. A
+// consumer adding native targets would extend `initializeListeners`
+// with NetInfo.
 
 // =============================================================================
 // SECTION: Loading
