@@ -42,6 +42,30 @@ export enum RepositoryErrorCode {
 }
 
 /**
+ * Query options for `findAll` operations.
+ */
+export interface FindOptions {
+  limit?: number;
+  offset?: number;
+  orderBy?: string;
+  orderDirection?: 'asc' | 'desc';
+}
+
+/**
+ * Base repository interface. Consumers define a concrete repository
+ * that implements this for their entity type. The audit gate (S9)
+ * flags any direct `supabase.*` call outside this folder.
+ */
+export interface IRepository<T, CreateDTO, UpdateDTO> {
+  findAll(options?: FindOptions): Promise<RepositoryResult<T[]>>;
+  findById(id: string): Promise<RepositoryResult<T | null>>;
+  create(data: CreateDTO): Promise<RepositoryResult<T>>;
+  update(id: string, data: UpdateDTO): Promise<RepositoryResult<T>>;
+  delete(id: string): Promise<RepositoryResult<void>>;
+  deleteMany(ids: string[]): Promise<RepositoryResult<void>>;
+}
+
+/**
  * Helper to create a successful result.
  */
 export function ok<T>(data: T): RepositoryResult<T> {
