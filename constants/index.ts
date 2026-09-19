@@ -4,6 +4,7 @@
 // repos, not the shell.
 
 export { theme } from './theme';
+export { STORAGE_KEYS, DOM_IDS, DEV_AUTH_EMAIL } from './storageKeys';
 export { APP_DISPLAY_NAME } from './displayName';
 export type { ColorScheme, ColorPalette } from './theme';
 export { DURATION, EASING, ANIMATION_CONFIG, ANIMATION } from './animation';
