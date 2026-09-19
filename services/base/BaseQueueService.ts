@@ -24,7 +24,13 @@ export abstract class BaseQueueService<T extends { id: string }> {
   protected abstract logContext: LogContext;
 
   constructor() {
-    this.loadPromise = this.loadQueue();
+    // Deferred by one microtask ON PURPOSE: subclass field initializers
+    // (`storageKey = 'my_key'`) run only AFTER super() returns, so a
+    // synchronous loadQueue() here would read `this.storageKey` as
+    // undefined and load from the literal key 'undefined' while
+    // persisting to the real key — persisted queues would never load.
+    // The microtask runs after the whole constructor chain settles.
+    this.loadPromise = Promise.resolve().then(() => this.loadQueue());
   }
 
   /** Resolves once the initial storage load has settled (success or not). */
@@ -93,9 +99,15 @@ export abstract class BaseQueueService<T extends { id: string }> {
   }
 
   /**
-   * Persist the current in-memory queue to storage.
+   * Persist the current in-memory queue to storage. Before the initial
+   * load has read storage, persists chain BEHIND the load — writing
+   * first would clobber the persisted blob before it merges, losing
+   * every queued item from the previous session.
    */
   protected async persistQueue(): Promise<void> {
+    if (!this.isLoaded) {
+      await this.loadPromise;
+    }
     try {
       await zustandStorage.setItem(this.storageKey, JSON.stringify(this.queue));
     } catch (error) {
