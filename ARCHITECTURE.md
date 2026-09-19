@@ -120,7 +120,7 @@
 
 ### S9. Service Layer / Repository Pattern
 - **Rule:** UI code calls services → services call repositories → repositories call Supabase. UI never touches `supabase.*` directly.
-- **Usage:** `hooks/queries/useRecords.ts` → `services/recordService.ts` → `utils/supabase/repositories/RecordRepository.ts`.
+- **Usage:** `hooks/queries/useRecords.ts` → `utils/supabase/repositories/RecordRepository.ts` (services sit between only when they add orchestration). The full worked chain — repository → `queryKeys` factory → `useQuery`/`useMutation` → invalidation — ships as commented copy-paste examples in `hooks/queries/README.md` and `hooks/mutations/README.md`.
 - **Audit:** `audit-data-layer.ts` blocks direct `supabase.*` in `app/`, `hooks/`, `components/`, `context/`.
 
 ### S10. Error Handling (AppError)
