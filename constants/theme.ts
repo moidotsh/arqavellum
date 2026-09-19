@@ -61,12 +61,21 @@ export interface TypeFaces {
   displayCondensed?: string;
   /** Mono face — ledger figures: prices, stock, dates, metrics, eyebrows. */
   mono?: string;
+  /**
+   * Condensed cut of the SAME mono variable file — the counter rank's
+   * optional width instance (see `mono`): one download, two families,
+   * RN code never touches fontStretch. Declared for consumers whose
+   * largest figures need the width back (a wide mono at poster rank
+   * can overrun a phone column); undefined keeps every figure on `mono`.
+   */
+  monoCondensed?: string;
 }
 
 const FONTS = {
   display: undefined,
   displayCondensed: undefined,
   mono: undefined,
+  monoCondensed: undefined,
 } as TypeFaces;
 
 // ── Design dialect ──────────────────────────────────────────────────────

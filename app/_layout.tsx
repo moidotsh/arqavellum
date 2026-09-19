@@ -159,7 +159,9 @@ function RootShell() {
       'global-focus-css',
       [
         "button:focus,[role='button']:focus,[role='link']:focus,a:focus,select:focus{outline-width:0;box-shadow:0 0 0 2px currentColor}",
-        'input:focus,textarea:focus{outline-width:0}',
+        // `outline: none`, not outline-width — WebKit's UA ring is
+        // outline-style: auto and ignores a width kill.
+        'input:focus,textarea:focus,select:focus{outline:none}',
       ].join(''),
     );
 

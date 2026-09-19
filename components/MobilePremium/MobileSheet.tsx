@@ -194,8 +194,11 @@ const styles = StyleSheet.create({
     ...MOBILE_CONTENT_WIDTH_STYLE,
   },
   sheetBottom: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    // The sheet obeys the theme's shape law — no hardcoded corner
+    // breaks (shapes.sheet is the single shape-language override
+    // point; a literal here bypassed the discipline).
+    borderTopLeftRadius: theme.shapes.sheet,
+    borderTopRightRadius: theme.shapes.sheet,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     maxHeight: '85%',
@@ -203,8 +206,8 @@ const styles = StyleSheet.create({
   sheetTop: {
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: theme.shapes.sheet,
+    borderBottomRightRadius: theme.shapes.sheet,
     maxHeight: '85%',
   },
   handleBar: {
