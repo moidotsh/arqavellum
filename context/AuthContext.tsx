@@ -15,6 +15,7 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 import { AuthService, type AuthSession } from '../utils/supabase';
 import { logger } from '../utils';
 import { useAuthStore } from '../stores';
+import { registerAuthErrorHandler } from '../lib/react-query';
 
 interface AuthContextValue {
   session: AuthSession | null;
@@ -37,6 +38,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // restore resolves, which is what the `enabled: !!userId` gates on
   // queries already guard against.
   const [initializing, setInitializing] = useState(false);
+
+  // Bridge the query/mutation caches back into auth state: an auth-class
+  // error (401 / session expired) surfacing through React Query clears
+  // the live session here + in the store mirror, same as an explicit
+  // sign-out. Registered for the provider's lifetime; the null cleanup
+  // unregisters on unmount.
+  useEffect(() => {
+    registerAuthErrorHandler(() => {
+      setSession(null);
+      useAuthStore.getState().setSession(null);
+    });
+    return () => registerAuthErrorHandler(null);
+  }, []);
 
   // Restore session on mount + subscribe to auth state changes. The
   // `cancelled` flag guards every setState after the await window so

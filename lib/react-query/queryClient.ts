@@ -1,7 +1,7 @@
 // lib/react-query/queryClient.ts
 // React Query client configuration. Queries and mutations funnel errors
 // through handleApiError; auth-class errors trigger the registered handler
-// (set up by fromAuthProvider).
+// (set up by AuthProvider).
 
 import { QueryClient } from '@tanstack/react-query';
 import { AppError, handleApiError } from '../../utils/errors';
@@ -42,7 +42,10 @@ export const queryClient = new QueryClient({
 
 let onAuthError: (() => void) | null = null;
 
-export function registerAuthErrorHandler(handler: () => void) {
+// Registers the auth-class error handler (pass null to unregister).
+// AuthProvider owns the registration so a 401/session-expired query or
+// mutation clears the live session instead of no-op'ing silently.
+export function registerAuthErrorHandler(handler: (() => void) | null) {
   onAuthError = handler;
 }
 
