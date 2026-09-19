@@ -47,12 +47,7 @@ export interface MobileActionFooterProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const PROGRESS_STYLE = {
-  fontSize: theme.typography.mobileEyebrow.fontSize,
-  fontWeight: theme.typography.mobileEyebrow.fontWeight as any,
-  lineHeight: theme.typography.mobileEyebrow.lineHeight,
-  letterSpacing: theme.typography.mobileEyebrow.letterSpacing,
-} as const;
+const PROGRESS_STYLE = theme.typography.mobileEyebrow;
 
 /**
  * Sticky bottom action footer. Two modes (see file header). Structured

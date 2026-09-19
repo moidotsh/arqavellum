@@ -25,3 +25,20 @@ export type { AtmosphereSurface, AtmospherePalette } from './atmospherePalettes'
 export { useCompressFade } from './useCompressFade';
 export type { UseCompressFadeResult } from './useCompressFade';
 export { useDialogFocus } from './useDialogFocus';
+export { useDismissOnEscape } from './useDismissOnEscape';
+export { useFieldChrome, FIELD_GROUP_STYLE } from './useFieldChrome';
+export type { FieldChrome, FieldChromeOptions } from './useFieldChrome';
+export {
+  useAnimatedValue,
+  useTransition,
+  useAnimatedFlag,
+  useLoop,
+  animateTo,
+} from './useAnimatedValue';
+export type {
+  TransitionOptions,
+  AnimatedFlagOptions,
+  LoopStep,
+  LoopOptions,
+  AnimationDriver,
+} from './useAnimatedValue';

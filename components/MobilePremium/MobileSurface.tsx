@@ -16,6 +16,7 @@ import { isWeb } from '../../utils';
 import { useAndroidChromeBlurFix } from '../../hooks';
 import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
+import { rgbaOf } from '../../utils/color';
 
 export interface MobileSurfaceProps {
   children?: React.ReactNode;
@@ -63,14 +64,7 @@ export function MobileSurface({
   // On dark: tint is a faint lightening (low-alpha accent over dark).
   // The math is the same — both branches composite the accent at low
   // alpha; the visual direction follows the base surface.
-  const tintColor = useMemo(() => {
-    const hex = accent.replace('#', '');
-    const r = parseInt(hex.substring(0, 2), 16);
-    const g = parseInt(hex.substring(2, 4), 16);
-    const b = parseInt(hex.substring(4, 6), 16);
-    const clamped = Math.max(0, Math.min(1, tintStrength));
-    return `rgba(${r}, ${g}, ${b}, ${clamped})`;
-  }, [accent, tintStrength]);
+  const tintColor = useMemo(() => rgbaOf(accent)(tintStrength), [accent, tintStrength]);
 
   const gradientStyle: ViewStyle | undefined = useMemo(() => {
     if (!isWeb || disableGradient) return undefined;

@@ -23,7 +23,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useReducedMotion } from '../premium/shared';
+import { useReducedMotion, useAnimatedValue, useLoop } from '../premium/shared';
 import { theme, MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
 
@@ -94,33 +94,18 @@ export function MobileTabBar({
 
   // The resume pulse — the one ambient animation in the system. A
   // looping opacity/scale breath on a ring behind the center circle;
-  // collapsed (never started) under reduced motion. One loop value,
-  // started/stopped in an effect with paired cleanup (R4a/R4b).
-  const pulse = useRef(new Animated.Value(0)).current;
+  // the loop core never starts it under reduced motion and resets the
+  // ring while paused.
+  const pulse = useAnimatedValue(0);
   const pulseActive = centerAction.active === true && !reduced;
-  useEffect(() => {
-    if (!pulseActive) {
-      pulse.stopAnimation();
-      pulse.setValue(0);
-      return;
-    }
-    const loop = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, {
-          toValue: 1,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulse, {
-          toValue: 0,
-          duration: 800,
-          useNativeDriver: true,
-        }),
-      ]),
-    );
-    loop.start();
-    return () => loop.stop();
-  }, [pulse, pulseActive]);
+  useLoop(
+    pulse,
+    [
+      { to: 1, duration: 800 },
+      { to: 0, duration: 800 },
+    ],
+    { paused: !pulseActive, resetTo: 0 },
+  );
 
   const pulseScale = pulse.interpolate({ inputRange: [0, 1], outputRange: [1, 1.35] });
   const pulseOpacity = pulse.interpolate({ inputRange: [0, 1], outputRange: [0.5, 0] });

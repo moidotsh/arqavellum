@@ -29,7 +29,7 @@ import { X } from '@tamagui/lucide-icons-2';
 import { isWeb } from '../../utils';
 import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
-import { useDialogFocus } from '../premium/shared';
+import { useDialogFocus, useDismissOnEscape } from '../premium/shared';
 
 export interface MobileSheetProps {
   /** Whether the sheet is visible. */
@@ -94,15 +94,7 @@ export function MobileSheet({
   const handleClose = () => onOpenChange?.(false);
 
   // Escape-to-close on web, gated by closeOnBackdropTap.
-  useEffect(() => {
-    if (!isWeb || !open || !closeOnBackdropTap) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') handleClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWeb, open, closeOnBackdropTap]);
+  useDismissOnEscape(open, closeOnBackdropTap, handleClose);
 
   if (!open) return null;
 

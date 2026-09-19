@@ -6,6 +6,7 @@
 // the displayed numeric string). The hook handles only the animation curve.
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useReducedMotion } from './useAnimation';
 
 /**
  * Manages an animated counter display for a numeric string value.
@@ -16,6 +17,7 @@ export function useAnimatedCounter(currentValue: string) {
   const [displayed, setDisplayed] = useState(currentValue);
   const rafRef = useRef<number | null>(null);
   const isAnimating = useRef(false);
+  const reduced = useReducedMotion();
 
   // Keep displayed in sync when value changes outside of animation
   useEffect(() => {
@@ -34,7 +36,7 @@ export function useAnimatedCounter(currentValue: string) {
     const from = parseFloat(fromValue);
     const to = parseFloat(toValue);
 
-    if (isNaN(from) || isNaN(to) || from === to) {
+    if (reduced || isNaN(from) || isNaN(to) || from === to) {
       setDisplayed(toValue);
       onComplete?.();
       return;
@@ -64,7 +66,7 @@ export function useAnimatedCounter(currentValue: string) {
     };
 
     rafRef.current = requestAnimationFrame(step);
-  }, []);
+  }, [reduced]);
 
   // Cleanup on unmount
   useEffect(() => () => {

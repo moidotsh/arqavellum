@@ -6,6 +6,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import { Animated, Easing } from 'react-native';
 import { isWeb } from '../utils';
 import { DURATION } from '../constants';
+import { useReducedMotion } from './useAnimation';
 
 /**
  * Options for scale animation
@@ -77,8 +78,13 @@ export function useScaleIn(options: ScaleAnimationOptions = {}): UseScaleInRetur
   } = options;
 
   const scale = useRef(new Animated.Value(initialScale)).current;
+  const reduced = useReducedMotion();
 
   const scaleIn = useCallback(() => {
+    if (reduced) {
+      scale.setValue(finalScale);
+      return;
+    }
     let animation: Animated.CompositeAnimation;
 
     if (useSpring) {
@@ -100,7 +106,7 @@ export function useScaleIn(options: ScaleAnimationOptions = {}): UseScaleInRetur
 
     animation.start();
     return animation;
-  }, [scale, duration, delay, easing, finalScale, useSpring, springConfig]);
+  }, [scale, duration, delay, easing, finalScale, useSpring, springConfig, reduced]);
 
   const reset = useCallback(() => {
     scale.setValue(initialScale);
@@ -160,8 +166,13 @@ export function usePopIn(options: UsePopInOptions = {}): UsePopInReturn {
   } = options;
 
   const scale = useRef(new Animated.Value(0)).current;
+  const reduced = useReducedMotion();
 
   const popIn = useCallback(() => {
+    if (reduced) {
+      scale.setValue(1);
+      return;
+    }
     Animated.sequence([
       Animated.timing(scale, {
         toValue: overshoot,
@@ -175,7 +186,7 @@ export function usePopIn(options: UsePopInOptions = {}): UsePopInReturn {
         useNativeDriver: !isWeb,
       }),
     ]).start();
-  }, [scale, duration, overshoot]);
+  }, [scale, duration, overshoot, reduced]);
 
   const reset = useCallback(() => {
     scale.setValue(0);

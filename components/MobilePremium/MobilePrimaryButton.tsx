@@ -67,12 +67,7 @@ export interface MobilePrimaryButtonProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const ACTION_LABEL_STYLE = {
-  fontSize: theme.typography.mobileAction.fontSize,
-  fontWeight: theme.typography.mobileAction.fontWeight as any,
-  lineHeight: theme.typography.mobileAction.lineHeight,
-  letterSpacing: theme.typography.mobileAction.letterSpacing,
-} as const;
+const ACTION_LABEL_STYLE = theme.typography.mobileAction;
 
 /**
  * Primary action button — the single primary affordance per screen.

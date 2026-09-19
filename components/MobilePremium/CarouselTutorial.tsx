@@ -24,6 +24,7 @@
 
 import React, { useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { clampNumber } from '../../utils/number';
 import { MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
 import { Crossfade, usePressedStyle } from '../premium/shared';
@@ -62,9 +63,6 @@ export interface CarouselTutorialProps {
   style?: StyleProp<ViewStyle>;
 }
 
-function clamp(v: number, lo: number, hi: number): number {
-  return Math.max(lo, Math.min(hi, v));
-}
 
 export function CarouselTutorial({
   slides,
@@ -83,7 +81,7 @@ export function CarouselTutorial({
   const accent = accentColor ?? colors.brand;
   const pressedStyle = usePressedStyle();
   const total = slides.length;
-  const startIndex = total > 0 ? clamp(initialIndex, 0, total - 1) : 0;
+  const startIndex = total > 0 ? clampNumber(initialIndex, 0, total - 1) : 0;
   const [index, setIndex] = useState(startIndex);
   const lastIndexRef = useRef(startIndex);
 
@@ -95,7 +93,7 @@ export function CarouselTutorial({
   const isLast = index === total - 1;
 
   const goTo = (next: number) => {
-    const clamped = clamp(next, 0, total - 1);
+    const clamped = clampNumber(next, 0, total - 1);
     if (clamped === index) return;
     lastIndexRef.current = index;
     setIndex(clamped);

@@ -86,9 +86,9 @@
 - **Prohibited:** `useRef(new Animated.Value(...))` boilerplate in components. Reanimated's `useAnimatedStyle` is permitted only when Motion primitives can't express the animation.
 
 ### S3. Animation Constants
-- **Rule:** Use `DURATION` from `constants/animation.ts`.
-- **Usage:** `duration: DURATION.moderate`
-- **Prohibited:** Hardcoded durations like `duration: 400`.
+- **Rule:** Recurring durations read `DURATION` and recurring curves read `EASING` from `constants/animation.ts`. Deliberate per-primitive tuning (considered motion) may stay as explicit local numbers when the value is not shared.
+- **Usage:** `duration: DURATION.moderate`, `easing: EASING.outCubic`
+- **Prohibited:** Hardcoded durations/easings for values that recur across primitives — promote them to tokens.
 
 ### S4. State Management
 - **Rule:** Follow the decision matrix.

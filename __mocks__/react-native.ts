@@ -197,9 +197,12 @@ export const NativeEventEmitter = class NativeEventEmitter {
 export const Easing = {
   linear: () => () => 0,
   ease: () => () => 0,
+  quad: () => () => 0,
+  cubic: () => () => 0,
   in: (fn: (t: number) => number) => fn,
   out: (fn: (t: number) => number) => fn,
   inOut: (fn: (t: number) => number) => fn,
+  back: () => () => 0,
   bezier: () => () => 0,
 };
 

@@ -12,6 +12,8 @@ export * from './validation';
 export * from './haptics';
 export * from './domMeasurement';
 export * from './toastEventEmitter';
+export * from './color';
+export * from './number';
 export * from './date-helpers';
 export * from './activityGrid';
 export * from './buildAiPayload';

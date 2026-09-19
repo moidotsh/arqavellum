@@ -6,7 +6,7 @@
 export { theme } from './theme';
 export { APP_DISPLAY_NAME } from './displayName';
 export type { ColorScheme, ColorPalette } from './theme';
-export { DURATION, ANIMATION_CONFIG, RESIZE_MEASUREMENT_DEBOUNCE, ANIMATION } from './animation';
+export { DURATION, EASING, ANIMATION_CONFIG, ANIMATION } from './animation';
 export {
   BREAKPOINTS,
   CONTAINER_THRESHOLDS,

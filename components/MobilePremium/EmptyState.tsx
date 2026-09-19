@@ -50,12 +50,7 @@ export interface EmptyStateProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const TITLE_STYLE = {
-  fontSize: theme.typography.mobileTitle.fontSize,
-  fontWeight: theme.typography.mobileTitle.fontWeight as any,
-  lineHeight: theme.typography.mobileTitle.lineHeight,
-  letterSpacing: theme.typography.mobileTitle.letterSpacing,
-} as const;
+const TITLE_STYLE = theme.typography.mobileTitle;
 
 const MESSAGE_STYLE = {
   fontSize: 14,

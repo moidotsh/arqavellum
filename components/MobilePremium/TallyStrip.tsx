@@ -26,7 +26,7 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, StyleSheet, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useAppTheme } from '../../context';
-import { useReducedMotion } from '../premium/shared';
+import { useReducedMotion, animateTo, useAnimatedValue } from '../premium/shared';
 
 export type TallySize = 'lg' | 'sm';
 
@@ -156,16 +156,12 @@ export function TallyStrip({
 }: TallyStripProps) {
   const { colors } = useAppTheme();
   const reduced = useReducedMotion();
-  const strike = useRef(new Animated.Value(1)).current;
+  const strike = useAnimatedValue(1);
 
   useEffect(() => {
     if (!animateLastStrike || reduced) return;
     strike.setValue(0);
-    const a = Animated.timing(strike, {
-      toValue: 1,
-      duration: 120,
-      useNativeDriver: false,
-    });
+    const a = animateTo(strike, 1, { duration: 120, driver: 'js' });
     a.start();
     return () => a.stop();
   }, [struck, animateLastStrike, reduced, strike]);

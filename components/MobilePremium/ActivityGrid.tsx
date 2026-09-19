@@ -32,6 +32,7 @@ import React, { useMemo, useRef } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
+import { rgbaOf } from '../../utils/color';
 import { useContainerQuery, useActivityGridLayout } from '../../hooks';
 import type { ActivityGridLayoutMode } from '../../hooks';
 import {
@@ -387,7 +388,7 @@ function ActivityGridLegend({
  */
 function useLevelFills(brandHex: string, cardAltHex: string): readonly string[] {
   return useMemo(() => {
-    const rgba = hexToRgba(brandHex);
+    const rgba = rgbaOf(brandHex);
     return [
       cardAltHex,
       rgba(LEVEL_ALPHAS[0]),
@@ -396,16 +397,6 @@ function useLevelFills(brandHex: string, cardAltHex: string): readonly string[] 
       rgba(LEVEL_ALPHAS[3]),
     ];
   }, [brandHex, cardAltHex]);
-}
-
-function hexToRgba(hex: string): (alpha: number) => string {
-  return (alpha: number) => {
-    const clean = hex.replace('#', '');
-    const r = parseInt(clean.substring(0, 2), 16) || 0;
-    const g = parseInt(clean.substring(2, 4), 16) || 0;
-    const b = parseInt(clean.substring(4, 6), 16) || 0;
-    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-  };
 }
 
 const styles = StyleSheet.create({

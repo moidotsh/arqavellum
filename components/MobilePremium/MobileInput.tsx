@@ -18,7 +18,7 @@
 // API are preserved — `errorText` maps to the new `error` slot, `helperText`
 // renders below the input when no error is present.
 
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Animated,
   Pressable,
@@ -30,8 +30,8 @@ import {
   type TextStyle,
   type ViewStyle,
 } from 'react-native';
-import { useFocusRing } from '../premium/shared';
-import { theme, MOBILE_CONTENT_WIDTH_STYLE } from '../../constants';
+import { useFocusRing, useFieldChrome, FIELD_GROUP_STYLE } from '../premium/shared';
+import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
 
 export interface MobileInputProps {
@@ -95,12 +95,8 @@ export interface MobileInputProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const FIELD_LABEL_STYLE: TextStyle = {
-  fontSize: theme.typography.mobileFieldLabel.fontSize,
-  fontWeight: theme.typography.mobileFieldLabel.fontWeight as any,
-  lineHeight: theme.typography.mobileFieldLabel.lineHeight,
-  letterSpacing: theme.typography.mobileFieldLabel.letterSpacing,
-};
+// The token object IS the style — spread/reference it directly.
+const FIELD_LABEL_STYLE = theme.typography.mobileFieldLabel;
 
 /**
  * Refined text input for the mobile premium kit.
@@ -148,31 +144,17 @@ export function MobileInput({
     focused: isFocused && !hasError,
   });
 
-  // Border color shifts with focus / error.
-  const borderColor = useMemo(() => {
-    if (hasError) return colors.status.error;
-    if (isFocused) return `${accent}66`;
-    return colors.glass.emptyInputBorder;
-  }, [hasError, isFocused, accent, colors.status.error, colors.glass.emptyInputBorder]);
-
-  // Background picks up the accent on focus; tinted red on error.
-  const backgroundColor = useMemo(() => {
-    if (hasError) return `${colors.status.error}0a`;
-    if (isFocused) return colors.glass.inputFocusBackground;
-    return colors.glass.inputBackground;
-  }, [
+  // Border / background / label respond to focus + error — the shared
+  // field-chrome mapping (one rhythm across the form trio).
+  const { borderColor, backgroundColor, labelColor } = useFieldChrome({
+    focused: isFocused,
     hasError,
-    isFocused,
-    colors.status.error,
-    colors.glass.inputFocusBackground,
-    colors.glass.inputBackground,
-  ]);
-
-  const labelColor = hasError ? colors.status.error : isFocused ? accent : colors.text;
+    accent,
+  });
   const isClickable = onPress !== undefined;
 
   return (
-    <View style={[styles.group, style]} testID={testID}>
+    <View style={[FIELD_GROUP_STYLE, style]} testID={testID}>
       {/* Label — typography.mobileFieldLabel rhythm. */}
       <Text style={[FIELD_LABEL_STYLE, { color: labelColor }]}>{label}</Text>
 
@@ -251,14 +233,6 @@ export function MobileInput({
 }
 
 const styles = StyleSheet.create({
-  group: {
-    gap: 6,
-    ...MOBILE_CONTENT_WIDTH_STYLE,
-    // Fill the slot: the width policy centers cross-axis, which in a row
-    // pair vertically floats the shorter field off the top edge.
-    alignSelf: 'stretch',
-    marginBottom: 16,
-  },
   inputContainer: {
     position: 'relative',
   },

@@ -34,13 +34,14 @@
 // data-testid="route-curtain" so screenshot walkers can wait it out.
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, StyleSheet, Text, View } from 'react-native';
+import { Animated, StyleSheet, Text, View } from 'react-native';
+import { useReducedMotion } from '../premium/shared';
 import { usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { isWeb } from '../../utils';
-import { theme } from '../../constants';
+import { theme, EASING } from '../../constants';
 import { useAppTheme } from '../../context';
-import { useReducedMotion, usePlatformAnimation } from '../../hooks';
+import { usePlatformAnimation } from '../../hooks';
 import {
   useRouteTransitionStore,
   routeCurtainCopy,
@@ -193,7 +194,7 @@ function CurtainPanel({ mode, direction, copy, revealed, onDone }: CurtainPanelP
 
   useEffect(() => {
     const timing = (value: Animated.Value, toValue: number, duration: number, delay = 0) =>
-      Animated.timing(value, { toValue, duration, delay, easing: Easing.out(Easing.cubic), useNativeDriver });
+      Animated.timing(value, { toValue, duration, delay, easing: EASING.outCubic, useNativeDriver });
 
     // Cover-in → hold → lift. The plate slides in at near-constant
     // velocity (a print plate, not a UI spring); the exit is thrown —
@@ -204,7 +205,7 @@ function CurtainPanel({ mode, direction, copy, revealed, onDone }: CurtainPanelP
       Animated.timing(ink, {
         toValue: 1,
         duration: entryMs,
-        easing: Easing.inOut(Easing.quad),
+        easing: EASING.inOutQuad,
         useNativeDriver,
       }),
       Animated.delay(HOLD_MS),
@@ -214,7 +215,7 @@ function CurtainPanel({ mode, direction, copy, revealed, onDone }: CurtainPanelP
       Animated.timing(chaser, {
         toValue: 1,
         duration: entryMs + 60,
-        easing: Easing.inOut(Easing.quad),
+        easing: EASING.inOutQuad,
         useNativeDriver,
       }),
       Animated.delay(HOLD_MS - 60 + CHASER_EXIT_DELAY_MS),
@@ -245,7 +246,7 @@ function CurtainPanel({ mode, direction, copy, revealed, onDone }: CurtainPanelP
   useEffect(() => {
     if (!revealed) return;
     const timing = (value: Animated.Value, duration: number, delay: number) =>
-      Animated.timing(value, { toValue: 1, duration, delay, easing: Easing.out(Easing.cubic), useNativeDriver });
+      Animated.timing(value, { toValue: 1, duration, delay, easing: EASING.outCubic, useNativeDriver });
 
     const details = Animated.parallel([
       timing(bar, 180, 20),
@@ -255,7 +256,7 @@ function CurtainPanel({ mode, direction, copy, revealed, onDone }: CurtainPanelP
         duration: 260,
         delay: 80,
         // A letterpress strike — slight overshoot past rest.
-        easing: Easing.out(Easing.back(1.15)),
+        easing: EASING.strike,
         useNativeDriver,
       }),
     ]);

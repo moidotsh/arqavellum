@@ -20,12 +20,15 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, StyleSheet, View, type ViewStyle } from 'react-native';
-import { useReducedMotion, usePlatformAnimation } from '../../hooks';
+import { usePlatformAnimation } from '../../hooks';
 import { isWeb, hasWindow } from '../../utils';
 import { useAppTheme } from '../../context';
 import { CONTENT_WIDTH_MODE, DESKTOP_LAYOUT_MODE, MOBILE_CONTENT_MAX_WIDTH } from '../../constants';
 import {
   PALETTES,
+  useReducedMotion,
+  useAnimatedValue,
+  useLoop,
   type AtmosphereSurface,
   type AtmospherePalette,
 } from '../premium/shared';
@@ -134,36 +137,35 @@ export function MobileAtmosphere({
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const prevSurfaceRef = useRef<MobileAtmosphereSurface>(surface);
 
-  const orb1Anim = useRef(new Animated.Value(0)).current;
-  const orb2Anim = useRef(new Animated.Value(0)).current;
-  const orb3Anim = useRef(new Animated.Value(0)).current;
+  const orb1Anim = useAnimatedValue(0);
+  const orb2Anim = useAnimatedValue(0);
+  const orb3Anim = useAnimatedValue(0);
 
-  useEffect(() => {
-    if (!orbsVisible) return;
-    if (reduced) return;
-    if (isWeb && !hasWindow()) return;
-
-    const float = (anim: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.delay(delay),
-          Animated.timing(anim, { toValue: 1, duration: 12000, useNativeDriver: !isWeb }),
-          Animated.timing(anim, { toValue: 0, duration: 12000, useNativeDriver: !isWeb }),
-        ]),
-      );
-
-    const a1 = float(orb1Anim, 0);
-    const a2 = float(orb2Anim, 2000);
-    const a3 = float(orb3Anim, 4000);
-    a1.start();
-    a2.start();
-    a3.start();
-    return () => {
-      a1.stop();
-      a2.stop();
-      a3.stop();
-    };
-  }, [orb1Anim, orb2Anim, orb3Anim, reduced, orbsVisible]);
+  const orbPaused = !orbsVisible || (isWeb && !hasWindow());
+  useLoop(
+    orb1Anim,
+    [
+      { to: 1, duration: 12000 },
+      { to: 0, duration: 12000 },
+    ],
+    { paused: orbPaused },
+  );
+  useLoop(
+    orb2Anim,
+    [
+      { to: 1, duration: 12000, delay: 2000 },
+      { to: 0, duration: 12000 },
+    ],
+    { paused: orbPaused },
+  );
+  useLoop(
+    orb3Anim,
+    [
+      { to: 1, duration: 12000, delay: 4000 },
+      { to: 0, duration: 12000 },
+    ],
+    { paused: orbPaused },
+  );
 
   useEffect(() => {
     if (surface === prevSurfaceRef.current) return;

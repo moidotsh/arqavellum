@@ -10,6 +10,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import { Animated, Easing } from 'react-native';
 import { isWeb } from '../utils';
 import { DURATION } from '../constants';
+import { useReducedMotion } from './useAnimation';
 
 /**
  * Options for translate animation.
@@ -63,8 +64,13 @@ export function useTranslateY(options: TranslateAnimationOptions = {}): UseTrans
   } = options;
 
   const translateY = useRef(new Animated.Value(initialValue)).current;
+  const reduced = useReducedMotion();
 
   const animate = useCallback(() => {
+    if (reduced) {
+      translateY.setValue(finalValue);
+      return;
+    }
     const animation = Animated.timing(translateY, {
       toValue: finalValue,
       duration,
@@ -74,7 +80,7 @@ export function useTranslateY(options: TranslateAnimationOptions = {}): UseTrans
     });
     animation.start();
     return animation;
-  }, [translateY, duration, delay, easing, finalValue]);
+  }, [translateY, duration, delay, easing, finalValue, reduced]);
 
   const reset = useCallback(() => {
     translateY.setValue(initialValue);

@@ -44,6 +44,7 @@ import {
   startOfMonth,
 } from 'date-fns';
 import { format } from 'date-fns';
+import { toYmd } from '../../utils/date-helpers';
 import { theme } from '../../constants';
 import { useAppTheme } from '../../context';
 import { usePressedStyle } from '../premium/shared';
@@ -68,28 +69,13 @@ export interface CalendarGridProps {
 
 const DOW_HEADERS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
 
-const EYEBROW: Pick<
-  typeof theme.typography.mobileEyebrow,
-  'fontSize' | 'fontWeight' | 'lineHeight' | 'letterSpacing'
-> = {
-  fontSize: theme.typography.mobileEyebrow.fontSize,
-  fontWeight: theme.typography.mobileEyebrow.fontWeight as any,
-  lineHeight: theme.typography.mobileEyebrow.lineHeight,
-  letterSpacing: theme.typography.mobileEyebrow.letterSpacing,
-};
+const EYEBROW = theme.typography.mobileEyebrow;
 
 function toLocalDate(ymd: string | null | undefined): Date | null {
   const normalized = ymd ? normalizeDateToISO(ymd) : null;
   if (!normalized) return null;
   const [y, m, d] = normalized.split('-').map(Number);
   return new Date(y, m - 1, d);
-}
-
-function toYmd(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
 }
 
 function clampInitialMonth(value: Date | null, min: Date | null, max: Date | null): Date {

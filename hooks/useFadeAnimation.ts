@@ -9,6 +9,7 @@ import { useRef, useEffect, useCallback } from 'react';
 import { Animated, Easing } from 'react-native';
 import { isWeb } from '../utils';
 import { DURATION } from '../constants';
+import { useReducedMotion } from './useAnimation';
 
 /**
  * Options for fade animation
@@ -71,18 +72,21 @@ export function useFadeIn(options: FadeAnimationOptions = {}): UseFadeInReturn {
   } = options;
 
   const opacity = useRef(new Animated.Value(initialOpacity)).current;
+  const reduced = useReducedMotion();
 
   const fadeIn = useCallback(() => {
+    // Reduced motion still fades (opacity is the content), just shorter —
+    // the FadeIn convention (≤200ms).
     const animation = Animated.timing(opacity, {
       toValue: finalOpacity,
-      duration,
+      duration: reduced ? Math.min(duration, 200) : duration,
       delay,
       easing,
       useNativeDriver: !isWeb,
     });
     animation.start();
     return animation;
-  }, [opacity, duration, delay, easing, finalOpacity]);
+  }, [opacity, duration, delay, easing, finalOpacity, reduced]);
 
   const reset = useCallback(() => {
     opacity.setValue(initialOpacity);

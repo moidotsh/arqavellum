@@ -32,7 +32,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { isWeb } from '../../utils';
-import { FadeIn, useDialogFocus } from '../premium/shared';
+import { FadeIn, useDialogFocus, useDismissOnEscape } from '../premium/shared';
 import { MOBILE_DIALOG_WIDTH_STYLE } from '../../constants';
 import { useAppTheme } from '../../context';
 import { MobileSurface } from './MobileSurface';
@@ -129,18 +129,8 @@ export function MobileDialog({
   const resolvedPrimaryLabel = primaryLabel ?? primaryActionLabel;
   const resolvedOnPrimary = onPrimary ?? onPrimaryAction;
 
-  // R4b: Escape-to-close on web — paired add/removeEventListener with cleanup.
-  useEffect(() => {
-    if (!isWeb || !resolvedOpen || !closeOnBackdropTap) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose();
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isWeb, resolvedOpen, closeOnBackdropTap]);
+  // Escape-to-close on web, gated by closeOnBackdropTap.
+  useDismissOnEscape(resolvedOpen, closeOnBackdropTap, handleClose);
 
   if (!resolvedOpen) return null;
 

@@ -10,6 +10,7 @@ import { useRef, useCallback } from 'react';
 import { Animated } from 'react-native';
 import { isWeb } from '../utils';
 import { DURATION } from '../constants';
+import { useReducedMotion } from './useAnimation';
 
 /**
  * Options for shake animation.
@@ -54,8 +55,10 @@ export function useShake(options: ShakeAnimationOptions = {}): UseShakeReturn {
   } = options;
 
   const shakeAnim = useRef(new Animated.Value(0)).current;
+  const reduced = useReducedMotion();
 
   const shake = useCallback(() => {
+    if (reduced) return;
     // Create shake sequence: right, left, right, left, ... settle at 0.
     // Intensity decays each cycle so the shake fades naturally.
     const sequence: Animated.CompositeAnimation[] = [];
@@ -86,7 +89,7 @@ export function useShake(options: ShakeAnimationOptions = {}): UseShakeReturn {
     );
 
     Animated.sequence(sequence).start();
-  }, [shakeAnim, intensity, stepDuration, cycles]);
+  }, [shakeAnim, intensity, stepDuration, cycles, reduced]);
 
   return {
     shakeAnim,

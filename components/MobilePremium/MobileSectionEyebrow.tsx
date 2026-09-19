@@ -40,13 +40,7 @@ export interface MobileSectionEyebrowProps {
   testID?: string;
 }
 
-const EYEBROW_STYLE = {
-  fontSize: theme.typography.mobileEyebrow.fontSize,
-  fontWeight: theme.typography.mobileEyebrow.fontWeight as any,
-  lineHeight: theme.typography.mobileEyebrow.lineHeight,
-  letterSpacing: theme.typography.mobileEyebrow.letterSpacing,
-  fontFamily: theme.typography.mobileEyebrow.fontFamily,
-} as const;
+const EYEBROW_STYLE = theme.typography.mobileEyebrow;
 
 /**
  * Small uppercase label that leads a section. Children can be a string

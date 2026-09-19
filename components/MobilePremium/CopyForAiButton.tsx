@@ -126,10 +126,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   label: {
-    fontSize: theme.typography.mobileEyebrow.fontSize,
-    fontWeight: theme.typography.mobileEyebrow.fontWeight as any,
-    lineHeight: theme.typography.mobileEyebrow.lineHeight,
-    letterSpacing: theme.typography.mobileEyebrow.letterSpacing,
+    ...theme.typography.mobileEyebrow,
     textTransform: 'uppercase',
   },
 });

@@ -6,14 +6,15 @@
 // indicator `MobileCheckboxItem` renders.
 //
 // Premium signals:
-//   • Animated check — fades + scales on toggle, snapping under
-//     reduced-motion (Animated timing; set duration to 0 to disable).
+//   • Animated check — fades + scales on toggle (one 0..1 flag value,
+//     two interpolations), snapping under reduced-motion.
 //   • Considered geometry — 1.5px border, 6px radius, centered glyph.
 
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 import { Check } from '@tamagui/lucide-icons-2';
 import { useAppTheme } from '../../context';
+import { useAnimatedFlag } from '../premium/shared';
 
 export interface CheckBoxProps {
   /** Current checked state. */
@@ -45,17 +46,8 @@ export function CheckBox({
   const { colors } = useAppTheme();
   const accent = accentColor ?? colors.brand;
 
-  const scale = useRef(new Animated.Value(checked ? 1 : 0)).current;
-  const opacity = useRef(new Animated.Value(checked ? 1 : 0)).current;
-
-  useEffect(() => {
-    const target = checked ? 1 : 0;
-    const anims = [scale, opacity].map((value) =>
-      Animated.timing(value, { toValue: target, duration, useNativeDriver: true }),
-    );
-    anims.forEach((anim) => anim.start());
-    return () => anims.forEach((anim) => anim.stop());
-  }, [checked, duration, scale, opacity]);
+  // One 0..1 progress value drives both the scale and the fade.
+  const progress = useAnimatedFlag(checked, { duration });
 
   return (
     <View
@@ -69,7 +61,7 @@ export function CheckBox({
         },
       ]}
     >
-      <Animated.View style={{ opacity, transform: [{ scale }] }}>
+      <Animated.View style={{ opacity: progress, transform: [{ scale: progress }] }}>
         <Check size={checkSize ?? size - 8} color={colors.textOnBrand} strokeWidth={3} />
       </Animated.View>
     </View>

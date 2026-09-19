@@ -68,9 +68,9 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../context';
-import { useAndroidChromeBlurFix, useReducedMotion } from '../../hooks';
+import { useAndroidChromeBlurFix } from '../../hooks';
 import { isWeb } from '../../utils';
-import { usePressedStyle } from '../premium/shared';
+import { useReducedMotion, usePressedStyle } from '../premium/shared';
 import { MobileAtmosphere, type MobileAtmosphereSurface } from './MobileAtmosphere';
 import { InkPanel } from './InkPanel';
 import { theme } from '../../constants';

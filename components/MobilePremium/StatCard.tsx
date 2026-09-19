@@ -52,13 +52,7 @@ export interface StatCardProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const LABEL_STYLE = {
-  fontSize: theme.typography.mobileEyebrow.fontSize,
-  fontWeight: theme.typography.mobileEyebrow.fontWeight as any,
-  lineHeight: theme.typography.mobileEyebrow.lineHeight,
-  letterSpacing: theme.typography.mobileEyebrow.letterSpacing,
-  fontFamily: theme.typography.mobileEyebrow.fontFamily,
-} as const;
+const LABEL_STYLE = theme.typography.mobileEyebrow;
 
 function valueStyleFor(size: StatCardSize) {
   switch (size) {

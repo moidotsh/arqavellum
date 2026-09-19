@@ -42,12 +42,7 @@ export interface MobileCheckboxItemProps {
   style?: StyleProp<ViewStyle>;
 }
 
-const TITLE_STYLE = {
-  fontSize: theme.typography.mobileFieldLabel.fontSize,
-  fontWeight: theme.typography.mobileFieldLabel.fontWeight as any,
-  lineHeight: theme.typography.mobileFieldLabel.lineHeight,
-  letterSpacing: theme.typography.mobileFieldLabel.letterSpacing,
-} as const;
+const TITLE_STYLE = theme.typography.mobileFieldLabel;
 
 const SUBTITLE_STYLE = {
   fontSize: 12,
