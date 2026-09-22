@@ -140,6 +140,13 @@ function RootShell() {
     ensureMeta('theme-color', colors.background, '(min-width: 701px)');
     ensureMeta('theme-color', colors.brand, '(max-width: 700px)');
 
+    // THE ROOT PAINT — the global shell CSS hardcodes the light ground
+    // on html/body; every pixel the app does not explicitly paint shows
+    // through it. Repaint both from the LIVE palette so dark mode owns
+    // the whole canvas (the PWA status-bar area included).
+    document.documentElement.style.backgroundColor = colors.background;
+    document.body.style.backgroundColor = colors.background;
+
     // Inject the global scrollbar-hiding CSS at runtime. The same Expo
     // Web export/dev-server strip that removes PWA tags also drops the
     // inline <style> block from index.html — without this injection the

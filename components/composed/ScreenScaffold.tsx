@@ -141,7 +141,17 @@ export function ScreenScaffold({
 }
 
 const styles = StyleSheet.create({
-  fill: { flex: 1 },
+  fill: {
+    flex: 1,
+    // iOS 27 LIQUID GLASS GUARD — do NOT remove in code hygiene.
+    // iOS 27 applies a system-level frosted-glass effect to the PWA
+    // status-bar zone; without this padding every consumer's header
+    // content renders under the frosted band (unreadable icons). The
+    // 24px clears it on every iPhone; desktop/web is unaffected (the
+    // extra air reads as breathing room). Consumers targeting only
+    // desktop may zero this without harm.
+    paddingTop: 24,
+  },
   compactBar: {
     height: 48,
     flexDirection: 'row',
