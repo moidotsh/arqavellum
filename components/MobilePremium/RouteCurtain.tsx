@@ -84,8 +84,12 @@ export function RouteCurtain() {
     const target = phase !== 'idle' ? colors.focus.background : colors.backgroundDeep;
     const metas = document.querySelectorAll('meta[name="theme-color"]');
     metas.forEach((m) => m.setAttribute('content', target));
+    document.documentElement.style.backgroundColor = target;
+    document.body.style.backgroundColor = target;
     return () => {
       metas.forEach((m) => m.setAttribute('content', colors.backgroundDeep));
+      document.documentElement.style.backgroundColor = colors.backgroundDeep;
+      document.body.style.backgroundColor = colors.backgroundDeep;
     };
   }, [phase, colors.focus.background, colors.backgroundDeep]);
 
