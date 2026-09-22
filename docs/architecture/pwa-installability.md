@@ -49,10 +49,10 @@ The full set of PWA tags injected at runtime (source of truth:
 | `<link rel="icon" type="image/png">` | Browser tab icon | All browsers |
 | `<meta name="apple-mobile-web-app-capable">` | Standalone mode | iOS Safari |
 | `<meta name="mobile-web-app-capable">` | Standalone mode (legacy) | Android Chrome (pre-manifest era) |
-| `<meta name="apple-mobile-web-app-status-bar-style">` | Status bar appearance | iOS Safari |
+| `<meta name="apple-mobile-web-app-status-bar-style">` | Status bar appearance (`black-translucent` — the app paints the safe-area itself, so the bar follows the active palette instead of the OS default) | iOS Safari |
 | `<meta name="apple-mobile-web-app-title">` | Home-screen label | iOS Safari |
-| `<meta name="theme-color" media="(min-width: 701px)">` | Browser UI tint (desktop) | Chrome desktop / Android |
-| `<meta name="theme-color" media="(max-width: 700px)">` | Browser UI tint (mobile) | Chrome mobile |
+| `<meta name="theme-color" media="(min-width: 701px)">` | Browser UI tint (desktop) — **repainted at runtime when the color scheme changes** | Chrome desktop / Android |
+| `<meta name="theme-color" media="(max-width: 700px)">` | Browser UI tint (mobile) — **repainted at runtime when the color scheme changes** | Chrome mobile |
 
 ---
 

@@ -109,7 +109,13 @@ function RootShell() {
     // metas pull from the LIVE palette so they follow colorScheme.
     const ensureMeta = (name: string, content: string, media?: string) => {
       const selector = `meta[name="${name}"]${media ? `[media="${media}"]` : ''}`;
-      if (document.querySelector(selector)) return;
+      const existing = document.querySelector(selector) as HTMLMetaElement | null;
+      if (existing) {
+        // UPDATE — the meta ships a static value in index.html; the
+        // runtime repaints it when the mode switches (PWA theme follows).
+        existing.setAttribute('content', content);
+        return;
+      }
       const m = document.createElement('meta');
       m.name = name;
       m.content = content;
@@ -129,7 +135,7 @@ function RootShell() {
     ensureLink('icon', '/icons/192.png', 'image/png');
     ensureMeta('apple-mobile-web-app-capable', 'yes');
     ensureMeta('mobile-web-app-capable', 'yes');
-    ensureMeta('apple-mobile-web-app-status-bar-style', colorScheme === 'dark' ? 'black' : 'default');
+    ensureMeta('apple-mobile-web-app-status-bar-style', 'black-translucent');
     ensureMeta('apple-mobile-web-app-title', APP_DISPLAY_NAME);
     ensureMeta('theme-color', colors.background, '(min-width: 701px)');
     ensureMeta('theme-color', colors.brand, '(max-width: 700px)');
