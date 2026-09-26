@@ -37,6 +37,14 @@ export interface RealtimeTableConfig<Mapped> {
   hydrateLimit?: number;
   /** Column the hydration tail orders by, descending. Default 'created_at'. */
   hydrateOrderColumn?: string;
+  /**
+   * Optional postgres_changes filter for the INSERT stream (PostgREST
+   * filter syntax, e.g. `user_id=eq.<uuid>`). Narrows which rows the
+   * channel delivers — RLS still owns what the subscriber is allowed to
+   * see. Does NOT apply to the hydration read; scope that in `mapRow`'s
+   * caller or read through a repository instead (hydrateLimit: 0).
+   */
+  filter?: string;
   /** Channel name — keep unique per subscription. Default `realtime-<table>`. */
   channelName?: string;
 }
@@ -53,6 +61,7 @@ export function startRealtimeTable<Mapped>(config: RealtimeTableConfig<Mapped>):
     onInsert,
     hydrateLimit = 100,
     hydrateOrderColumn = 'created_at',
+    filter,
     channelName = `realtime-${table}`,
   } = config;
 
@@ -77,7 +86,7 @@ export function startRealtimeTable<Mapped>(config: RealtimeTableConfig<Mapped>):
     .channel(channelName)
     .on(
       'postgres_changes',
-      { event: 'INSERT', schema: 'public', table },
+      { event: 'INSERT', schema: 'public', table, filter },
       (payload: { new: RealtimeRow }) => {
         onInsert?.(mapRow(payload.new));
       },

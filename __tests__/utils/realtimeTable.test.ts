@@ -118,6 +118,35 @@ describe('startRealtimeTable — INSERT stream', () => {
 
     expect(onInsert).toHaveBeenCalledWith({ id: 'z', body: 'live row' });
   });
+
+  it('passes the optional postgres_changes filter through to the channel', () => {
+    stubHydration({ data: [], error: null });
+    const filters: unknown[] = [];
+    const channel = {
+      on: (_type: string, filter: unknown, _cb: InsertCallback) => {
+        filters.push(filter);
+        return channel;
+      },
+      subscribe: vi.fn(() => channel),
+    };
+    (supabase as unknown as Record<string, unknown>).channel = vi.fn(() => channel);
+    (supabase as unknown as Record<string, unknown>).removeChannel = vi.fn();
+
+    startRealtimeTable({
+      table: 'messages',
+      mapRow,
+      onHydrate: vi.fn(),
+      filter: 'user_id=eq.abc-123',
+    });
+
+    expect(filters).toHaveLength(1);
+    expect(filters[0]).toEqual({
+      event: 'INSERT',
+      schema: 'public',
+      table: 'messages',
+      filter: 'user_id=eq.abc-123',
+    });
+  });
 });
 
 describe('startRealtimeTable — the stopper', () => {
